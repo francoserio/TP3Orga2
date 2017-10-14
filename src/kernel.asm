@@ -7,6 +7,8 @@
 
 global start
 
+extern GDT_DESC
+extern KERNEL
 
 ;; Saltear seccion de datos
 jmp start
@@ -39,22 +41,40 @@ start:
 
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len, 0x07, 0, 0
-
-
     ; Habilitar A20
-
+    call habilitar_A20
+    xchg bx, bx
     ; Cargar la GDT
-
+    lgdt [GDT_DESC]
     ; Setear el bit PE del registro CR0
-
+    xchg bx, bx
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
     ; Saltar a modo protegido
-
+    xchg bx, bx
+    jmp 0x58:mp
     ; Establecer selectores de segmentos
-
+BITS 32
+mp:
+    xchg bx, bx
+    xor eax, eax
+    mov ax, 1001000b    ;data segment nivel 0
+    mov ds, ax
+    xchg bx, bx
+    mov es, ax
+    mov gs, ax
+    mov ss, ax
+    mov ax, 1100000b    ;video
+    mov fs, ax
     ; Establecer la base de la pila
-
+    xchg bx, bx
+    mov ebp, 0x27000       ;setear la pila
+    mov esp, 0x27000
+    xchg bx, bx
     ; Imprimir mensaje de bienvenida
-
+    imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
+    xchg bx, bx
     ; Inicializar el juego
 
     ; Inicializar pantalla
