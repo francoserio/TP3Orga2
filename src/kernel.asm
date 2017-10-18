@@ -9,6 +9,8 @@ global start
 
 extern GDT_DESC
 extern KERNEL
+extern IDT_DESC
+extern idt_inicializar
 
 ;; Saltear seccion de datos
 jmp start
@@ -94,11 +96,14 @@ mp:
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
-
+    call idt_inicializar
+    xchg bx, bx
     ; Cargar IDT
-
+    lidt[IDT_DESC]
+    xchg bx, bx
     ; Configurar controlador de interrupciones
-
+    int 3
+    xchg bx, bx
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
