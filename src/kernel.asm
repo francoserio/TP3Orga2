@@ -11,6 +11,7 @@ extern GDT_DESC
 extern KERNEL
 extern IDT_DESC
 extern idt_inicializar
+extern screen_inicializar
 
 ;; Saltear seccion de datos
 jmp start
@@ -80,7 +81,8 @@ mp:
     ; Inicializar el juego
 
     ; Inicializar pantalla
-
+    call screen_inicializar
+    xchg bx, bx
     ; Inicializar el manejador de memoria
 
     ; Inicializar el directorio de paginas
@@ -102,8 +104,7 @@ mp:
     lidt[IDT_DESC]
     xchg bx, bx
     ; Configurar controlador de interrupciones
-    int 3
-    xchg bx, bx
+
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones

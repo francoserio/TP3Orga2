@@ -82,4 +82,41 @@ void print_dec(uint numero, int size, uint x, uint y, unsigned short attr) {
     }
 }
 
+void screen_inicializar() {
+  int i = 0;
+  int j;
+  while (i < 50) {
+    j = 0;
+     while (j < 80) {
+       screen_pintar(0x00, 0x07 << 4, i, j);
+       j++;
+     }
+     i++;
+  }
 
+  i = 45;
+  while (i < 50) {
+    j = 0;
+    while (j < 80) {
+      screen_pintar(0x00, 0x00 << 4, i, j);
+      j++;
+    }
+    i++;
+  }
+
+  i = 45;
+  while (i < 50) {
+    j = 33;
+    while (j < 40) {
+      screen_pintar(0x00, 0x04 << 4, i, j);
+      j++;
+    }
+    while (j < 47) {
+      screen_pintar(0x00, 0x01 << 4, i, j);
+      j++;
+    }
+    i++;
+  }
+
+
+}
