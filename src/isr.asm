@@ -1,4 +1,4 @@
-; ** por compatibilidad se omiten tildes **
+       ; ** por compatibilidad se omiten tildes **
 ; ==============================================================================
 ; TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 ; ==============================================================================
@@ -66,6 +66,7 @@ desc_len_18 equ     $ - desc_18
 desc_19 db   'SIMD Error'
 desc_len_19 equ     $ - desc_19
 
+
 BITS 32
 
 sched_tarea_offset:     dd 0x00
@@ -73,6 +74,9 @@ sched_tarea_selector:   dw 0x00
 
 ;; PIC
 extern fin_intr_pic1
+
+;; Teclado
+extern atender_teclado
 
 ;; Sched
 extern sched_tick
@@ -125,8 +129,30 @@ ISR 19
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
 ;;
+global _isr32
+_isr32:    
+	; QUE REGISTROS PRESERVO?
+	call fin_intr_pic1
+	call screen_proximo_reloj ; HAY QUE DEFINIR ESTA? LA QUE PINTA EL CLOCK
+	; RESTAURAR REGISTROS
+	iret    
+
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
 ;;
+global _isr33
+_isr33:    
+	push al
+	call fin_intr_pic1
+	in al, 0x60
+	; lo muevo a rsi para usarlo como parametro?
+	call atender_teclado
+	pop al
+	iret    
+
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
+global _isr66
+_isr66:
+	mov eax, 0x42
+	iret

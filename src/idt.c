@@ -64,4 +64,19 @@ void idt_inicializar() {
     IDT_ENTRY(17);
     IDT_ENTRY(18);
     IDT_ENTRY(19);
+
+    IDT_ENTRY(32);
+    IDT_ENTRY(33);
+
+    IDT_ENTRY(66    );
+}
+
+void atender_teclado( QUE TIPO ES? key){
+    switch(key) {
+        case ''  :
+          screen_pintar(letra, color, fila, columna)
+          break;         
+        default : 
+        statement(s);
+        }
 }
