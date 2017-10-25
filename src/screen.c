@@ -82,6 +82,10 @@ void print_dec(uint numero, int size, uint x, uint y, unsigned short attr) {
     }
 }
 
+void screen_pintar_nombre() {
+  print("ENIFRA", 73, 0, 0xF);
+}
+
 void screen_inicializar() {
   int i = 0;
   int j;
@@ -118,5 +122,10 @@ void screen_inicializar() {
     i++;
   }
 
-
+  i = 0;
+  j = 0;
+  while (j < 80) {
+    screen_pintar(0x00, 0x00 << 4, i, j);
+    j++;
+  }
 }

@@ -9,7 +9,55 @@
 #include "i386.h"
 /* Atributos paginas */
 /* -------------------------------------------------------------------------- */
+page_directory_entry* inicioDirectory = (page_directory_entry*)0x27000;
 
+page_table_entry* inicioTable = (page_table_entry*)0x28000;
+
+void mmu_inicializar_dir_kernel() {
+  page_directory_entry pde;
+
+  pde.present = 0;
+  pde.read_write = 1;
+  pde.user_supervisor = 0;
+  pde.write_through = 0;
+  pde.cache_disable = 0;
+  pde.accessed = 0;
+  pde.ignored = 0;
+  pde.page_size = 0;
+  pde.global = 0;
+  pde.base_address = 0x00000;
+
+  for (int j = 0; j < 1024; j++) {
+    inicioDirectory[j] = pde;
+  }
+
+  inicioDirectory[0].present = 1;
+  inicioDirectory[0].base_address = 0x28000 >> 12;
+
+  page_table_entry pte;
+
+  pte.present = 1;
+  pte.read_write = 1;
+  pte.user_supervisor = 0;
+  pte.write_through = 0;
+  pte.cache_disable = 0;
+  pte.accessed = 0;
+  pte.dirty = 0;
+  pte.attribute_index = 0;
+  pte.global = 0;
+  pte.base_address = 0x00000;
+
+  for (int i = 0; i < 1024; i++) {
+    pte.base_address = i;
+    inicioTable[i] = pte;
+  }
+
+  tlbflush();
+}
+
+void mmu_inicializar() {
+
+}
 
 /* Direcciones fisicas de codigos */
 /* -------------------------------------------------------------------------- */

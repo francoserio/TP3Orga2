@@ -12,6 +12,9 @@ extern KERNEL
 extern IDT_DESC
 extern idt_inicializar
 extern screen_inicializar
+extern mmu_inicializar_dir_kernel
+extern mmu_inicializar
+extern screen_pintar_nombre
 
 ;; Saltear seccion de datos
 jmp start
@@ -82,15 +85,24 @@ mp:
 
     ; Inicializar pantalla
     call screen_inicializar
+    call screen_pintar_nombre
     xchg bx, bx
     ; Inicializar el manejador de memoria
-
+    ; call mmu_inicializar
     ; Inicializar el directorio de paginas
-
+    call mmu_inicializar_dir_kernel
+    xchg bx, bx
     ; Cargar directorio de paginas
-
+    xor eax, eax
+    mov eax, 0x27000
+    mov cr3, eax
+    xchg bx, bx
     ; Habilitar paginacion
-
+    xor eax, eax
+    mov eax, cr0
+    or eax, 0x80000000
+    mov cr0, eax
+    xchg bx, bx
     ; Inicializar tss
 
     ; Inicializar tss de la tarea Idle

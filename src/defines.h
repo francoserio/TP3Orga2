@@ -15,6 +15,7 @@
 #define TRUE                    0x00000001
 #define FALSE                   0x00000000
 #define ERROR                   1
+#define KERNEL_DIRECTORY        0x27000
 
 typedef unsigned char  uchar;
 typedef unsigned short ushort;
