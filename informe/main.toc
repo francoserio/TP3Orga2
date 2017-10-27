@@ -1,0 +1,9 @@
+\select@language {spanish}
+\contentsline {section}{\numberline {1}Explicacion}{3}
+\contentsline {subsection}{\numberline {1.1}Explicacion}{3}
+\contentsline {section}{\numberline {2}otraHoja1}{4}
+\contentsline {subsection}{\numberline {2.1}otraHoja1}{4}
+\contentsline {section}{\numberline {3}otraHoja2}{5}
+\contentsline {subsection}{\numberline {3.1}otraHoja2}{5}
+\contentsline {section}{\numberline {4}otraHoja3}{6}
+\contentsline {subsection}{\numberline {4.1}otraHoja3}{6}
