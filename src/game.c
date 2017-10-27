@@ -207,4 +207,42 @@ void game_terminar_si_es_hora()
 
 void game_atender_teclado(unsigned char tecla)
 {
+  switch(tecla) {
+    case KB_w:
+      screen_pintar('W', 0xF, 0, 65);
+      break;
+    case KB_s:
+      screen_pintar('S', 0xF, 0, 65);
+      break;
+    case KB_a:
+      screen_pintar('A', 0xF, 0, 65);
+      break;
+    case KB_d:
+      screen_pintar('D', 0xF, 0, 65);
+      break;
+    case KB_e:
+      screen_pintar('E', 0xF, 0, 65);
+      break;
+    case KB_q:
+      screen_pintar('Q', 0xF, 0, 65);
+      break;
+    case KB_i:
+      screen_pintar('I', 0xF, 0, 65);
+      break;
+    case KB_k:
+      screen_pintar('K', 0xF, 0, 65);
+      break;
+    case KB_j:
+      screen_pintar('J', 0xF, 0, 65);
+      break;
+    case KB_l:
+      screen_pintar('L', 0xF, 0, 65);
+      break;
+    case KB_shiftL:
+      print("shiftL", 65, 0, 0xF);
+      break;
+    case KB_shiftR:
+      print("shiftR", 65, 0, 0xF);
+      break;
+  }
 }

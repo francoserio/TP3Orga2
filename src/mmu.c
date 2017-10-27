@@ -55,17 +55,17 @@ void mmu_inicializar_dir_kernel() {
   tlbflush();
 }
 
-unsigned int proxima_pagina_libre;
-
-void mmu_inicializar(){
-	proxima_pagina_libre = INICIO_PAGINAS_LIBRES;
-}
-
-unsigned int mmu_proxima_pagina_fisica_libre() {
-	unsigned int pagina_libre  = proxima_pagina_libre;
-	proxima_pagina_libre += PAGE_SIZE; // PAGE_SIZE = 1024
-	return pagina_libre;
-}
+// unsigned int proxima_pagina_libre;
+//
+// void mmu_inicializar(){
+// 	proxima_pagina_libre = INICIO_PAGINAS_LIBRES;
+// }
+//
+// unsigned int mmu_proxima_pagina_fisica_libre() {
+// 	unsigned int pagina_libre  = proxima_pagina_libre;
+// 	proxima_pagina_libre += PAGE_SIZE; // PAGE_SIZE = 1024
+// 	return pagina_libre;
+// }
 
 /* Direcciones fisicas de codigos */
 /* -------------------------------------------------------------------------- */

@@ -76,7 +76,7 @@ sched_tarea_selector:   dw 0x00
 extern fin_intr_pic1
 
 ;; Teclado
-extern atender_teclado
+extern game_atender_teclado
 
 ;; Sched
 extern sched_tick
@@ -129,30 +129,40 @@ ISR 19
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
 ;;
+extern screen_actualizar_reloj_global
+
 global _isr32
-_isr32:    
-	; QUE REGISTROS PRESERVO?
-	call fin_intr_pic1
-	call screen_proximo_reloj ; HAY QUE DEFINIR ESTA? LA QUE PINTA EL CLOCK
+_isr32:
+	; PRESERVAR REGISTROS
+  pushad
+  call fin_intr_pic1
+	call screen_actualizar_reloj_global
 	; RESTAURAR REGISTROS
-	iret    
+  popad
+  iret
 
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
 ;;
 global _isr33
-_isr33:    
-	push al
-	call fin_intr_pic1
+_isr33:
+  pushad
+  call fin_intr_pic1
+  xor ax, ax
 	in al, 0x60
 	; lo muevo a rsi para usarlo como parametro?
-	call atender_teclado
-	pop al
-	iret    
+  push eax
+	call game_atender_teclado
+  pop eax
+  popad
+	iret
 
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
-global _isr66
-_isr66:
+global _isr46
+_isr46:
+  pushad
+  call fin_intr_pic1
 	mov eax, 0x42
-	iret
+  popad
+  iret

@@ -83,7 +83,7 @@ void print_dec(uint numero, int size, uint x, uint y, unsigned short attr) {
 }
 
 void screen_pintar_nombre() {
-  print("ENIFRA", 73, 0, 0xF);
+  print("ENIFRA", 74, 0, 0xF);
 }
 
 void screen_inicializar() {

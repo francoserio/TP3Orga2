@@ -15,6 +15,8 @@ extern screen_inicializar
 extern mmu_inicializar_dir_kernel
 extern mmu_inicializar
 extern screen_pintar_nombre
+extern resetear_pic
+extern habilitar_pic
 
 ;; Saltear seccion de datos
 jmp start
@@ -116,7 +118,9 @@ mp:
     lidt[IDT_DESC]
     xchg bx, bx
     ; Configurar controlador de interrupciones
-
+    call resetear_pic
+    call habilitar_pic
+    sti
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
