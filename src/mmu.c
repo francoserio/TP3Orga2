@@ -9,6 +9,8 @@
 #include "i386.h"
 /* Atributos paginas */
 /* -------------------------------------------------------------------------- */
+unsigned int proxima_pagina_libre;
+
 page_directory_entry* inicioDirectory = (page_directory_entry*)0x27000;
 
 page_table_entry* inicioTable = (page_table_entry*)0x28000;
@@ -55,17 +57,66 @@ void mmu_inicializar_dir_kernel() {
   tlbflush();
 }
 
-// unsigned int proxima_pagina_libre;
-//
-// void mmu_inicializar(){
-// 	proxima_pagina_libre = INICIO_PAGINAS_LIBRES;
-// }
-//
-// unsigned int mmu_proxima_pagina_fisica_libre() {
-// 	unsigned int pagina_libre  = proxima_pagina_libre;
-// 	proxima_pagina_libre += PAGE_SIZE; // PAGE_SIZE = 1024
-// 	return pagina_libre;
-// }
+void mmu_inicializar() {
+  proxima_pagina_libre = 0x100000;
+}
+
+unsigned int mmu_proxima_pagina_fisica_libre() {
+  unsigned int pagina_libre = proxima_pagina_libre;
+  proxima_pagina_libre += PAGE_SIZE;
+  return pagina_libre;
+}
+
+void mmu_inicializar_dir_pirata(unsigned int virtual, unsigned int cr3, unsigned char jugador, unsigned int fisica) {
+  unsigned int pagina_libre = mmu_proxima_pagina_fisica_libre();
+  
+  mmu_mapear_pagina(virtual, cr3, fisica);
+}
+
+void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica) {
+  cr3 = (cr3 >> 12) << 12;
+  unsigned int indiceDirectory = virtual >> 22;
+  unsigned int indiceTable = (virtual >> 12) << 10;
+  page_directory_entry pde = *(cr3 + indiceDirectory);
+  if (pde.present == 1) {
+    page_table_entry pte = *(pde.base_address + indiceTable);
+    if (pte.present == 1) {
+      pte.base_address = (fisica >> 12);
+    } else {
+      pte.present = 1;
+      pte.base_address = (fisica >> 12);
+    }
+  } else {
+    pde.present = 1;
+    unsigned int proxima_pag = proxima_pagina_libre();
+    pde.base_address = proxima_pag << 12;
+  }
+
+  tlbflush();
+}
+
+void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
+  cr3 = (cr3 >> 12) << 12;
+  unsigned int indiceDirectory = virtual >> 22;
+  unsigned int indiceTable = (virtual >> 12) << 10;
+  page_directory_entry pde = *(cr3 + indiceDirectory);
+  page_table_entry pte = *(pde.base_address + indiceTable);
+  pte.present = 0;
+  int i = 0;
+  int estanTodasEnNotPresent = 1;
+  while (i < 1024 && estanTodasEnNotPresent == 1) {
+    page_table_entry pte = *(pde.base_address + i);
+    if (pte.present = 1) {
+      estanTodasEnNotPresent = 0;
+    }
+    i++;
+  }
+  if (estanTodasEnNotPresent == 1) {
+    pte.present = 0;
+  }
+
+  tlbflush();
+}
 
 /* Direcciones fisicas de codigos */
 /* -------------------------------------------------------------------------- */

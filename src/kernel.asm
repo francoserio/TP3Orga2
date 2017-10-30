@@ -17,6 +17,7 @@ extern mmu_inicializar
 extern screen_pintar_nombre
 extern resetear_pic
 extern habilitar_pic
+extern game_inicializar
 
 ;; Saltear seccion de datos
 jmp start
@@ -84,15 +85,18 @@ mp:
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
     xchg bx, bx
     ; Inicializar el juego
-
+    call game_inicializar
     ; Inicializar pantalla
     call screen_inicializar
     call screen_pintar_nombre
     xchg bx, bx
     ; Inicializar el manejador de memoria
-    ; call mmu_inicializar
+    call mmu_inicializar
+    xchg bx, bx
     ; Inicializar el directorio de paginas
     call mmu_inicializar_dir_kernel
+    xchg bx, bx
+    call mmu_inicializar_dir_pirata
     xchg bx, bx
     ; Cargar directorio de paginas
     xor eax, eax
@@ -119,12 +123,14 @@ mp:
     xchg bx, bx
     ; Configurar controlador de interrupciones
     call resetear_pic
+    xchg bx, bx
     call habilitar_pic
-    sti
+    xchg bx, bx
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
-
+    sti
+    xchg bx, bx
     ; Saltar a la primera tarea: Idle
 
     ; Ciclar infinitamente (por si algo sale mal...)
