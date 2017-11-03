@@ -56,5 +56,6 @@ typedef struct str_tss {
 } __attribute__((__packed__, aligned (8))) tss;
 
 void tss_inicializar();
+void tss_agregar_a_gdt();
 
 #endif  /* !__TSS_H__ */

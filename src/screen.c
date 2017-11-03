@@ -128,4 +128,10 @@ void screen_inicializar() {
     screen_pintar(0x00, 0x00 << 4, i, j);
     j++;
   }
+
+  i = 46;
+  j = 4;
+  print("1 2 3 4 5 6 7 8", j, i, 0xF);
+  j = j + 56;
+  print("1 2 3 4 5 6 7 8", j, i, 0xF);
 }

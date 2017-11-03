@@ -18,6 +18,9 @@ extern screen_pintar_nombre
 extern resetear_pic
 extern habilitar_pic
 extern game_inicializar
+extern mmu_inicializar_dir_pirata
+extern tss_inicializar
+extern tss_agregar_a_gdt
 
 ;; Saltear seccion de datos
 jmp start
@@ -91,17 +94,16 @@ mp:
     call screen_pintar_nombre
     xchg bx, bx
     ; Inicializar el manejador de memoria
-    call mmu_inicializar
-    xchg bx, bx
-    ; Inicializar el directorio de paginas
-    call mmu_inicializar_dir_kernel
-    xchg bx, bx
-    call mmu_inicializar_dir_pirata
-    xchg bx, bx
-    ; Cargar directorio de paginas
     xor eax, eax
     mov eax, 0x27000
     mov cr3, eax
+    call mmu_inicializar
+    xchg bx, bx
+    ; Inicializar el directorio de paginas
+    ; Cargar directorio de paginas
+    call mmu_inicializar_dir_kernel
+    xchg bx, bx
+    call mmu_inicializar_dir_pirata
     xchg bx, bx
     ; Habilitar paginacion
     xor eax, eax
@@ -110,9 +112,9 @@ mp:
     mov cr0, eax
     xchg bx, bx
     ; Inicializar tss
-
     ; Inicializar tss de la tarea Idle
-
+    call tss_inicializar
+    call tss_agregar_a_gdt
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
@@ -127,12 +129,13 @@ mp:
     call habilitar_pic
     xchg bx, bx
     ; Cargar tarea inicial
-
+    mov ax, 0x70
+    ltr ax
     ; Habilitar interrupciones
     sti
     xchg bx, bx
     ; Saltar a la primera tarea: Idle
-
+    jmp 0x68:0
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
     mov ebx, 0xFFFF
