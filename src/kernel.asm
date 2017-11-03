@@ -73,14 +73,12 @@ mp:
     xor eax, eax
     mov ax, 1001000b    ;data segment nivel 0
     mov ds, ax
-    xchg bx, bx
     mov es, ax
     mov gs, ax
     mov ss, ax
     mov ax, 1100000b    ;video
     mov fs, ax
     ; Establecer la base de la pila
-    xchg bx, bx
     mov ebp, 0x27000       ;setear la pila
     mov esp, 0x27000
     xchg bx, bx
@@ -89,8 +87,10 @@ mp:
     xchg bx, bx
     ; Inicializar el juego
     call game_inicializar
+    xchg bx, bx
     ; Inicializar pantalla
     call screen_inicializar
+    xchg bx, bx
     call screen_pintar_nombre
     xchg bx, bx
     ; Inicializar el manejador de memoria
@@ -114,7 +114,9 @@ mp:
     ; Inicializar tss
     ; Inicializar tss de la tarea Idle
     call tss_inicializar
+    xchg bx, bx
     call tss_agregar_a_gdt
+    xchg bx, bx
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
@@ -131,11 +133,13 @@ mp:
     ; Cargar tarea inicial
     mov ax, 0x70
     ltr ax
+    xchg bx, bx
     ; Habilitar interrupciones
     sti
     xchg bx, bx
     ; Saltar a la primera tarea: Idle
     jmp 0x68:0
+    xchg bx, bx
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
     mov ebx, 0xFFFF
