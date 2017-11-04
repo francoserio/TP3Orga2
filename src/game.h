@@ -9,7 +9,7 @@
 
 #include "defines.h"
 
-typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD} direccion;
+typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD } direccion;
 
 #define MAX_CANT_PIRATAS_VIVOS           8
 
@@ -19,6 +19,7 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD} direccion
 #define MAPA_ANCHO                       78
 #define MAPA_ALTO                        44
 
+typedef enum tipoPirata_e { minero = 1, explorador = 0 } tipoPirata;
 
 struct jugador_t;
 
@@ -26,7 +27,11 @@ typedef struct pirata_t
 {
     uint index;
     struct jugador_t *jugador;
-
+    uint id;
+    uint posicionX;
+    uint posicionY;
+    tipoPirata tipo;
+    uint reloj;
     // id unica, posicion, tipo, reloj
 } pirata_t;
 
@@ -35,7 +40,12 @@ typedef struct jugador_t
 {
     uint index;
     pirata_t piratas[MAX_CANT_PIRATAS_VIVOS];
+    uint id;
     uint puntaje;
+    uint piratasRestantes;
+    uint minerosPendientes;
+    uint puertoX;
+    uint puertoY;
     // coordenadas puerto, posiciones exploradas, mineros pendientes, etc
 } jugador_t;
 
