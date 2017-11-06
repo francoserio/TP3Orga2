@@ -75,7 +75,11 @@ unsigned int pos2mapVir(unsigned int x, unsigned int y) {
 	return (0x400000 + ((x + y*MAPA_ANCHO))*PAGE_SIZE);
 }
 
-unsigned int mmu_inicializar_dir_pirata(pirata_t tarea) {
+// unsigned int mapear_dir_pirata(pirata_t tarea) {
+//
+// }
+
+unsigned int mmu_inicializar_dir_pirata(unsigned char jugador, unsigned char tarea) {
   //aca ya tengo la page directory y table de la tarea.
 
   page_directory_entry* pd = (page_directory_entry*) mmu_proxima_pagina_fisica_libre();
@@ -107,56 +111,56 @@ unsigned int mmu_inicializar_dir_pirata(pirata_t tarea) {
   }
 
   unsigned int page_directory_address = (unsigned int)pd;
-  if (*(tarea.jugador).id == JUGADOR_A) {
+  if (jugador == JUGADOR_A) {
     //empiezo en la primera posicion
     //primero copio la tarea
-    if (tarea.tipoPirata == 0) {
+    if (tarea == 0) {
       //explorador
       for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapFis(tarea.posicionX,tarea.posicionY)))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
+        ((unsigned int*)(pos2mapFis(1,1)))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
       }
     } else {
       //minero
       for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapFis(tarea.posicionX,tarea.posicionY)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
+        ((unsigned int*)(pos2mapFis(1,1)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
       }
     }
     //mapeo donde estamos parados
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX,tarea.posicionY), (page_directory_address), pos2mapFis(tarea.posicionX,tarea.posicionY), 1, 1);
+    mmu_mapear_pagina(pos2mapVir(1,1), (page_directory_address), pos2mapFis(1,1), 1, 1);
     //se mapean las de alrededor para jugador 1
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX+1,tarea.posicionY), (page_directory_address), pos2mapFis(tarea.posicionX+1,tarea.posicionY), 0, 1);//derecha
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX+1,tarea.posicionY+1), (page_directory_address), pos2mapFis(tarea.posicionX+1,tarea.posicionY+1), 0, 1);//abajo-derecha
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX,tarea.posicionY+1), (page_directory_address), pos2mapFis(tarea.posicionX,tarea.posicionY+1), 0, 1);//abajo
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX-1,tarea.posicionY), (page_directory_address), pos2mapFis(tarea.posicionX-1,tarea.posicionY), 0, 1);//izquierda
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX-1,tarea.posicionY+1), (page_directory_address), pos2mapFis(tarea.posicionX-1,tarea.posicionY+1), 0, 1);//abajo-izquierda
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX,tarea.posicionY-1), (page_directory_address), pos2mapFis(tarea.posicionX,tarea.posicionY-1), 0, 1);//arriba
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX-1,tarea.posicionY-1), (page_directory_address), pos2mapFis(tarea.posicionX-1,tarea.posicionY-1), 0, 1);//arriba-izquierda
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX+1,tarea.posicionY-1), (page_directory_address), pos2mapFis(tarea.posicionX+1,tarea.posicionY-1), 0, 1);//arriba-derecha
+    mmu_mapear_pagina(pos2mapVir(2,1), (page_directory_address), pos2mapFis(2,1), 0, 1);//derecha
+    mmu_mapear_pagina(pos2mapVir(2,2), (page_directory_address), pos2mapFis(2,2), 0, 1);//abajo-derecha
+    mmu_mapear_pagina(pos2mapVir(1,2), (page_directory_address), pos2mapFis(1,2), 0, 1);//abajo
+    mmu_mapear_pagina(pos2mapVir(0,1), (page_directory_address), pos2mapFis(0,1), 0, 1);//izquierda
+    mmu_mapear_pagina(pos2mapVir(0,2), (page_directory_address), pos2mapFis(0,2), 0, 1);//abajo-izquierda
+    mmu_mapear_pagina(pos2mapVir(1,0), (page_directory_address), pos2mapFis(1,0), 0, 1);//arriba
+    mmu_mapear_pagina(pos2mapVir(0,0), (page_directory_address), pos2mapFis(0,0), 0, 1);//arriba-izquierda
+    mmu_mapear_pagina(pos2mapVir(2,0), (page_directory_address), pos2mapFis(2,0), 0, 1);//arriba-derecha
   } else {
     //empiezo en la ultima posicion
     //primero copio la tarea
     if (tarea == 0) {
       //explorador
       for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapFis(tarea.posicionX,tarea.posicionY)))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
+        ((unsigned int*)(pos2mapFis(78,43)))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
       }
     } else {
       //minero
       for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapFis(tarea.posicionX,tarea.posicionY)))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
+        ((unsigned int*)(pos2mapFis(78,43)))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
       }
     }
     //mapeo donde estamos parados
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX,tarea.posicionY), (page_directory_address), pos2mapFis(tarea.posicionX,tarea.posicionY), 1, 1);
+    mmu_mapear_pagina(pos2mapVir(78,43), (page_directory_address), pos2mapFis(78,43), 1, 1);
     //al principio solo se mapean las paginas de la izquierda, arriba, arriba-izquierda para jug 2
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX-1,tarea.posicionY), (page_directory_address), pos2mapFis(tarea.posicionX-1,tarea.posicionY), 0, 1);//izquierda
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX-1,tarea.posicionY-1), (page_directory_address), pos2mapFis(tarea.posicionX-1,tarea.posicionY-1), 0, 1);//arriba-izquierda
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX,tarea.posicionY-1), (page_directory_address), pos2mapFis(tarea.posicionX,tarea.posicionY-1), 0, 1);//arriba
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX+1,tarea.posicionY), (page_directory_address), pos2mapFis(tarea.posicionX+1,tarea.posicionY), 0, 1);//derecha
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX+1,tarea.posicionY-1), (page_directory_address), pos2mapFis(tarea.posicionX+1,tarea.posicionY-1), 0, 1);//arriba-derecha
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX,tarea.posicionY+1), (page_directory_address), pos2mapFis(tarea.posicionX,tarea.posicionY+1), 0, 1);//abajo
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX+1,tarea.posicionY+1), (page_directory_address), pos2mapFis(tarea.posicionX+1,tarea.posicionY+1), 0, 1);//abajo-derecha
-    mmu_mapear_pagina(pos2mapVir(tarea.posicionX-1,tarea.posicionY+1), (page_directory_address), pos2mapFis(tarea.posicionX-1,tarea.posicionY+1), 0, 1);//abajo-izquierda
+    mmu_mapear_pagina(pos2mapVir(77,43), (page_directory_address), pos2mapFis(77,43), 0, 1);//izquierda
+    mmu_mapear_pagina(pos2mapVir(77,42), (page_directory_address), pos2mapFis(77,42), 0, 1);//arriba-izquierda
+    mmu_mapear_pagina(pos2mapVir(78,42), (page_directory_address), pos2mapFis(78,42), 0, 1);//arriba
+    mmu_mapear_pagina(pos2mapVir(79,43), (page_directory_address), pos2mapFis(79,43), 0, 1);//derecha
+    mmu_mapear_pagina(pos2mapVir(79,42), (page_directory_address), pos2mapFis(79,42), 0, 1);//arriba-derecha
+    mmu_mapear_pagina(pos2mapVir(78,44), (page_directory_address), pos2mapFis(78,44), 0, 1);//abajo
+    mmu_mapear_pagina(pos2mapVir(79,44), (page_directory_address), pos2mapFis(79,44), 0, 1);//abajo-derecha
+    mmu_mapear_pagina(pos2mapVir(77,44), (page_directory_address), pos2mapFis(77,44), 0, 1);//abajo-izquierda
   }
 
   return page_directory_address;

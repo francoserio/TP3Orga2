@@ -5,6 +5,8 @@
   definicion de la tabla de descriptores globales
 */
 
+#include "game.h"
+
 #ifndef __SYSCALL_H__
 #define __SYSCALL_H__
 

@@ -159,10 +159,30 @@ _isr33:
 
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
+
 global _isr46
 _isr46:
+  ;en eax tengo el primer parámetro
   pushad
   call fin_intr_pic1
-	mov eax, 0x42
+  cmp eax, 1
+  je moverse
+  cmp eax, 2
+  je cavar
+  cmp eax, 3
+  je posicion
+  jmp fin
+moverse:
+  ;en ecx tengo la direccion. 4 arriba, 7 abajo, 10 derecha, 13 izquierda
+  push ecx
+  syscall_mover
+  jmp fin
+cavar:
+  syscall_cavar
+  jmp fin
+posicion:
+  push ecx
+  syscall_posicion
+fin:
   popad
   iret

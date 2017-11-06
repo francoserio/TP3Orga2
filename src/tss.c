@@ -135,58 +135,58 @@ void tss_agregar_a_gdt() {
 }
 
 void completarTssPirata(pirata_t tarea) {
-  unsigned int paginaParaPilaCero = proxima_pagina_libre();
+  unsigned int paginaParaPilaCero = mmu_proxima_pagina_fisica_libre();
 
-  tss* tss_pirata = jugador == JUG_A ? &tss_piratasA[tarea.id] : &tss_piratasB[tarea.id];
+  tss* tss_pirata = (*tarea.jugador).id == JUGADOR_A ? &tss_jugadorA[tarea.id] : &tss_jugadorB[tarea.id];
 
-  if (pirata.tipo == minero) {
-    if ((*pirata.jugador).id == 0) { //
-      tss_pirata.eip = 0x11000;
+  if (tarea.tipo == minero) {
+    if ((*tarea.jugador).id == 0) { //
+      tss_pirata->eip = 0x11000;
     } else {
-      tss_pirata.eip = 0x13000;
+      tss_pirata->eip = 0x13000;
     }
   } else {
-    if ((*pirata.jugador).id == 0) {
-      tss_pirata.eip = 0x10000;
+    if ((*tarea.jugador).id == 0) {
+      tss_pirata->eip = 0x10000;
     } else {
-      tss_pirata.eip = 0x12000;
+      tss_pirata->eip = 0x12000;
     }
   }
-  tss_pirata.ptl = 0;
-  tss_pirata.unused0 = 0;
-  tss_pirata.esp0 = paginaParaPilaCero;
-  tss_pirata.ss0 = (unsigned int)0x40;
-  tss_pirata.unused1 = 0;
-  tss_pirata.esp1 = 0;
-  tss_pirata.ss1 = 0;
-  tss_pirata.unused2 = 0;
-  tss_pirata.esp2 = 0;
-  tss_pirata.ss2 = 0;
-  tss_pirata.unused3 = 0;
-  tss_pirata.cr3 = mmu_inicializar_dir_pirata(tarea);
-  tss_pirata.eflags = (unsigned int)0x00202;
-  tss_pirata.eax = 0;
-  tss_pirata.ecx = 0;
-  tss_pirata.edx = 0;
-  tss_pirata.ebx = 0;
-  tss_pirata.esp = 0x400000 + PAGE_SIZE;
-  tss_pirata.ebp = 0x400000 + PAGE_SIZE;
-  tss_pirata.esi = 0;
-  tss_pirata.edi = 0;
-  tss_pirata.es = (unsigned int)0x40;
-  tss_pirata.unused4 = 0;
-  tss_pirata.cs = (unsigned int)0x50;
-  tss_pirata.unused5 = 0;
-  tss_pirata.ss = (unsigned int)0x40;
-  tss_pirata.unused6 = 0;
-  tss_pirata.ds = (unsigned int)0x40;
-  tss_pirata.unused7 = 0;
-  tss_pirata.fs = (unsigned int)0x00060;
-  tss_pirata.unused8 = 0;
-  tss_pirata.gs = (unsigned int)0x40;
-  tss_pirata.unused9 = 0;
-  tss_pirata.ldt = 0;
-  tss_pirata.unused10 = 0;
-  tss_pirata.dtrap = 0;
-  tss_pirata.iomap = 0;
+  tss_pirata->ptl = 0;
+  tss_pirata->unused0 = 0;
+  tss_pirata->esp0 = paginaParaPilaCero;
+  tss_pirata->ss0 = (unsigned int)0x40;
+  tss_pirata->unused1 = 0;
+  tss_pirata->esp1 = 0;
+  tss_pirata->ss1 = 0;
+  tss_pirata->unused2 = 0;
+  tss_pirata->esp2 = 0;
+  tss_pirata->ss2 = 0;
+  tss_pirata->unused3 = 0;
+  tss_pirata->cr3 = mmu_inicializar_dir_pirata((*tarea.jugador).id, tarea.id);
+  tss_pirata->eflags = (unsigned int)0x00202;
+  tss_pirata->eax = 0;
+  tss_pirata->ecx = 0;
+  tss_pirata->edx = 0;
+  tss_pirata->ebx = 0;
+  tss_pirata->esp = 0x400000 + PAGE_SIZE;
+  tss_pirata->ebp = 0x400000 + PAGE_SIZE;
+  tss_pirata->esi = 0;
+  tss_pirata->edi = 0;
+  tss_pirata->es = (unsigned int)0x40;
+  tss_pirata->unused4 = 0;
+  tss_pirata->cs = (unsigned int)0x50;
+  tss_pirata->unused5 = 0;
+  tss_pirata->ss = (unsigned int)0x40;
+  tss_pirata->unused6 = 0;
+  tss_pirata->ds = (unsigned int)0x40;
+  tss_pirata->unused7 = 0;
+  tss_pirata->fs = (unsigned int)0x00060;
+  tss_pirata->unused8 = 0;
+  tss_pirata->gs = (unsigned int)0x40;
+  tss_pirata->unused9 = 0;
+  tss_pirata->ldt = 0;
+  tss_pirata->unused10 = 0;
+  tss_pirata->dtrap = 0;
+  tss_pirata->iomap = 0;
 }
