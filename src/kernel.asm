@@ -21,6 +21,7 @@ extern game_inicializar
 extern mmu_inicializar_dir_pirata
 extern tss_inicializar
 extern tss_agregar_a_gdt
+extern sched_inicializar
 
 ;; Saltear seccion de datos
 jmp start
@@ -100,9 +101,9 @@ mp:
     call mmu_inicializar
     xchg bx, bx
     ; Inicializar el directorio de paginas
-    ; Cargar directorio de paginas
     call mmu_inicializar_dir_kernel
     xchg bx, bx
+    ; Cargar directorio de paginas
     call mmu_inicializar_dir_pirata
     xchg bx, bx
     ; Habilitar paginacion
@@ -111,14 +112,13 @@ mp:
     or eax, 0x80000000
     mov cr0, eax
     xchg bx, bx
-    ; Inicializar tss
-    ; Inicializar tss de la tarea Idle
+    ; Inicializar tss y la tarea Idle
     call tss_inicializar
     xchg bx, bx
     call tss_agregar_a_gdt
     xchg bx, bx
     ; Inicializar el scheduler
-
+    call sched_inicializar
     ; Inicializar la IDT
     call idt_inicializar
     xchg bx, bx

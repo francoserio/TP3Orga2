@@ -59,4 +59,10 @@ void tss_inicializar();
 void tss_agregar_a_gdt();
 void completarTssPirata(pirata_t tarea);
 
+tss tss_inicial;
+tss tss_idle;
+
+tss tss_jugadorA[MAX_CANT_PIRATAS_VIVOS];
+tss tss_jugadorB[MAX_CANT_PIRATAS_VIVOS];
+
 #endif  /* !__TSS_H__ */

@@ -137,8 +137,8 @@ void screen_inicializar() {
 
   //puntaje
   i = 47;
-  j = 36;
-  print("0", j, i, 0xF);
+  j = 35;
+  print("000", j, i, 0xF);
   j = j + 7;
-  print("0", j, i, 0xF);
+  print("000", j, i, 0xF);
 }

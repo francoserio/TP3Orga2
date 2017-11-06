@@ -136,7 +136,7 @@ _isr32:
 	; PRESERVAR REGISTROS
   pushad
   call fin_intr_pic1
-	call screen_actualizar_reloj_global
+	call sched_tick
 	; RESTAURAR REGISTROS
   popad
   iret
