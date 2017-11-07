@@ -9,6 +9,7 @@
 #include "mmu.h"
 #include "gdt.h"
 
+
 void tss_inicializar() {
 
   //tss_idle
@@ -130,16 +131,16 @@ void tss_agregar_a_gdt() {
 void completarTssPirata(pirata_t tarea) {
   unsigned int paginaParaPilaCero = mmu_proxima_pagina_fisica_libre();
 
-  tss* tss_pirata = (*tarea.jugador).id == JUGADOR_A ? &tss_jugadorA[tarea.id] : &tss_jugadorB[tarea.id];
+  tss* tss_pirata = (*tarea.jugador).index == JUGADOR_A ? &tss_jugadorA[tarea.id] : &tss_jugadorB[tarea.id];
 
   if (tarea.tipo == minero) {
-    if ((*tarea.jugador).id == 0) { //
+    if ((tarea.jugador)->index == JUGADOR_A) { //
       tss_pirata->eip = 0x11000;
     } else {
       tss_pirata->eip = 0x13000;
     }
   } else {
-    if ((*tarea.jugador).id == 0) {
+    if ((tarea.jugador)->index == JUGADOR_A) {
       tss_pirata->eip = 0x10000;
     } else {
       tss_pirata->eip = 0x12000;
@@ -156,7 +157,7 @@ void completarTssPirata(pirata_t tarea) {
   tss_pirata->esp2 = 0;
   tss_pirata->ss2 = 0;
   tss_pirata->unused3 = 0;
-  tss_pirata->cr3 = mmu_inicializar_dir_pirata((*tarea.jugador).id, tarea.id);
+  tss_pirata->cr3 = mmu_inicializar_dir_pirata((tarea.jugador)->index, tarea.id);
   tss_pirata->eflags = (unsigned int)0x00202;
   tss_pirata->eax = 0;
   tss_pirata->ecx = 0;
@@ -182,4 +183,43 @@ void completarTssPirata(pirata_t tarea) {
   tss_pirata->unused10 = 0;
   tss_pirata->dtrap = 0;
   tss_pirata->iomap = 0;
+}
+
+void tss_agregar_piratas_a_gdt() {
+  for (int i = 0; i < 8; i++) {
+    completarTssPirata(jugadorA.piratas[i]);
+    gdt[EMPIEZAN_TSS + i] = (gdt_entry) {
+      (unsigned short)    0x0067,         /* limit[0:15]  */
+      (unsigned short)    (int)(&tss_jugadorA[jugadorA.piratas[i].id]) & 0xFFFF, /* base[0:15]   */
+      (unsigned char)     (int)((int)(&tss_jugadorA[jugadorA.piratas[i].id]) >> 16) & 0x00FF,           /* base[23:16]  */
+      (unsigned char)     0x09,           /* type         */
+      (unsigned char)     0x00,           /* s            */
+      (unsigned char)     0x00,           /* dpl          */
+      (unsigned char)     0x01,           /* p            */
+      (unsigned char)     0x00,           /* limit[16:19] */
+      (unsigned char)     0x00,           /* avl          */
+      (unsigned char)     0x00,           /* l            */
+      (unsigned char)     0x00,           /* db           */
+      (unsigned char)     0x00,           /* g            */
+      (unsigned char)     (int)(&tss_jugadorA[jugadorA.piratas[i].id]) >> 24,           /* base[31:24]  */
+    };
+  }
+  for (int j = 0; j < 8; j++) {
+    completarTssPirata(jugadorB.piratas[j]);
+    gdt[EMPIEZAN_TSS + 8 + j] = (gdt_entry) {
+      (unsigned short)    0x0067,         /* limit[0:15]  */
+      (unsigned short)    (int)(&tss_jugadorB[jugadorB.piratas[j].id]) & 0xFFFF, /* base[0:15]   */
+      (unsigned char)     (int)((int)(&tss_jugadorB[jugadorB.piratas[j].id]) >> 16) & 0x00FF,           /* base[23:16]  */
+      (unsigned char)     0x09,           /* type         */
+      (unsigned char)     0x00,           /* s            */
+      (unsigned char)     0x00,           /* dpl          */
+      (unsigned char)     0x01,           /* p            */
+      (unsigned char)     0x00,           /* limit[16:19] */
+      (unsigned char)     0x00,           /* avl          */
+      (unsigned char)     0x00,           /* l            */
+      (unsigned char)     0x00,           /* db           */
+      (unsigned char)     0x00,           /* g            */
+      (unsigned char)     (int)(&tss_jugadorB[jugadorB.piratas[j].id]) >> 24,           /* base[31:24]  */
+    };
+  }
 }

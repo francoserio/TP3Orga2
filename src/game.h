@@ -20,18 +20,21 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD } direccio
 #define MAPA_ALTO                        44
 
 typedef enum tipoPirata_e { minero = 1, explorador = 0 } tipoPirata;
+uint reloj_pirata[16];
+// uint contador_de_tiempo = 0;
 
 struct jugador_t;
 
 typedef struct pirata_t
 {
     uint index;
-    struct jugador_t *jugador;
+    struct jugador_t* jugador;
     uint id;
     uint posicionX;
     uint posicionY;
     tipoPirata tipo;
     uint reloj;
+    uchar vivoMuerto; //0 muerto 1 vivo
     // id unica, posicion, tipo, reloj
 } pirata_t;
 
@@ -40,12 +43,13 @@ typedef struct jugador_t
 {
     uint index;
     pirata_t piratas[MAX_CANT_PIRATAS_VIVOS];
-    uint id;
     uint puntaje;
     uint piratasRestantes;
-    uint minerosPendientes;
+    uint posicionesXVistas[80];
+    uint posicionesYVistas[44];
     uint puertoX;
     uint puertoY;
+    uint colorJug;
     // coordenadas puerto, posiciones exploradas, mineros pendientes, etc
 } jugador_t;
 
@@ -72,6 +76,7 @@ uint game_valor_tesoro(uint x, uint y);
 void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y);
 pirata_t* game_pirata_en_posicion(uint x, uint y);
 
+uint game_syscall_cavar(uint id);
 uint game_syscall_pirata_posicion(uint id, int idx);
 uint game_syscall_pirata_mover(uint id, direccion key);
 uint game_syscall_manejar(uint syscall, uint param1);

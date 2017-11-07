@@ -44,7 +44,7 @@ void screen_pintar_puntajes();
 void screen_pintar_nombre();
 
 void screen_actualizar_reloj_global();
-void screen_actualizar_reloj_pirata (jugador_t *j, pirata_t *pirata);
+void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata);
 unsigned char screen_color_jugador(jugador_t *j);
 unsigned char screen_caracter_pirata(unsigned int tipo);
 void screen_pintar_pirata(jugador_t *j, pirata_t *pirata);

@@ -48,6 +48,10 @@ void sched_intercambiar_por_idle() {
   estaEnIdle = 1;
 }
 
+void sched_nointercambiar_por_idle() {
+  estaEnIdle = 0;
+}
+
 void sched_toggle_debug() {
   if (modoDebug) {
     modoDebug = FALSE;

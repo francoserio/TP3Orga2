@@ -25,6 +25,8 @@ void screen_actualizar_reloj_global()
     reloj_global = (reloj_global + 1) % reloj_size;
 
     screen_pintar(reloj[reloj_global], C_BW, 49, 79);
+
+    // contador_de_tiempo++;
 }
 
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
@@ -86,6 +88,15 @@ void screen_pintar_nombre() {
   print("ENIFRA", 74, 0, 0xF);
 }
 
+void screen_pintar_puntajes() {
+  //puntaje
+  int i = 47;
+  int j = 35;
+  print("000", j, i, 0xF);
+  j = j + 7;
+  print("000", j, i, 0xF);
+}
+
 void screen_inicializar() {
   int i = 0;
   int j;
@@ -134,11 +145,8 @@ void screen_inicializar() {
   print("1 2 3 4 5 6 7 8", j, i, 0xF);
   j = j + 56;
   print("1 2 3 4 5 6 7 8", j, i, 0xF);
+}
 
-  //puntaje
-  i = 47;
-  j = 35;
-  print("000", j, i, 0xF);
-  j = j + 7;
-  print("000", j, i, 0xF);
+void screen_stop_game_show_winner(jugador_t *j) {
+  print("GANADOR:" + j->index, 39, 22, 0xF);
 }

@@ -58,6 +58,7 @@ typedef struct str_tss {
 void tss_inicializar();
 void tss_agregar_a_gdt();
 void completarTssPirata(pirata_t tarea);
+void tss_agregar_piratas_a_gdt();
 
 tss tss_inicial;
 tss tss_idle;

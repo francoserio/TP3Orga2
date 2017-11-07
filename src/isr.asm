@@ -159,30 +159,34 @@ _isr33:
 
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
+extern game_syscall_pirata_mover
+extern game_syscall_cavar
+extern game_syscall_pirata_posicion
 
 global _isr46
 _isr46:
   ;en eax tengo el primer parámetro
   pushad
-  call fin_intr_pic1
-  cmp eax, 1
-  je moverse
-  cmp eax, 2
-  je cavar
-  cmp eax, 3
-  je posicion
-  jmp fin
-moverse:
-  ;en ecx tengo la direccion. 4 arriba, 7 abajo, 10 derecha, 13 izquierda
-  push ecx
-  syscall_mover
-  jmp fin
-cavar:
-  syscall_cavar
-  jmp fin
-posicion:
-  push ecx
-  syscall_posicion
-fin:
+;   call fin_intr_pic1
+;   cmp eax, 1
+;   je moverse
+;   cmp eax, 2
+;   je cavar
+;   cmp eax, 3
+;   je posicion
+;   jmp fin
+; moverse:
+;   ;en ecx tengo la direccion. 4 arriba, 7 abajo, 10 derecha, 13 izquierda
+;   push ecx
+;   call game_syscall_pirata_mover
+;   jmp fin
+; cavar:
+;   call game_syscall_cavar
+;   jmp fin
+; posicion:
+;   push ecx
+;   call game_syscall_pirata_posicion
+; fin:
+  mov eax, 0x42
   popad
   iret
