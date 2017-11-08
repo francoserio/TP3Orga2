@@ -85,17 +85,47 @@ uint game_valor_tesoro(uint x, uint y)
 // dada una posicion (x,y) guarda las posiciones de alrededor en dos arreglos, uno para las x y otro para las y
 void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y)
 {
-	int next = 0;
-	int i, j;
-	for (i = -1; i <= 1; i++)
-	{
-		for (j = -1; j <= 1; j++)
-		{
-			vistas_x[next] = x + j;
-			vistas_y[next] = y + i;
-			next++;
-		}
-	}
+
+  if (y == 1) {
+    //si es la primera fila no se agrega la fila 0 porque no existe
+    vistas_x[x - 1] = 1;
+    vistas_x[x] = 1;
+    vistas_x[x + 1] = 1;
+    vistas_y[y] = 1;
+    vistas_y[y + 1] = 1;
+  } else if (y == 44) {
+    //si es la ultima fila no se agreg la fila 45 porque no existe
+    vistas_x[x - 1] = 1;
+    vistas_x[x] = 1;
+    vistas_x[x + 1] = 1;
+    vistas_y[y] = 1;
+    vistas_y[y - 1] = 1;
+  } else if (c == 0) {
+    //si es la primera columna no se agreg la columna -1 porque no existe
+    vistas_x[x] = 1;
+    vistas_x[x + 1] = 1;
+    vistas_y[y + 1] = 1;
+    vistas_y[y] = 1;
+    vistas_y[y - 1] = 1;
+  } else if (c == 79) {
+    //si es la ultima columna no se agrega la columna 80 porque no existe
+    vistas_x[x] = 1;
+    vistas_x[x - 1] = 1;
+    vistas_y[y + 1] = 1;
+    vistas_y[y] = 1;
+    vistas_y[y - 1] = 1;
+  } else {
+  	int i, j;
+    for (i = -1; i <= 1; i++)
+    {
+      for (j = -1; j <= 1; j++)
+      {
+        vistas_x[x + j] = 1;
+        vistas_y[y + i] = 1;
+        next++;
+      }
+    }
+  }
 }
 
 
@@ -197,6 +227,8 @@ void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y
 
 void game_explorar_posicion(jugador_t *jugador, int c, int f)
 {
+  game_calcular_posiciones_vistas(jugador->posicionesXVistas, jugador->posicionesYVistas, c, f);
+
 }
 
 uint game_posicion_ya_vista(pirata_t* tareaPir, direccion dir) {
