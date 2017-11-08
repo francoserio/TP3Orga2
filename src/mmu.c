@@ -109,19 +109,18 @@ unsigned int mmu_inicializar_dir_pirata(unsigned char jugador, unsigned char tar
   unsigned int page_directory_address = (unsigned int)pd;
   if (jugador == JUGADOR_A) {
     //empiezo en la primera posicion
-    //primero copio la tarea
 
     //mapeo donde estamos parados
     mmu_mapear_pagina(pos2mapVir(1,1), (page_directory_address), pos2mapFis(1,1), 1, 1);
     if (tarea == 0) {
       //explorador
       for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapFis(1,1)))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
+        ((unsigned int*)(pos2mapVir(1,1)))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
       }
     } else {
       //minero
       for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapFis(1,1)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
+        ((unsigned int*)(pos2mapVir(1,1)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
       }
     }
 
@@ -138,22 +137,21 @@ unsigned int mmu_inicializar_dir_pirata(unsigned char jugador, unsigned char tar
     mmu_mapear_pagina(pos2mapVir(2,0), (page_directory_address), pos2mapFis(2,0), 0, 1);//arriba-derecha
   } else {
     //empiezo en la ultima posicion
-    //primero copio la tarea
 
     //mapeo donde estamos parados
     mmu_mapear_pagina(pos2mapVir(78,43), (page_directory_address), pos2mapFis(78,43), 1, 1);
     if (tarea == 0) {
       //explorador
       for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapFis(78,43)))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
+        ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
       }
     } else {
       //minero
       for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapFis(78,43)))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
+        ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
       }
     }
-    
+
     mmu_unmapear_pagina(pos2mapVir(78,43), (page_directory_address));
 
     //al principio solo se mapean las paginas de la izquierda, arriba, arriba-izquierda para jug 2

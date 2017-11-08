@@ -13,6 +13,7 @@ void sched_inicializar() {
     proximaTareaA = 0;
     estaEnIdle = 1;
     proximaTareaB = 0;
+    modoDebug = 0;
 }
 
 unsigned int sched_tick() {
@@ -148,6 +149,10 @@ unsigned int sched_tick() {
       return (proxTarea) << 3;
     }
   }
+}
+
+unsigned int sched_proxima_a_ejecutar() {
+  return sched_tick();
 }
 
 void sched_intercambiar_por_idle() {

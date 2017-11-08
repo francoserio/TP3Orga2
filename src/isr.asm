@@ -130,12 +130,15 @@ ISR 19
 ;; -------------------------------------------------------------------------- ;;
 ;;
 extern screen_actualizar_reloj_global
+extern modoDebug
 
 global _isr32
 _isr32:
 	; PRESERVAR REGISTROS
   pushad
   call fin_intr_pic1
+  cmp byte [modoDebug], 1
+  je .fin
 	call sched_tick
   str cx
   cmp ax, cx
@@ -165,33 +168,18 @@ _isr33:
 
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
-extern game_syscall_pirata_mover
-extern game_syscall_cavar
-extern game_syscall_pirata_posicion
+extern game_syscall_manejar
 
 global _isr46
 _isr46:
   ;en eax tengo el primer parámetro
   pushad
   call fin_intr_pic1
-  cmp eax, 1
-  je moverse
-  cmp eax, 2
-  je cavar
-  cmp eax, 3
-  je posicion
-  jmp fin
-moverse:
-  ;en ecx tengo la direccion. 4 arriba, 7 abajo, 10 derecha, 13 izquierda
+  push eax
   push ecx
-  call game_syscall_pirata_mover
-  jmp fin
-cavar:
-  call game_syscall_cavar
-  jmp fin
-posicion:
-  push ecx
-  call game_syscall_pirata_posicion
+  call game_syscall_manejar
+  pop ecx
+  pop eax
 fin:
   popad
   iret

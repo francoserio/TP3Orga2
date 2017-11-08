@@ -29,6 +29,10 @@ void screen_actualizar_reloj_global()
     // contador_de_tiempo++;
 }
 
+void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata) {
+  
+}
+
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
 {
     p[fila][columna].c = c;

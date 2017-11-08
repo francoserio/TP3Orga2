@@ -8,6 +8,7 @@ TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 #include "mmu.h"
 #include "tss.h"
 #include "screen.h"
+#include "sched.h"
 
 #include <stdarg.h>
 
@@ -21,8 +22,6 @@ TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 #define MAX_SIN_CAMBIOS                 999
 
 #define BOTINES_CANTIDAD 8
-
-#define MAX_TIEMPO 10000000000000000000000000000000
 
 uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
                                         {30,  3, 50}, {31, 38, 50}, {15, 21, 100}, {45, 21, 100} ,
@@ -102,9 +101,6 @@ void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y)
 
 void game_inicializar()
 {
-  // for (int i = 0; i < 16; i++) {
-  //   reloj_pirata[i] = 0;
-  // }
   game_jugador_inicializar(&jugadorA);
   game_jugador_inicializar(&jugadorB);
 }
@@ -169,9 +165,9 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
 void game_tick(uint id_pirata)
 {
   screen_actualizar_reloj_global();
-  // if (id_pirata2pirata(id_pirata)->vivoMuerto) {
-  //   reloj_pirata[id_pirata2pirata(id_pirata)->id]++;
-  // }
+  if (id_pirata2pirata(id_pirata)->vivoMuerto) {
+    reloj_pirata[id_pirata2pirata(id_pirata)->id]++;
+  }
 }
 
 
@@ -203,45 +199,107 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 {
 }
 
+uint game_posicion_ya_vista(pirata_t* tareaPir, direccion dir) {
+  int x, y;
+  game_dir2xy(dir, x, y);
+  if ((tareaPir->jugador)->posicionesYVistas[y] == 1 && (tareaPir->jugador)->posicionesXVistas[x] == 1) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
 
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
-  // pirata_t* tareaPirata = id_pirata2pirata(id);
-  // if (tareaPirata->tipoPirata == minero) {
-  //   //tengo que checkear que la posicion ya está mapeada
-  //
-  // } else {
-  //   //si no es minero tengo que checkear que sea valida
-  //   int x, y;
-  //   game_dir2xy(dir, x, y)
-  //   if (game_posicion_valida(tareaPirata->posicionX + x, tareaPirata->posicionY + y)) {
-  //     //va a pasar a una posicion valida en el juego
-  //
-  //   } else {
-  //     //si no va a ir a una posicion valida lo mato
-  //
-  //   }
-  // }
+  pirata_t* tareaPirata = id_pirata2pirata(id);
+  if (tareaPirata->tipoPirata == minero) {
+    //tengo que checkear que sea valida
+    int x, y;
+    game_dir2xy(dir, x, y);
+    if (game_posicion_valida(tareaPirata->posicionX + x, tareaPirata->posicionY + y) == 1) {
+      //tengo que checkear que la posicion ya esté mapeada
+      if (game_posicion_ya_vista(tareaPirata, dir) == 0) {
+        //si no está mapeada, lo mato
+        game_pirata_exploto(id);
+      }
+    }
+  } else {
+    //tengo que checkear que sea valida
+    int x, y;
+    game_dir2xy(dir, x, y);
+    if (game_posicion_valida(tareaPirata->posicionX + x, tareaPirata->posicionY + y)) {
+      //va a pasar a una posicion valida en el juego
+      game_explorar_posicion(tareaPirata->jugador, x, y);
+    } else {
+      //si no va a ir a una posicion valida lo mato
+      game_pirata_exploto(id);
+    }
+  }
   return 0;
 }
 
 uint game_syscall_cavar(uint id)
 {
-    // ~ completar ~
+  pirata_t* tareaPirata = id_pirata2pirata(id);
+  if (game_valor_tesoro(tareaPirata->posicionX, tareaPirata->posicionY) == 0) {
+    //lo mato
+    game_pirata_exploto(id);
+  } else {
+    game_jugador_anotar_punto(tareaPirata->jugador);
+    for (int i = 0; i < BOTINES_CANTIDAD; i++) {
+      if (botines[i][0] == tareaPirata->posicionX && botines[i][1] == tareaPirata->posicionY) {
+        botines[i][2] = botines[i][2] - 1;
+      }
+    }
+  }
 
 	return 0;
 }
 
 uint game_syscall_pirata_posicion(uint id, int idx)
 {
-    // ~ completar ~
-    return 0;
+  if (idx == -1) {
+    //tengo que dar la posicion del propio pirata.
+    pirata_t* tareaPirata = id_pirata2pirata(id);
+    return (tareaPirata->posicionY << 8 | tareaPirata->posicionX);
+  } else {
+    //sino es un indice del 0-7 para indicar el indice de pirata del propio jugador.
+    if (turnoPirata == 0) {
+      //turno jugador A
+      pirata_t tareaPirata = jugadorA.piratas[idx];
+      return (tareaPirata->posicionY << 8 | tareaPirata->posicionX);
+    } else {
+      //turno jugador B
+      pirata_t tareaPirata = jugadorB.piratas[idx];
+      return (tareaPirata->posicionY << 8 | tareaPirata->posicionX);
+    }
+  }
+  return 0;
 }
 
 uint game_syscall_manejar(uint syscall, uint param1)
 {
-    // ~ completar ~
-    return 0;
+  if (turnoPirata == 0) {
+    //turno pirata A
+    pirata_t pirataA = jugadorA[proximaTareaA];
+    if (syscall == 0x1) {
+      return game_syscall_pirata_mover(pirataA.id, param1);
+    } else if (syscall == 0x2) {
+      return game_syscall_cavar(pirataA.id);
+    } else if (syscall == 0x3) {
+      return game_syscall_pirata_posicion(pirataA.id, param1);
+    }
+  } else {
+    //turno pirata B
+    pirata_t pirataB = jugadorB[proximaTareaB];
+    if (syscall == 0x1) {
+      return game_syscall_pirata_mover(pirataB.id, param1);
+    } else if (syscall == 0x2) {
+      return game_syscall_cavar(pirataB.id);
+    } else if (syscall == 0x3) {
+      return game_syscall_pirata_posicion(pirataB.id, param1);
+    }
+  }
 }
 
 void game_pirata_exploto(uint id)
@@ -290,6 +348,7 @@ void game_terminar_si_es_hora()
 #define KB_l        0x26 // 0xa6
 #define KB_shiftL   0x2a // 0xaa
 #define KB_shiftR   0x36 // 0xb6
+#define KB_y        0x15
 
 
 void game_atender_teclado(unsigned char tecla)
@@ -340,6 +399,11 @@ void game_atender_teclado(unsigned char tecla)
       break;
     case KB_shiftR:
       print("shiftR", 65, 0, 0xF);
+      break;
+    case KB_y:
+      print("      ", 65, 0, 0x0);
+      screen_pintar('y', 0xF, 0, 65);
+      sched_toggle_debug();
       break;
   }
 }
