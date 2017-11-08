@@ -52,6 +52,5 @@ void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3);
 unsigned int mmu_proxima_pagina_fisica_libre();
 unsigned int pos2mapFis(unsigned int x, unsigned int y);
 unsigned int pos2mapVir(unsigned int x, unsigned int y);
-// unsigned int mapear_dir_pirata(pirata_t tarea);
 
 #endif	/* !__MMU_H__ */

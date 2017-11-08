@@ -22,6 +22,8 @@ extern mmu_inicializar_dir_pirata
 extern tss_inicializar
 extern tss_agregar_a_gdt
 extern sched_inicializar
+extern screen_pintar_puntajes
+extern tss_agregar_piratas_a_gdt
 
 ;; Saltear seccion de datos
 jmp start
@@ -94,6 +96,8 @@ mp:
     xchg bx, bx
     call screen_pintar_nombre
     xchg bx, bx
+    call screen_pintar_puntajes
+    xchg bx, bx
     ; Inicializar el manejador de memoria
     xor eax, eax
     mov eax, 0x27000
@@ -117,8 +121,10 @@ mp:
     xchg bx, bx
     call tss_agregar_a_gdt
     xchg bx, bx
+    ; call tss_agregar_piratas_a_gdt
+    ; xchg bx, bx
     ; Inicializar el scheduler
-    ; call sched_inicializar
+    call sched_inicializar
     ; Inicializar la IDT
     call idt_inicializar
     xchg bx, bx

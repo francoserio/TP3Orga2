@@ -75,10 +75,6 @@ unsigned int pos2mapVir(unsigned int x, unsigned int y) {
 	return (0x400000 + ((x + y*MAPA_ANCHO))*PAGE_SIZE);
 }
 
-// unsigned int mapear_dir_pirata(pirata_t tarea) {
-//
-// }
-
 unsigned int mmu_inicializar_dir_pirata(unsigned char jugador, unsigned char tarea) {
   //aca ya tengo la page directory y table de la tarea.
 
@@ -114,6 +110,9 @@ unsigned int mmu_inicializar_dir_pirata(unsigned char jugador, unsigned char tar
   if (jugador == JUGADOR_A) {
     //empiezo en la primera posicion
     //primero copio la tarea
+
+    //mapeo donde estamos parados
+    mmu_mapear_pagina(pos2mapVir(1,1), (page_directory_address), pos2mapFis(1,1), 1, 1);
     if (tarea == 0) {
       //explorador
       for (int i = 0; i < 1024; i++) {
@@ -125,8 +124,9 @@ unsigned int mmu_inicializar_dir_pirata(unsigned char jugador, unsigned char tar
         ((unsigned int*)(pos2mapFis(1,1)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
       }
     }
-    //mapeo donde estamos parados
-    mmu_mapear_pagina(pos2mapVir(1,1), (page_directory_address), pos2mapFis(1,1), 1, 1);
+
+    mmu_unmapear_pagina(pos2mapVir(1,1), (page_directory_address));
+
     //se mapean las de alrededor para jugador 1
     mmu_mapear_pagina(pos2mapVir(2,1), (page_directory_address), pos2mapFis(2,1), 0, 1);//derecha
     mmu_mapear_pagina(pos2mapVir(2,2), (page_directory_address), pos2mapFis(2,2), 0, 1);//abajo-derecha
@@ -139,6 +139,9 @@ unsigned int mmu_inicializar_dir_pirata(unsigned char jugador, unsigned char tar
   } else {
     //empiezo en la ultima posicion
     //primero copio la tarea
+
+    //mapeo donde estamos parados
+    mmu_mapear_pagina(pos2mapVir(78,43), (page_directory_address), pos2mapFis(78,43), 1, 1);
     if (tarea == 0) {
       //explorador
       for (int i = 0; i < 1024; i++) {
@@ -150,8 +153,9 @@ unsigned int mmu_inicializar_dir_pirata(unsigned char jugador, unsigned char tar
         ((unsigned int*)(pos2mapFis(78,43)))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
       }
     }
-    //mapeo donde estamos parados
-    mmu_mapear_pagina(pos2mapVir(78,43), (page_directory_address), pos2mapFis(78,43), 1, 1);
+    
+    mmu_unmapear_pagina(pos2mapVir(78,43), (page_directory_address));
+
     //al principio solo se mapean las paginas de la izquierda, arriba, arriba-izquierda para jug 2
     mmu_mapear_pagina(pos2mapVir(77,43), (page_directory_address), pos2mapFis(77,43), 0, 1);//izquierda
     mmu_mapear_pagina(pos2mapVir(77,42), (page_directory_address), pos2mapFis(77,42), 0, 1);//arriba-izquierda

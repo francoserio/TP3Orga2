@@ -20,7 +20,6 @@ uint modoDebug = FALSE;
 void sched_inicializar();
 unsigned int sched_tick();
 void sched_toggle_debug();
-unsigned int sched_proxima_a_ejecutar();
 void sched_nointercambiar_por_idle();
 
 #endif	/* !__SCHED_H__ */

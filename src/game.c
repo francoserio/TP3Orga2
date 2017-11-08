@@ -105,6 +105,8 @@ void game_inicializar()
   // for (int i = 0; i < 16; i++) {
   //   reloj_pirata[i] = 0;
   // }
+  game_jugador_inicializar(&jugadorA);
+  game_jugador_inicializar(&jugadorB);
 }
 
 void game_jugador_inicializar_mapa(jugador_t *jug)
@@ -136,10 +138,10 @@ void game_jugador_inicializar(jugador_t *j)
     j->puertoX = 78;
     j->colorJug = C_BG_BLUE;
   }
-  pirata_t* pirata = NULL;
+  pirata_t pirata;
   for (int i = 0; i < 8; i++) {
-    game_pirata_inicializar(pirata, j, i, idPir++);
-    j->piratas[i] = *pirata;
+    game_pirata_inicializar(&pirata, j, i, idPir++);
+    j->piratas[i] = pirata;
   }
 }
 
@@ -167,14 +169,15 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
 void game_tick(uint id_pirata)
 {
   screen_actualizar_reloj_global();
-  if (id_pirata2pirata(id_pirata)->vivoMuerto) {
-    reloj_pirata[id_pirata2pirata(id_pirata)->id]++;
-  }
+  // if (id_pirata2pirata(id_pirata)->vivoMuerto) {
+  //   reloj_pirata[id_pirata2pirata(id_pirata)->id]++;
+  // }
 }
 
 
 void game_pirata_relanzar(pirata_t *pirata, jugador_t *j, uint tipo)
 {
+
 }
 
 pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo)

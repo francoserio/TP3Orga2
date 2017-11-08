@@ -137,6 +137,12 @@ _isr32:
   pushad
   call fin_intr_pic1
 	call sched_tick
+  str cx
+  cmp ax, cx
+  je .fin
+  mov [sched_tarea_selector], ax
+  jmp far [sched_tarea_offset]
+.fin:
 	; RESTAURAR REGISTROS
   popad
   iret
@@ -167,26 +173,25 @@ global _isr46
 _isr46:
   ;en eax tengo el primer parámetro
   pushad
-;   call fin_intr_pic1
-;   cmp eax, 1
-;   je moverse
-;   cmp eax, 2
-;   je cavar
-;   cmp eax, 3
-;   je posicion
-;   jmp fin
-; moverse:
-;   ;en ecx tengo la direccion. 4 arriba, 7 abajo, 10 derecha, 13 izquierda
-;   push ecx
-;   call game_syscall_pirata_mover
-;   jmp fin
-; cavar:
-;   call game_syscall_cavar
-;   jmp fin
-; posicion:
-;   push ecx
-;   call game_syscall_pirata_posicion
-; fin:
-  mov eax, 0x42
+  call fin_intr_pic1
+  cmp eax, 1
+  je moverse
+  cmp eax, 2
+  je cavar
+  cmp eax, 3
+  je posicion
+  jmp fin
+moverse:
+  ;en ecx tengo la direccion. 4 arriba, 7 abajo, 10 derecha, 13 izquierda
+  push ecx
+  call game_syscall_pirata_mover
+  jmp fin
+cavar:
+  call game_syscall_cavar
+  jmp fin
+posicion:
+  push ecx
+  call game_syscall_pirata_posicion
+fin:
   popad
   iret
