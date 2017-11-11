@@ -104,12 +104,10 @@ mp:
     mov cr3, eax
     call mmu_inicializar
     xchg bx, bx
+    ; Cargar directorio de paginas
     ; Inicializar el directorio de paginas
     call mmu_inicializar_dir_kernel
     xchg bx, bx
-    ; Cargar directorio de paginas
-    ; call mmu_inicializar_dir_pirata
-    ; xchg bx, bx
     ; Habilitar paginacion
     xor eax, eax
     mov eax, cr0
@@ -121,8 +119,8 @@ mp:
     xchg bx, bx
     call tss_agregar_a_gdt
     xchg bx, bx
-    ; call tss_agregar_piratas_a_gdt
-    ; xchg bx, bx
+    call tss_agregar_piratas_a_gdt
+    xchg bx, bx
     ; Inicializar el scheduler
     call sched_inicializar
     ; Inicializar la IDT

@@ -145,7 +145,7 @@ void completarTssPirata(pirata_t tarea) {
   tss_pirata->esp2 = 0;
   tss_pirata->ss2 = 0;
   tss_pirata->unused3 = 0;
-  tss_pirata->cr3 = mmu_inicializar_dir_pirata((tarea.jugador)->index, tarea.id);
+  tss_pirata->cr3 = mmu_inicializar_dir_pirata(tarea.jugador, &tarea);
   tss_pirata->eflags = (unsigned int)0x00202;
   tss_pirata->eax = 0;
   tss_pirata->ecx = 0;

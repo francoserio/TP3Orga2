@@ -26,11 +26,11 @@ void screen_actualizar_reloj_global()
 
     screen_pintar(reloj[reloj_global], C_BW, 49, 79);
 
-    // contador_de_tiempo++;
+    contador_de_tiempo++;
 }
 
 void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata) {
-  
+
 }
 
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
@@ -149,6 +149,13 @@ void screen_inicializar() {
   print("1 2 3 4 5 6 7 8", j, i, 0xF);
   j = j + 56;
   print("1 2 3 4 5 6 7 8", j, i, 0xF);
+}
+
+void screen_pintar_pirata(jugador_t *j, pirata_t *pirata) {
+  // if (pirata->tipo == ) {
+  //
+  // }
+  // screen_pintar();
 }
 
 void screen_stop_game_show_winner(jugador_t *j) {

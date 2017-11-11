@@ -22,5 +22,6 @@ unsigned int sched_proxima_a_ejecutar();
 unsigned int sched_tick();
 void sched_toggle_debug();
 void sched_nointercambiar_por_idle();
+void sched_intercambiar_por_idle();
 
 #endif	/* !__SCHED_H__ */

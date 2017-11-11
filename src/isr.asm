@@ -159,7 +159,6 @@ _isr33:
   call fin_intr_pic1
   xor ax, ax
 	in al, 0x60
-	; lo muevo a rsi para usarlo como parametro?
   push eax
 	call game_atender_teclado
   pop eax

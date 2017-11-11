@@ -7,15 +7,16 @@
 
 #include "mmu.h"
 #include "i386.h"
+#include "tss.h"
 /* Atributos paginas */
 /* -------------------------------------------------------------------------- */
 unsigned int proxima_pagina_libre;
 
-page_directory_entry* inicioDirectory = (page_directory_entry*)0x27000;
-
-page_table_entry* inicioTable = (page_table_entry*)0x28000;
-
 void mmu_inicializar_dir_kernel() {
+  page_directory_entry* inicioDirectory = (page_directory_entry*)0x27000;
+
+  page_table_entry* inicioTable = (page_table_entry*)0x28000;
+
   page_directory_entry pde;
 
   pde.present = 0;
@@ -75,7 +76,28 @@ unsigned int pos2mapVir(unsigned int x, unsigned int y) {
 	return (0x400000 + ((x + y*MAPA_ANCHO))*PAGE_SIZE);
 }
 
-unsigned int mmu_inicializar_dir_pirata(unsigned char jugador, unsigned char tarea) {
+void mmu_inicializar_dir_pirataConocidas(jugador_t* jugador) {
+  for (int i = 0; i < 8; i++) {
+    //cada pirata del jugador.
+    for (int j = 0; j < 80; j++) {
+      for (int k = 0; k < 45; k++) {
+        if (jugador->posicionesXVistas[j] == 1 && jugador->posicionesYVistas[k] == 1) {
+          mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorA[i].cr3, pos2mapFis(j, k), 0, 1);
+        }
+      }
+    }
+  }
+}
+
+void mmu_moverCodigo(pirata_t* tarea, uint x, uint y, uint indexJug) {
+  if (indexJug == JUGADOR_A) {
+    mmu_mapear_pagina(pos2mapVir(x, y), tss_jugadorA[tarea->index].cr3, pos2mapFis(x, y), 1, 1);
+  } else {
+    mmu_mapear_pagina(pos2mapVir(x, y), tss_jugadorB[tarea->index].cr3, pos2mapFis(x, y), 1, 1);
+  }
+}
+
+unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
   //aca ya tengo la page directory y table de la tarea.
 
   page_directory_entry* pd = (page_directory_entry*) mmu_proxima_pagina_fisica_libre();
@@ -107,40 +129,40 @@ unsigned int mmu_inicializar_dir_pirata(unsigned char jugador, unsigned char tar
   }
 
   unsigned int page_directory_address = (unsigned int)pd;
-  if (jugador == JUGADOR_A) {
+  if (jugador->index == JUGADOR_A) {
     //empiezo en la primera posicion
 
     //mapeo donde estamos parados
-    mmu_mapear_pagina(pos2mapVir(1,1), (page_directory_address), pos2mapFis(1,1), 1, 1);
-    if (tarea == 0) {
+    mmu_mapear_pagina(pos2mapVir(1,2), (page_directory_address), pos2mapFis(1,2), 1, 1);
+    if (tarea->tipo == explorador) {
       //explorador
       for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapVir(1,1)))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
+        ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
       }
     } else {
       //minero
       for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapVir(1,1)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
+        ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
       }
     }
 
-    mmu_unmapear_pagina(pos2mapVir(1,1), (page_directory_address));
+    mmu_unmapear_pagina(pos2mapVir(1,2), (page_directory_address));
 
     //se mapean las de alrededor para jugador 1
     mmu_mapear_pagina(pos2mapVir(2,1), (page_directory_address), pos2mapFis(2,1), 0, 1);//derecha
     mmu_mapear_pagina(pos2mapVir(2,2), (page_directory_address), pos2mapFis(2,2), 0, 1);//abajo-derecha
-    mmu_mapear_pagina(pos2mapVir(1,2), (page_directory_address), pos2mapFis(1,2), 0, 1);//abajo
+    mmu_mapear_pagina(pos2mapVir(1,3), (page_directory_address), pos2mapFis(1,3), 0, 1);//abajo
     mmu_mapear_pagina(pos2mapVir(0,1), (page_directory_address), pos2mapFis(0,1), 0, 1);//izquierda
     mmu_mapear_pagina(pos2mapVir(0,2), (page_directory_address), pos2mapFis(0,2), 0, 1);//abajo-izquierda
-    mmu_mapear_pagina(pos2mapVir(1,0), (page_directory_address), pos2mapFis(1,0), 0, 1);//arriba
-    mmu_mapear_pagina(pos2mapVir(0,0), (page_directory_address), pos2mapFis(0,0), 0, 1);//arriba-izquierda
-    mmu_mapear_pagina(pos2mapVir(2,0), (page_directory_address), pos2mapFis(2,0), 0, 1);//arriba-derecha
+    mmu_mapear_pagina(pos2mapVir(1,1), (page_directory_address), pos2mapFis(1,1), 0, 1);//arriba
+    mmu_mapear_pagina(pos2mapVir(0,3), (page_directory_address), pos2mapFis(0,3), 0, 1);//arriba-izquierda
+    mmu_mapear_pagina(pos2mapVir(2,3), (page_directory_address), pos2mapFis(2,3), 0, 1);//arriba-derecha
   } else {
     //empiezo en la ultima posicion
 
     //mapeo donde estamos parados
-    mmu_mapear_pagina(pos2mapVir(78,43), (page_directory_address), pos2mapFis(78,43), 1, 1);
-    if (tarea == 0) {
+    mmu_mapear_pagina(pos2mapVir(78,43), (page_directory_address), pos2mapFis(78,43), 0, 1);
+    if (tarea->tipo == explorador) {
       //explorador
       for (int i = 0; i < 1024; i++) {
         ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
