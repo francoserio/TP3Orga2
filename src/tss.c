@@ -130,27 +130,11 @@ void tss_agregar_a_gdt() {
 }
 
 void completarTssPirata(pirata_t tarea) {
-<<<<<<< HEAD
-  unsigned int paginaParaPilaCero = mmu_proxima_pagina_fisica_libre();
-=======
   unsigned int paginaParaPilaCero = mmu_proxima_pagina_fisica_libre() + 0x1000;
->>>>>>> bb19678... compila y corre, falta testear
 
   tss* tss_pirata = (*(tarea.jugador)).index == JUGADOR_A ? &tss_jugadorA[tarea.id] : &tss_jugadorB[tarea.id];
 
-  if (tarea.tipo == minero) {
-    if ((tarea.jugador)->index == JUGADOR_A) { //
-      tss_pirata->eip = 0x11000;
-    } else {
-      tss_pirata->eip = 0x13000;
-    }
-  } else {
-    if ((tarea.jugador)->index == JUGADOR_A) {
-      tss_pirata->eip = 0x10000;
-    } else {
-      tss_pirata->eip = 0x12000;
-    }
-  }
+  tss_pirata->eip = 0x00400000;
   tss_pirata->ptl = 0;
   tss_pirata->unused0 = 0;
   tss_pirata->esp0 = paginaParaPilaCero;
@@ -162,19 +146,14 @@ void completarTssPirata(pirata_t tarea) {
   tss_pirata->esp2 = 0;
   tss_pirata->ss2 = 0;
   tss_pirata->unused3 = 0;
-  tss_pirata->cr3 = mmu_inicializar_dir_pirata((tarea.jugador)->index, tarea.id);
+  tss_pirata->cr3 = mmu_inicializar_dir_pirata(tarea.jugador, &tarea);
   tss_pirata->eflags = (unsigned int)0x00202;
   tss_pirata->eax = 0;
   tss_pirata->ecx = 0;
   tss_pirata->edx = 0;
   tss_pirata->ebx = 0;
-<<<<<<< HEAD
-  tss_pirata->esp = 0x400000 + PAGE_SIZE;
-  tss_pirata->ebp = 0x400000 + PAGE_SIZE;
-=======
   tss_pirata->esp = 0x00401000 - 12;
   tss_pirata->ebp = 0x00401000 - 12;
->>>>>>> bb19678... compila y corre, falta testear
   tss_pirata->esi = 0;
   tss_pirata->edi = 0;
   tss_pirata->es = (unsigned int)0x40 | 0x3;
@@ -199,13 +178,8 @@ void tss_agregar_piratas_a_gdt(jugador_t* j) {
   if (j->index == 0)  {
     gdt[EMPIEZAN_TSS + proximaTareaA] = (gdt_entry) {
       (unsigned short)    0x0067,         /* limit[0:15]  */
-<<<<<<< HEAD
-      (unsigned short)    (int)(&tss_jugadorA[jugadorA.piratas[i].id]) & 0xFFFF, /* base[0:15]   */
-      (unsigned char)     (int)((int)(&tss_jugadorA[jugadorA.piratas[i].id]) >> 16) & 0x00FF,           /* base[23:16]  */
-=======
       (unsigned short)    (int)(&tss_jugadorA[jugadorA.piratas[proximaTareaA].index]) & 0xFFFF, /* base[0:15]   */
       (unsigned char)     (int)((int)(&tss_jugadorA[jugadorA.piratas[proximaTareaA].index]) >> 16) & 0x00FF,           /* base[23:16]  */
->>>>>>> bb19678... compila y corre, falta testear
       (unsigned char)     0x09,           /* type         */
       (unsigned char)     0x00,           /* s            */
       (unsigned char)     0x03,           /* dpl          */
@@ -215,23 +189,14 @@ void tss_agregar_piratas_a_gdt(jugador_t* j) {
       (unsigned char)     0x00,           /* l            */
       (unsigned char)     0x00,           /* db           */
       (unsigned char)     0x00,           /* g            */
-<<<<<<< HEAD
-      (unsigned char)     (int)(&tss_jugadorA[jugadorA.piratas[i].id]) >> 24,           /* base[31:24]  */
-=======
       (unsigned char)     (int)(&tss_jugadorA[jugadorA.piratas[proximaTareaA].index]) >> 24,           /* base[31:24]  */
->>>>>>> bb19678... compila y corre, falta testear
     };
     completarTssPirata(jugadorA.piratas[proximaTareaA]);
   } else {
     gdt[EMPIEZAN_TSS + 8 + proximaTareaB] = (gdt_entry) {
       (unsigned short)    0x0067,         /* limit[0:15]  */
-<<<<<<< HEAD
-      (unsigned short)    (int)(&tss_jugadorB[jugadorB.piratas[j].id]) & 0xFFFF, /* base[0:15]   */
-      (unsigned char)     (int)((int)(&tss_jugadorB[jugadorB.piratas[j].id]) >> 16) & 0x00FF,           /* base[23:16]  */
-=======
       (unsigned short)    (int)(&tss_jugadorB[jugadorB.piratas[proximaTareaB].index]) & 0xFFFF, /* base[0:15]   */
       (unsigned char)     (int)((int)(&tss_jugadorB[jugadorB.piratas[proximaTareaB].index]) >> 16) & 0x00FF,           /* base[23:16]  */
->>>>>>> bb19678... compila y corre, falta testear
       (unsigned char)     0x09,           /* type         */
       (unsigned char)     0x00,           /* s            */
       (unsigned char)     0x03,           /* dpl          */

@@ -21,7 +21,8 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD } direccio
 
 typedef enum tipoPirata_e { minero = 1, explorador = 0 } tipoPirata;
 uint reloj_pirata[16];
-// uint contador_de_tiempo = 0;
+uint contador_de_tiempo;
+uchar siempreIgual;
 
 struct jugador_t;
 
@@ -35,6 +36,8 @@ typedef struct pirata_t
     tipoPirata tipo;
     uint reloj;
     uchar vivoMuerto; //0 muerto 1 vivo
+    int posicionXObjetivo; // si es minero
+    int posicionYObjetivo; // si es minero
     // id unica, posicion, tipo, reloj
 } pirata_t;
 
@@ -45,8 +48,9 @@ typedef struct jugador_t
     pirata_t piratas[MAX_CANT_PIRATAS_VIVOS];
     uint puntaje;
     uint piratasRestantes;
+    uint minerosPendientes;
     uint posicionesXVistas[80];
-    uint posicionesYVistas[44];
+    uint posicionesYVistas[45];
     uint puertoX;
     uint puertoY;
     uint colorJug;
@@ -67,13 +71,14 @@ void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y
 void game_pirata_exploto(uint id);
 
 void game_jugador_inicializar(jugador_t *j);
-void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y);
+void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y);
 pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo);
 void game_jugador_anotar_punto(jugador_t *j);
 void game_explorar_posicion(jugador_t *jugador, int x, int y);
 
 uint game_valor_tesoro(uint x, uint y);
-void game_calcular_posiciones_vistas(int *vistas_x, int *vistas_y, int x, int y);
+uint game_valores_tesoros();
+void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y);
 pirata_t* game_pirata_en_posicion(uint x, uint y);
 
 uint game_syscall_cavar(uint id);

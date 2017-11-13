@@ -46,12 +46,13 @@ typedef struct str_page_table_entry {
 
 void mmu_inicializar();
 void mmu_inicializar_dir_kernel();
-unsigned int mmu_inicializar_dir_pirata(unsigned char jugador, unsigned char tarea);
+unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea);
 void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica, unsigned char read_write, unsigned char user_supervisor);
 void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3);
 unsigned int mmu_proxima_pagina_fisica_libre();
 unsigned int pos2mapFis(unsigned int x, unsigned int y);
 unsigned int pos2mapVir(unsigned int x, unsigned int y);
-// unsigned int mapear_dir_pirata(pirata_t tarea);
+void mmu_inicializar_dir_pirataConocidas(jugador_t* jugador);
+void mmu_moverCodigo(pirata_t* tarea, uint x, uint y, uint indexJug);
 
 #endif	/* !__MMU_H__ */

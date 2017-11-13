@@ -26,7 +26,11 @@ void screen_actualizar_reloj_global()
 
     screen_pintar(reloj[reloj_global], C_BW, 49, 79);
 
-    // contador_de_tiempo++;
+    contador_de_tiempo++;
+}
+
+void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata) {
+
 }
 
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
@@ -147,8 +151,6 @@ void screen_inicializar() {
   print("1 2 3 4 5 6 7 8", j, i, 0xF);
 }
 
-<<<<<<< HEAD
-=======
 void screen_pintar_pirata(jugador_t *j, pirata_t *pirata) {
   if (pirata->tipo == minero) {
     screen_pintar(' ', j->colorJug, pirata->posicionX, pirata->posicionY);
@@ -160,10 +162,9 @@ void screen_pintar_pirata(jugador_t *j, pirata_t *pirata) {
 }
 
 void screen_borrar_pirata(jugador_t *j, pirata_t *pirata) {
-  screen_pintar(' ', j->colorJug, pirata->posicionX, pirata->posicionY);  
+  screen_pintar(' ', j->colorJug, pirata->posicionX, pirata->posicionY);
 }
 
->>>>>>> bb19678... compila y corre, falta testear
 void screen_stop_game_show_winner(jugador_t *j) {
   print("GANADOR:" + j->index, 39, 22, 0xF);
 }
