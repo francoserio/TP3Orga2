@@ -8,6 +8,7 @@
 #include "mmu.h"
 #include "i386.h"
 #include "tss.h"
+#include "sched.h"
 /* Atributos paginas */
 /* -------------------------------------------------------------------------- */
 unsigned int proxima_pagina_libre;
@@ -90,10 +91,27 @@ void mmu_inicializar_dir_pirataConocidas(jugador_t* jugador) {
 }
 
 void mmu_moverCodigo(pirata_t* tarea, uint x, uint y, uint indexJug) {
+  mmu_mapear_pagina((unsigned int)0x00400000, tss_jugadorA[tarea->index].cr3, pos2mapFis(x,y), 1, 1);
   if (indexJug == JUGADOR_A) {
-    mmu_mapear_pagina(pos2mapVir(x, y), tss_jugadorA[tarea->index].cr3, pos2mapFis(x, y), 1, 1);
+    if (tarea->tipo == explorador) {
+      for (int i = 0; i < 1024; i++) {
+        ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
+      }
+    } else {
+      for (int i = 0; i < 1024; i++) {
+        ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
+      }
+    }
   } else {
-    mmu_mapear_pagina(pos2mapVir(x, y), tss_jugadorB[tarea->index].cr3, pos2mapFis(x, y), 1, 1);
+    if (tarea->tipo == explorador) {
+      for (int i = 0; i < 1024; i++) {
+        ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
+      }
+    } else {
+      for (int i = 0; i < 1024; i++) {
+        ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
+      }
+    }
   }
 }
 
@@ -129,35 +147,21 @@ unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
   unsigned int page_directory_address = (unsigned int)pd;
   if (jugador->index == JUGADOR_A) {
     //empiezo en la primera posicion
-    //mapeo la 0x400000
-    mmu_mapear_pagina((unsigned int)0x00400000, page_directory_address, pos2mapFis(1,2), 1, 1);
-    // if (tarea->tipo == explorador) {
-    //   for (int i = 0; i < 1024; i++) {
-    //     ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
-    //   }
-    // } else {
-    //   for (int i = 0; i < 1024; i++) {
-    //     ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
-    //   }
-    // }
-    // breakpoint();
     //mapeo donde estamos parados
     mmu_mapear_pagina(pos2mapVir(1,2), (page_directory_address), pos2mapFis(1,2), 1, 1);
-
-    // if (tarea->tipo == explorador) {
-    //   //explorador
-    //   for (int i = 0; i < 1024; i++) {
-    //     ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
-    //   }
-    // } else {
-    //   //minero
-    //   for (int i = 0; i < 1024; i++) {
-    //     ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
-    //   }
-    // }
+    if (tarea->tipo == explorador) {
+      //explorador
+      for (int i = 0; i < 1024; i++) {
+        ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
+      }
+    } else {
+      //minero
+      for (int i = 0; i < 1024; i++) {
+        ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
+      }
+    }
 
     mmu_unmapear_pagina(pos2mapVir(1,2), (page_directory_address));
-    breakpoint();
     //se mapean las de alrededor para jugador 1
     mmu_mapear_pagina(pos2mapVir(2,1), (page_directory_address), pos2mapFis(2,1), 0, 1);//derecha
     mmu_mapear_pagina(pos2mapVir(2,2), (page_directory_address), pos2mapFis(2,2), 0, 1);//abajo-derecha
@@ -170,31 +174,19 @@ unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
 
   } else {
     //empiezo en la ultima posicion
-    //mapeo la 0x400000
-    mmu_mapear_pagina((unsigned int)0x00400000, (page_directory_address), pos2mapFis(1,2), 1, 1);
-    // if (tarea->tipo == explorador) {
-    //   for (int i = 0; i < 1024; i++) {
-    //     ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
-    //   }
-    // } else {
-    //   for (int i = 0; i < 1024; i++) {
-    //     ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
-    //   }
-    // }
-    // breakpoint();
     //mapeo donde estamos parados
-    mmu_mapear_pagina(pos2mapVir(78,43), (page_directory_address), pos2mapFis(78,43), 0, 1);
-    // if (tarea->tipo == explorador) {
-    //   //explorador
-    //   for (int i = 0; i < 1024; i++) {
-    //     ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
-    //   }
-    // } else {
-    //   //minero
-    //   for (int i = 0; i < 1024; i++) {
-    //     ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
-    //   }
-    // }
+    mmu_mapear_pagina(pos2mapVir(78,43), (page_directory_address), pos2mapFis(78,43), 1, 1);
+    if (tarea->tipo == explorador) {
+      //explorador
+      for (int i = 0; i < 1024; i++) {
+        ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
+      }
+    } else {
+      //minero
+      for (int i = 0; i < 1024; i++) {
+        ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
+      }
+    }
 
     mmu_unmapear_pagina(pos2mapVir(78,43), (page_directory_address));
 
@@ -219,7 +211,7 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
   unsigned int indiceTable = (virtual << 10) >> 22;
   page_directory_entry pde = pd[indiceDirectory];
   if (pde.present == 1) {
-    page_table_entry* pt = (page_table_entry*)((pde.base_address << 12) >> 12);
+    page_table_entry* pt = (page_table_entry*)((pde.base_address << 12));
     page_table_entry pte = pt[indiceTable];
     if (pte.present == 1) {
       pte.user_supervisor = user_supervisor;

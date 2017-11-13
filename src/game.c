@@ -273,6 +273,7 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
   j->piratasRestantes--;
   if (j->index == 0) {
     //turno proximo de jugador A. Tengo que explorar las paginas de alrededor
+    breakpoint();
     if (tipo != minero) {
         game_explorar_posicion(j, 1, 2);
     }
@@ -284,6 +285,7 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
     }
     tss_agregar_piratas_a_gdt(j);
     breakpoint();
+    mmu_moverCodigo(&tareaPirata, x, y, j->index);
     screen_pintar_pirata(j, &tareaPirata);
   } else {
     //turno proximo de jugador B. Tengo que explorar las paginas de alrededor
@@ -297,6 +299,7 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
       tareaPirata.posicionYObjetivo = y;
     }
     tss_agregar_piratas_a_gdt(j);
+    mmu_moverCodigo(&tareaPirata, x, y, j->index);
     screen_pintar_pirata(j, &tareaPirata);
   }
 }
@@ -545,7 +548,7 @@ void game_atender_teclado(unsigned char tecla)
       break;
     case KB_shiftL:
       print("shiftL", 65, 0, 0xF);
-      game_jugador_lanzar_pirata(&jugadorA, explorador, 1, 1);
+      game_jugador_lanzar_pirata(&jugadorA, explorador, 1, 2);
       break;
     case KB_shiftR:
       print("shiftR", 65, 0, 0xF);

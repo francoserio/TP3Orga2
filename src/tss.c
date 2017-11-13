@@ -132,7 +132,7 @@ void tss_agregar_a_gdt() {
 void completarTssPirata(pirata_t tarea) {
   unsigned int paginaParaPilaCero = mmu_proxima_pagina_fisica_libre() + 0x1000;
 
-  tss* tss_pirata = (*(tarea.jugador)).index == JUGADOR_A ? &tss_jugadorA[tarea.id] : &tss_jugadorB[tarea.id];
+  tss* tss_pirata = (*(tarea.jugador)).index == JUGADOR_A ? &tss_jugadorA[tarea.index] : &tss_jugadorB[tarea.index];
 
   tss_pirata->ptl = 0;
   tss_pirata->unused0 = 0;
@@ -206,7 +206,7 @@ void tss_agregar_piratas_a_gdt(jugador_t* j) {
       (unsigned char)     0x00,           /* l            */
       (unsigned char)     0x00,           /* db           */
       (unsigned char)     0x00,           /* g            */
-      (unsigned char)     (int)(&tss_jugadorB[jugadorB.piratas[proximaTareaB].id]) >> 24,           /* base[31:24]  */
+      (unsigned char)     (int)(&tss_jugadorB[jugadorB.piratas[proximaTareaB].index]) >> 24,           /* base[31:24]  */
     };
     completarTssPirata(jugadorB.piratas[proximaTareaB]);
   }
