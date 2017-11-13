@@ -283,6 +283,7 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
       tareaPirata.posicionYObjetivo = y;
     }
     tss_agregar_piratas_a_gdt(j);
+    breakpoint();
     screen_pintar_pirata(j, &tareaPirata);
   } else {
     //turno proximo de jugador B. Tengo que explorar las paginas de alrededor
@@ -544,7 +545,7 @@ void game_atender_teclado(unsigned char tecla)
       break;
     case KB_shiftL:
       print("shiftL", 65, 0, 0xF);
-      // game_jugador_lanzar_pirata(jugadorA)
+      game_jugador_lanzar_pirata(&jugadorA, explorador, 1, 1);
       break;
     case KB_shiftR:
       print("shiftR", 65, 0, 0xF);

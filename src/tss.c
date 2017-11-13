@@ -134,7 +134,6 @@ void completarTssPirata(pirata_t tarea) {
 
   tss* tss_pirata = (*(tarea.jugador)).index == JUGADOR_A ? &tss_jugadorA[tarea.id] : &tss_jugadorB[tarea.id];
 
-  tss_pirata->eip = 0x00400000;
   tss_pirata->ptl = 0;
   tss_pirata->unused0 = 0;
   tss_pirata->esp0 = paginaParaPilaCero;
@@ -147,6 +146,7 @@ void completarTssPirata(pirata_t tarea) {
   tss_pirata->ss2 = 0;
   tss_pirata->unused3 = 0;
   tss_pirata->cr3 = mmu_inicializar_dir_pirata(tarea.jugador, &tarea);
+  tss_pirata->eip = 0x00400000;
   tss_pirata->eflags = (unsigned int)0x00202;
   tss_pirata->eax = 0;
   tss_pirata->ecx = 0;

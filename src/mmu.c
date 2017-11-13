@@ -130,34 +130,34 @@ unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
   if (jugador->index == JUGADOR_A) {
     //empiezo en la primera posicion
     //mapeo la 0x400000
-    mmu_mapear_pagina((unsigned int)0x00400000, (page_directory_address), pos2mapFis(1,2), 1, 1);
-    breakpoint();
-    if (tarea->tipo == explorador) {
-      for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
-      }
-    } else {
-      for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
-      }
-    }
-    breakpoint();
+    mmu_mapear_pagina((unsigned int)0x00400000, page_directory_address, pos2mapFis(1,2), 1, 1);
+    // if (tarea->tipo == explorador) {
+    //   for (int i = 0; i < 1024; i++) {
+    //     ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
+    //   }
+    // } else {
+    //   for (int i = 0; i < 1024; i++) {
+    //     ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
+    //   }
+    // }
+    // breakpoint();
     //mapeo donde estamos parados
     mmu_mapear_pagina(pos2mapVir(1,2), (page_directory_address), pos2mapFis(1,2), 1, 1);
-    if (tarea->tipo == explorador) {
-      //explorador
-      for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
-      }
-    } else {
-      //minero
-      for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
-      }
-    }
+
+    // if (tarea->tipo == explorador) {
+    //   //explorador
+    //   for (int i = 0; i < 1024; i++) {
+    //     ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
+    //   }
+    // } else {
+    //   //minero
+    //   for (int i = 0; i < 1024; i++) {
+    //     ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
+    //   }
+    // }
 
     mmu_unmapear_pagina(pos2mapVir(1,2), (page_directory_address));
-
+    breakpoint();
     //se mapean las de alrededor para jugador 1
     mmu_mapear_pagina(pos2mapVir(2,1), (page_directory_address), pos2mapFis(2,1), 0, 1);//derecha
     mmu_mapear_pagina(pos2mapVir(2,2), (page_directory_address), pos2mapFis(2,2), 0, 1);//abajo-derecha
@@ -167,34 +167,34 @@ unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
     mmu_mapear_pagina(pos2mapVir(1,1), (page_directory_address), pos2mapFis(1,1), 0, 1);//arriba
     mmu_mapear_pagina(pos2mapVir(0,3), (page_directory_address), pos2mapFis(0,3), 0, 1);//arriba-izquierda
     mmu_mapear_pagina(pos2mapVir(2,3), (page_directory_address), pos2mapFis(2,3), 0, 1);//arriba-derecha
+
   } else {
     //empiezo en la ultima posicion
-    breakpoint();
     //mapeo la 0x400000
     mmu_mapear_pagina((unsigned int)0x00400000, (page_directory_address), pos2mapFis(1,2), 1, 1);
-    if (tarea->tipo == explorador) {
-      for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
-      }
-    } else {
-      for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
-      }
-    }
-    breakpoint();
+    // if (tarea->tipo == explorador) {
+    //   for (int i = 0; i < 1024; i++) {
+    //     ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
+    //   }
+    // } else {
+    //   for (int i = 0; i < 1024; i++) {
+    //     ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
+    //   }
+    // }
+    // breakpoint();
     //mapeo donde estamos parados
     mmu_mapear_pagina(pos2mapVir(78,43), (page_directory_address), pos2mapFis(78,43), 0, 1);
-    if (tarea->tipo == explorador) {
-      //explorador
-      for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
-      }
-    } else {
-      //minero
-      for (int i = 0; i < 1024; i++) {
-        ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
-      }
-    }
+    // if (tarea->tipo == explorador) {
+    //   //explorador
+    //   for (int i = 0; i < 1024; i++) {
+    //     ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
+    //   }
+    // } else {
+    //   //minero
+    //   for (int i = 0; i < 1024; i++) {
+    //     ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x13000))[i];
+    //   }
+    // }
 
     mmu_unmapear_pagina(pos2mapVir(78,43), (page_directory_address));
 
@@ -208,7 +208,7 @@ unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
     mmu_mapear_pagina(pos2mapVir(79,44), (page_directory_address), pos2mapFis(79,44), 0, 1);//abajo-derecha
     mmu_mapear_pagina(pos2mapVir(77,44), (page_directory_address), pos2mapFis(77,44), 0, 1);//abajo-izquierda
   }
-  breakpoint();
+
   return page_directory_address;
 }
 
@@ -216,7 +216,7 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 
   page_directory_entry* pd = (page_directory_entry*)(cr3);
   unsigned int indiceDirectory = virtual >> 22;
-  unsigned int indiceTable = (virtual >> 12) << 10;
+  unsigned int indiceTable = (virtual << 10) >> 22;
   page_directory_entry pde = pd[indiceDirectory];
   if (pde.present == 1) {
     page_table_entry* pt = (page_table_entry*)((pde.base_address << 12) >> 12);
@@ -233,16 +233,34 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
     }
   } else {
     unsigned int proxima_pag = mmu_proxima_pagina_fisica_libre();
+    page_table_entry* pt = (page_table_entry*)(proxima_pag);
+    for (int i = 0; i < 1024; i++){
+			pt[i].present = 0;
+		}
     pde.present = 1;
     pde.read_write = read_write;
     pde.user_supervisor = user_supervisor;
+    pde.write_through = 0;
+    pde.cache_disable = 0;
+    pde.accessed = 0;
+    pde.ignored = 0;
+    pde.page_size = 0;
+    pde.global = 0;
+    pde.disponible = 0;
+    pde.base_address = 0;
     pde.base_address = proxima_pag >> 12;
-    page_table_entry* pt = (page_table_entry*)(proxima_pag);
+
     pt[indiceTable].present = 1;
     pt[indiceTable].user_supervisor = user_supervisor;
     pt[indiceTable].read_write = read_write;
+    pt[indiceTable].write_through = 0;
+    pt[indiceTable].cache_disable = 0;
+    pt[indiceTable].accessed = 0;
+    pt[indiceTable].dirty = 0;
+    pt[indiceTable].attribute_index = 0;
+    pt[indiceTable].global = 0;
+    pt[indiceTable].disponible = 0;
     pt[indiceTable].base_address = (fisica >> 12);
-
   }
 
   tlbflush();
@@ -251,7 +269,7 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
   page_directory_entry* pd = (page_directory_entry*)(cr3);
   unsigned int indiceDirectory = virtual >> 22;
-  unsigned int indiceTable = (virtual >> 12) << 10;
+  unsigned int indiceTable = (virtual << 10) >> 22;
   page_directory_entry pde = pd[indiceDirectory];
   page_table_entry* pt = (page_table_entry*)(pde.base_address << 12);
   pt[indiceTable].present = 0;
