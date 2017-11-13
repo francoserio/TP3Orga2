@@ -117,6 +117,11 @@ mp:
     xchg bx, bx
     call tss_agregar_a_gdt
     xchg bx, bx
+<<<<<<< HEAD
+=======
+    ; call tss_agregar_piratas_a_gdt
+    ; xchg bx, bx
+>>>>>>> bb19678... compila y corre, falta testear
     ; Inicializar el scheduler
     ; call sched_inicializar
     ; Inicializar la IDT

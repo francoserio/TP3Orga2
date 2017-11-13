@@ -8,6 +8,7 @@
 #include "tss.h"
 #include "mmu.h"
 #include "gdt.h"
+#include "sched.h"
 
 
 void tss_inicializar() {
@@ -129,9 +130,13 @@ void tss_agregar_a_gdt() {
 }
 
 void completarTssPirata(pirata_t tarea) {
+<<<<<<< HEAD
   unsigned int paginaParaPilaCero = mmu_proxima_pagina_fisica_libre();
+=======
+  unsigned int paginaParaPilaCero = mmu_proxima_pagina_fisica_libre() + 0x1000;
+>>>>>>> bb19678... compila y corre, falta testear
 
-  tss* tss_pirata = (*tarea.jugador).index == JUGADOR_A ? &tss_jugadorA[tarea.id] : &tss_jugadorB[tarea.id];
+  tss* tss_pirata = (*(tarea.jugador)).index == JUGADOR_A ? &tss_jugadorA[tarea.id] : &tss_jugadorB[tarea.id];
 
   if (tarea.tipo == minero) {
     if ((tarea.jugador)->index == JUGADOR_A) { //
@@ -163,63 +168,81 @@ void completarTssPirata(pirata_t tarea) {
   tss_pirata->ecx = 0;
   tss_pirata->edx = 0;
   tss_pirata->ebx = 0;
+<<<<<<< HEAD
   tss_pirata->esp = 0x400000 + PAGE_SIZE;
   tss_pirata->ebp = 0x400000 + PAGE_SIZE;
+=======
+  tss_pirata->esp = 0x00401000 - 12;
+  tss_pirata->ebp = 0x00401000 - 12;
+>>>>>>> bb19678... compila y corre, falta testear
   tss_pirata->esi = 0;
   tss_pirata->edi = 0;
-  tss_pirata->es = (unsigned int)0x40;
+  tss_pirata->es = (unsigned int)0x40 | 0x3;
   tss_pirata->unused4 = 0;
-  tss_pirata->cs = (unsigned int)0x50;
+  tss_pirata->cs = (unsigned int)0x50 | 0x3;
   tss_pirata->unused5 = 0;
-  tss_pirata->ss = (unsigned int)0x40;
+  tss_pirata->ss = (unsigned int)0x40 | 0x3;
   tss_pirata->unused6 = 0;
-  tss_pirata->ds = (unsigned int)0x40;
+  tss_pirata->ds = (unsigned int)0x40 | 0x3;
   tss_pirata->unused7 = 0;
-  tss_pirata->fs = (unsigned int)0x00060;
+  tss_pirata->fs = (unsigned int)0x40 | 0x3;
   tss_pirata->unused8 = 0;
-  tss_pirata->gs = (unsigned int)0x40;
+  tss_pirata->gs = (unsigned int)0x40 | 0x3;
   tss_pirata->unused9 = 0;
   tss_pirata->ldt = 0;
   tss_pirata->unused10 = 0;
   tss_pirata->dtrap = 0;
-  tss_pirata->iomap = 0;
+  tss_pirata->iomap = 0xFFFF;
 }
 
-void tss_agregar_piratas_a_gdt() {
-  for (int i = 0; i < 8; i++) {
-    completarTssPirata(jugadorA.piratas[i]);
-    gdt[EMPIEZAN_TSS + i] = (gdt_entry) {
+void tss_agregar_piratas_a_gdt(jugador_t* j) {
+  if (j->index == 0)  {
+    gdt[EMPIEZAN_TSS + proximaTareaA] = (gdt_entry) {
       (unsigned short)    0x0067,         /* limit[0:15]  */
+<<<<<<< HEAD
       (unsigned short)    (int)(&tss_jugadorA[jugadorA.piratas[i].id]) & 0xFFFF, /* base[0:15]   */
       (unsigned char)     (int)((int)(&tss_jugadorA[jugadorA.piratas[i].id]) >> 16) & 0x00FF,           /* base[23:16]  */
+=======
+      (unsigned short)    (int)(&tss_jugadorA[jugadorA.piratas[proximaTareaA].index]) & 0xFFFF, /* base[0:15]   */
+      (unsigned char)     (int)((int)(&tss_jugadorA[jugadorA.piratas[proximaTareaA].index]) >> 16) & 0x00FF,           /* base[23:16]  */
+>>>>>>> bb19678... compila y corre, falta testear
       (unsigned char)     0x09,           /* type         */
       (unsigned char)     0x00,           /* s            */
-      (unsigned char)     0x00,           /* dpl          */
+      (unsigned char)     0x03,           /* dpl          */
       (unsigned char)     0x01,           /* p            */
       (unsigned char)     0x00,           /* limit[16:19] */
       (unsigned char)     0x00,           /* avl          */
       (unsigned char)     0x00,           /* l            */
       (unsigned char)     0x00,           /* db           */
       (unsigned char)     0x00,           /* g            */
+<<<<<<< HEAD
       (unsigned char)     (int)(&tss_jugadorA[jugadorA.piratas[i].id]) >> 24,           /* base[31:24]  */
+=======
+      (unsigned char)     (int)(&tss_jugadorA[jugadorA.piratas[proximaTareaA].index]) >> 24,           /* base[31:24]  */
+>>>>>>> bb19678... compila y corre, falta testear
     };
-  }
-  for (int j = 0; j < 8; j++) {
-    completarTssPirata(jugadorB.piratas[j]);
-    gdt[EMPIEZAN_TSS + 8 + j] = (gdt_entry) {
+    completarTssPirata(jugadorA.piratas[proximaTareaA]);
+  } else {
+    gdt[EMPIEZAN_TSS + 8 + proximaTareaB] = (gdt_entry) {
       (unsigned short)    0x0067,         /* limit[0:15]  */
+<<<<<<< HEAD
       (unsigned short)    (int)(&tss_jugadorB[jugadorB.piratas[j].id]) & 0xFFFF, /* base[0:15]   */
       (unsigned char)     (int)((int)(&tss_jugadorB[jugadorB.piratas[j].id]) >> 16) & 0x00FF,           /* base[23:16]  */
+=======
+      (unsigned short)    (int)(&tss_jugadorB[jugadorB.piratas[proximaTareaB].index]) & 0xFFFF, /* base[0:15]   */
+      (unsigned char)     (int)((int)(&tss_jugadorB[jugadorB.piratas[proximaTareaB].index]) >> 16) & 0x00FF,           /* base[23:16]  */
+>>>>>>> bb19678... compila y corre, falta testear
       (unsigned char)     0x09,           /* type         */
       (unsigned char)     0x00,           /* s            */
-      (unsigned char)     0x00,           /* dpl          */
+      (unsigned char)     0x03,           /* dpl          */
       (unsigned char)     0x01,           /* p            */
       (unsigned char)     0x00,           /* limit[16:19] */
       (unsigned char)     0x00,           /* avl          */
       (unsigned char)     0x00,           /* l            */
       (unsigned char)     0x00,           /* db           */
       (unsigned char)     0x00,           /* g            */
-      (unsigned char)     (int)(&tss_jugadorB[jugadorB.piratas[j].id]) >> 24,           /* base[31:24]  */
+      (unsigned char)     (int)(&tss_jugadorB[jugadorB.piratas[proximaTareaB].id]) >> 24,           /* base[31:24]  */
     };
+    completarTssPirata(jugadorB.piratas[proximaTareaB]);
   }
 }

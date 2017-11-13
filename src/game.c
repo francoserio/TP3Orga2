@@ -187,7 +187,38 @@ pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo)
 
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, int x, int y)
 {
+<<<<<<< HEAD
 
+=======
+  j->piratasRestantes--;
+  if (j->index == 0) {
+    //turno proximo de jugador A. Tengo que explorar las paginas de alrededor
+    if (tipo != minero) {
+        game_explorar_posicion(j, 1, 2);
+    }
+    pirata_t tareaPirata = jugadorA.piratas[proximaTareaA];
+    tareaPirata.tipo = tipo;
+    if (tipo == minero) {
+      tareaPirata.posicionXObjetivo = x;
+      tareaPirata.posicionYObjetivo = y;
+    }
+    tss_agregar_piratas_a_gdt(j);
+    screen_pintar_pirata(j, &tareaPirata);
+  } else {
+    //turno proximo de jugador B. Tengo que explorar las paginas de alrededor
+    if (tipo != minero) {
+        game_explorar_posicion(j, 78, 43);
+    }
+    pirata_t tareaPirata = jugadorB.piratas[proximaTareaB];
+    tareaPirata.tipo = tipo;
+    if (tipo == minero) {
+      tareaPirata.posicionXObjetivo = x;
+      tareaPirata.posicionYObjetivo = y;
+    }
+    tss_agregar_piratas_a_gdt(j);
+    screen_pintar_pirata(j, &tareaPirata);
+  }
+>>>>>>> bb19678... compila y corre, falta testear
 }
 
 void game_pirata_habilitar_posicion(jugador_t *j, pirata_t *pirata, int x, int y)
