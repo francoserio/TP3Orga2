@@ -270,6 +270,7 @@ pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo)
 
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
 {
+  j->piratasRestantes--;
   if (j->index == 0) {
     //turno proximo de jugador A. Tengo que explorar las paginas de alrededor
     if (tipo != minero) {
@@ -281,6 +282,7 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
       tareaPirata.posicionXObjetivo = x;
       tareaPirata.posicionYObjetivo = y;
     }
+    tss_agregar_piratas_a_gdt(j);
     screen_pintar_pirata(j, &tareaPirata);
   } else {
     //turno proximo de jugador B. Tengo que explorar las paginas de alrededor
@@ -293,6 +295,7 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
       tareaPirata.posicionXObjetivo = x;
       tareaPirata.posicionYObjetivo = y;
     }
+    tss_agregar_piratas_a_gdt(j);
     screen_pintar_pirata(j, &tareaPirata);
   }
 }

@@ -119,8 +119,8 @@ mp:
     xchg bx, bx
     call tss_agregar_a_gdt
     xchg bx, bx
-    call tss_agregar_piratas_a_gdt
-    xchg bx, bx
+    ; call tss_agregar_piratas_a_gdt
+    ; xchg bx, bx
     ; Inicializar el scheduler
     call sched_inicializar
     ; Inicializar la IDT
