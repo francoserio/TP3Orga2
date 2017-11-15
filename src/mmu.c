@@ -122,7 +122,6 @@ unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
     mmu_mapear_pagina(pos2mapVir(1,1), page_directory_address, pos2mapFis(1,1), 0, 1);//arriba
     mmu_mapear_pagina(pos2mapVir(0,3), page_directory_address, pos2mapFis(0,3), 0, 1);//arriba-izquierda
     mmu_mapear_pagina(pos2mapVir(2,3), page_directory_address, pos2mapFis(2,3), 0, 1);//arriba-derecha
-
   } else {
     //empiezo en la ultima posicion
     //mapeo donde estamos parados
@@ -146,9 +145,8 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
   page_directory_entry* pd = (page_directory_entry*)(cr3);
   unsigned int indiceDirectory = virtual >> 22;
   unsigned int indiceTable = (virtual << 10) >> 22;
-  page_directory_entry pde = pd[indiceDirectory];
-  if (pde.present == 1) {
-    page_table_entry* pt = (page_table_entry*)((pde.base_address << 12));
+  if (pd[indiceDirectory].present == 1) {
+    page_table_entry* pt = (page_table_entry*)((pd[indiceDirectory].base_address << 12));
     page_table_entry pte = pt[indiceTable];
     if (pte.present == 1) {
       pte.user_supervisor = user_supervisor;
@@ -168,18 +166,18 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 			pt[i].present = 0;
 		}
 
-    pde.present = 1;
-    pde.read_write = read_write;
-    pde.user_supervisor = user_supervisor;
-    pde.write_through = 0;
-    pde.cache_disable = 0;
-    pde.accessed = 0;
-    pde.ignored = 0;
-    pde.page_size = 0;
-    pde.global = 0;
-    pde.disponible = 0;
-    pde.base_address = 0;
-    pde.base_address = proxima_pag >> 12;
+    pd[indiceDirectory].present = 1;
+    pd[indiceDirectory].read_write = read_write;
+    pd[indiceDirectory].user_supervisor = user_supervisor;
+    pd[indiceDirectory].write_through = 0;
+    pd[indiceDirectory].cache_disable = 0;
+    pd[indiceDirectory].accessed = 0;
+    pd[indiceDirectory].ignored = 0;
+    pd[indiceDirectory].page_size = 0;
+    pd[indiceDirectory].global = 0;
+    pd[indiceDirectory].disponible = 0;
+    pd[indiceDirectory].base_address = 0;
+    pd[indiceDirectory].base_address = proxima_pag >> 12;
 
     pt[indiceTable].present = 1;
     pt[indiceTable].user_supervisor = user_supervisor;
