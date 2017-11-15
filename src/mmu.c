@@ -147,16 +147,15 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
   unsigned int indiceTable = (virtual << 10) >> 22;
   if (pd[indiceDirectory].present == 1) {
     page_table_entry* pt = (page_table_entry*)((pd[indiceDirectory].base_address << 12));
-    page_table_entry pte = pt[indiceTable];
-    if (pte.present == 1) {
-      pte.user_supervisor = user_supervisor;
-      pte.read_write = read_write;
-      pte.base_address = (fisica >> 12);
+    if (pt[indiceTable].present == 1) {
+      pt[indiceTable].user_supervisor = user_supervisor;
+      pt[indiceTable].read_write = read_write;
+      pt[indiceTable].base_address = (fisica >> 12);
     } else {
-      pte.present = 1;
-      pte.user_supervisor = user_supervisor;
-      pte.read_write = read_write;
-      pte.base_address = (fisica >> 12);
+      pt[indiceTable].present = 1;
+      pt[indiceTable].user_supervisor = user_supervisor;
+      pt[indiceTable].read_write = read_write;
+      pt[indiceTable].base_address = (fisica >> 12);
     }
   } else {
     unsigned int proxima_pag = mmu_proxima_pagina_fisica_libre();
