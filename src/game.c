@@ -181,6 +181,10 @@ void game_inicializar()
   game_jugador_inicializar(&jugadorA);
   game_jugador_inicializar(&jugadorB);
 
+  for (int i = 0; i < 16; i++) {
+    reloj_pirata[i] = 0;
+  }
+
   siempreIgual = 1;
   contador_de_tiempo = 0;
 }
@@ -273,7 +277,6 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
   j->piratasRestantes--;
   if (j->index == 0) {
     //turno proximo de jugador A. Tengo que explorar las paginas de alrededor
-    breakpoint();
     if (tipo != minero) {
         game_explorar_posicion(j, 1, 2);
     }
@@ -284,8 +287,13 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
       tareaPirata.posicionYObjetivo = y;
     }
     tss_agregar_piratas_a_gdt(j);
-    breakpoint();
-    mmu_moverCodigo(&tareaPirata, x, y, j->index);
+    if (tareaPirata.tipo == explorador) {
+      //explorador
+      memcpy((unsigned int)0x10000, pos2mapFis(1, 2), PAGE_SIZE, 1, 1);
+    } else {
+      //minero
+      memcpy((unsigned int)0x11000, pos2mapFis(1, 2), PAGE_SIZE, 1, 1);
+    }
     screen_pintar_pirata(j, &tareaPirata);
   } else {
     //turno proximo de jugador B. Tengo que explorar las paginas de alrededor
@@ -299,7 +307,13 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
       tareaPirata.posicionYObjetivo = y;
     }
     tss_agregar_piratas_a_gdt(j);
-    mmu_moverCodigo(&tareaPirata, x, y, j->index);
+    if (tareaPirata.tipo == explorador) {
+      //explorador
+      memcpy(0x12000, pos2mapVir(78,43), PAGE_SIZE, 1, 1);
+    } else {
+      //minero
+      memcpy(0x13000, pos2mapVir(78,43), PAGE_SIZE, 1, 1);
+    }
     screen_pintar_pirata(j, &tareaPirata);
   }
 }
@@ -328,6 +342,7 @@ uint game_posicion_ya_vista(pirata_t* tareaPir, direccion dir) {
 
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
+  breakpoint();
   pirata_t* tareaPirata = id_pirata2pirata(id);
   if (tareaPirata->tipo == minero) {
     //tengo que checkear que sea valida
@@ -342,9 +357,11 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
         screen_borrar_pirata(tareaPirata->jugador, tareaPirata);
       } else {
         //puedo seguir
-        tareaPirata->posicionX = *x;
-        tareaPirata->posicionY = *y;
-        mmu_moverCodigo(tareaPirata, *x, *y, (tareaPirata->jugador)->index);
+        if ((tareaPirata->jugador)->index == 0) {
+          memcpy((unsigned int)0x11000, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
+        } else {
+          memcpy((unsigned int)0x13000, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
+        }
         screen_pintar_pirata(tareaPirata->jugador, tareaPirata);
       }
     }
@@ -355,9 +372,11 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
     game_dir2xy(dir, x, y);
     if (game_posicion_valida(tareaPirata->posicionX + *x, tareaPirata->posicionY + *y)) {
       //va a pasar a una posicion valida en el juego
-      tareaPirata->posicionX = *x;
-      tareaPirata->posicionY = *y;
-      mmu_moverCodigo(tareaPirata, *x, *y, (tareaPirata->jugador)->index);
+      if ((tareaPirata->jugador)->index == 0) {
+        memcpy((unsigned int)0x10000, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
+      } else {
+        memcpy((unsigned int)0x12000, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
+      }
       game_explorar_posicion(tareaPirata->jugador, *x, *y);
       screen_pintar_pirata(tareaPirata->jugador, tareaPirata);
       mmu_inicializar_dir_pirataConocidas(tareaPirata->jugador);

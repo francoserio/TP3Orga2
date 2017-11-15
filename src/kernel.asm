@@ -99,15 +99,15 @@ mp:
     call screen_pintar_puntajes
     xchg bx, bx
     ; Inicializar el manejador de memoria
-    xor eax, eax
-    mov eax, 0x27000
-    mov cr3, eax
     call mmu_inicializar
     xchg bx, bx
-    ; Cargar directorio de paginas
     ; Inicializar el directorio de paginas
     call mmu_inicializar_dir_kernel
     xchg bx, bx
+    ; Cargar directorio de paginas
+    xor eax, eax
+    mov eax, 0x27000
+    mov cr3, eax
     ; Habilitar paginacion
     xor eax, eax
     mov eax, cr0
@@ -119,8 +119,6 @@ mp:
     xchg bx, bx
     call tss_agregar_a_gdt
     xchg bx, bx
-    ; call tss_agregar_piratas_a_gdt
-    ; xchg bx, bx
     ; Inicializar el scheduler
     call sched_inicializar
     ; Inicializar la IDT

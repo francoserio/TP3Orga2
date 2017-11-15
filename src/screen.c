@@ -26,11 +26,26 @@ void screen_actualizar_reloj_global()
 
     screen_pintar(reloj[reloj_global], C_BW, 49, 79);
 
+    for (int i = 0; i < 8; i++) {
+      screen_actualizar_reloj_pirata(&jugadorA, &(jugadorA.piratas[i]));
+
+      screen_actualizar_reloj_pirata(&jugadorB, &(jugadorB.piratas[i]));
+    }
+
+    screen_pintar_reloj_piratas(&jugadorA);
+
+    screen_pintar_reloj_piratas(&jugadorB);
+
     contador_de_tiempo++;
 }
 
 void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata) {
-
+  if (pirata->vivoMuerto == 0) {
+    //si se murio
+    pirata->reloj = 0;
+  } else {
+    pirata->reloj = (pirata->reloj + 1) % reloj_size;
+  }
 }
 
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
@@ -101,6 +116,34 @@ void screen_pintar_puntajes() {
   print("000", j, i, 0xF);
 }
 
+void screen_pintar_reloj_pirata(jugador_t* j, pirata_t* pirata) {
+  if (pirata->vivoMuerto == 0) {
+    //si es 0 esta muerto
+    if (j->index == 0) {
+      //jugadorA
+      screen_pintar('x', C_FG_RED, 48, pirata->index*2 + 4);
+    } else {
+      //jugadorB
+      screen_pintar('x', C_FG_BLUE, 48, pirata->index*2 + 60);
+    }
+  } else {
+    //esta vivo
+    if (j->index == 0) {
+      //jugadorA
+      screen_pintar(reloj[reloj_pirata[pirata->id]], C_BW, 48, pirata->index*2 + 4);
+    } else {
+      //jugadorB
+      screen_pintar(reloj[reloj_pirata[pirata->id]], C_BW, 48, pirata->index*2 + 60);
+    }
+  }
+}
+
+void screen_pintar_reloj_piratas(jugador_t* j) {
+  for (int i = 0; i < 8; i++) {
+    screen_pintar_reloj_pirata(j, &(j->piratas[i]));
+  }
+}
+
 void screen_inicializar() {
   int i = 0;
   int j;
@@ -149,6 +192,8 @@ void screen_inicializar() {
   print("1 2 3 4 5 6 7 8", j, i, 0xF);
   j = j + 56;
   print("1 2 3 4 5 6 7 8", j, i, 0xF);
+  screen_pintar_reloj_piratas(&jugadorA);
+  screen_pintar_reloj_piratas(&jugadorB);
 }
 
 void screen_pintar_pirata(jugador_t *j, pirata_t *pirata) {
