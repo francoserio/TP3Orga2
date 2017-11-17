@@ -13,6 +13,7 @@ void task(int x, int y) {
     /* Tarea */
     int restantex = MAPA_ANCHO-3;
     int restantey = MAPA_ALTO-3;
+    breakpoint();
 
     while(1)
     {

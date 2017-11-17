@@ -177,10 +177,10 @@ void completarTssPirata(pirata_t tarea) {
 
 void tss_agregar_piratas_a_gdt(jugador_t* j) {
   if (j->index == 0)  {
-    gdt[EMPIEZAN_TSS + proximaTareaA] = (gdt_entry) {
+    gdt[EMPIEZAN_TSS + tareaActualA] = (gdt_entry) {
       (unsigned short)    0x0067,         /* limit[0:15]  */
-      (unsigned short)    (int)(&tss_jugadorA[proximaTareaA]) & 0xFFFF, /* base[0:15]   */
-      (unsigned char)     (int)((int)(&tss_jugadorA[proximaTareaA]) >> 16) & 0x00FF,           /* base[23:16]  */
+      (unsigned short)    (int)(&tss_jugadorA[tareaActualA]) & 0xFFFF, /* base[0:15]   */
+      (unsigned char)     (int)((int)(&tss_jugadorA[tareaActualA]) >> 16) & 0x00FF,           /* base[23:16]  */
       (unsigned char)     0x09,           /* type         */
       (unsigned char)     0x00,           /* s            */
       (unsigned char)     0x00,           /* dpl          */
@@ -190,14 +190,14 @@ void tss_agregar_piratas_a_gdt(jugador_t* j) {
       (unsigned char)     0x00,           /* l            */
       (unsigned char)     0x00,           /* db           */
       (unsigned char)     0x00,           /* g            */
-      (unsigned char)     (int)(&tss_jugadorA[proximaTareaA]) >> 24,           /* base[31:24]  */
+      (unsigned char)     (int)(&tss_jugadorA[tareaActualA]) >> 24,           /* base[31:24]  */
     };
-    completarTssPirata(jugadorA.piratas[proximaTareaA]);
+    completarTssPirata(jugadorA.piratas[tareaActualA]);
   } else {
-    gdt[EMPIEZAN_TSS + 8 + proximaTareaB] = (gdt_entry) {
+    gdt[EMPIEZAN_TSS + 8 + tareaActualB] = (gdt_entry) {
       (unsigned short)    0x0067,         /* limit[0:15]  */
-      (unsigned short)    (int)(&(tss_jugadorB[proximaTareaB])) & 0xFFFF, /* base[0:15]   */
-      (unsigned char)     (int)((int)(&(tss_jugadorB[proximaTareaB])) >> 16) & 0x00FF,           /* base[23:16]  */
+      (unsigned short)    (int)(&(tss_jugadorB[tareaActualB])) & 0xFFFF, /* base[0:15]   */
+      (unsigned char)     (int)((int)(&(tss_jugadorB[tareaActualB])) >> 16) & 0x00FF,           /* base[23:16]  */
       (unsigned char)     0x09,           /* type         */
       (unsigned char)     0x00,           /* s            */
       (unsigned char)     0x00,           /* dpl          */
@@ -207,8 +207,8 @@ void tss_agregar_piratas_a_gdt(jugador_t* j) {
       (unsigned char)     0x00,           /* l            */
       (unsigned char)     0x00,           /* db           */
       (unsigned char)     0x00,           /* g            */
-      (unsigned char)     (int)(&(tss_jugadorB[proximaTareaB])) >> 24,           /* base[31:24]  */
+      (unsigned char)     (int)(&(tss_jugadorB[tareaActualB])) >> 24,           /* base[31:24]  */
     };
-    completarTssPirata(jugadorB.piratas[proximaTareaB]);
+    completarTssPirata(jugadorB.piratas[tareaActualB]);
   }
 }

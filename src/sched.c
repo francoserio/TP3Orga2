@@ -14,6 +14,8 @@ void sched_inicializar() {
     estaEnIdle = 1;
     proximaTareaB = 0;
     modoDebug = 0;
+    tareaActualA = 0;
+    tareaActualB = 0;
 }
 
 unsigned int sched_tick() {
@@ -30,6 +32,7 @@ unsigned int sched_tick() {
       while (noEncontreNinguna == 1 && todosMuertos == 0) {
         if (jugadorA.piratas[i].vivoMuerto == 1) {
           //si esta vivo la pongo como la proxima tarea de A
+          tareaActualA = proximaTareaA;
           proximaTareaA = jugadorA.piratas[i].index;
           noEncontreNinguna = 0;
         }
@@ -62,6 +65,7 @@ unsigned int sched_tick() {
       while (noEncontreNinguna == 1 && todosMuertos == 0) {
         if (jugadorB.piratas[i].vivoMuerto == 1) {
           //si esta vivo la pongo como la proxima tarea de B
+          tareaActualB = proximaTareaB;
           proximaTareaB = jugadorB.piratas[i].index;
           noEncontreNinguna = 0;
         }
@@ -96,6 +100,7 @@ unsigned int sched_tick() {
       while (noEncontreNinguna == 1 && todosMuertos == 0) {
         if (jugadorA.piratas[i].vivoMuerto == 1) {
           //si esta vivo la pongo como la proxima tarea de A
+          tareaActualA = proximaTareaA;
           proximaTareaA = jugadorA.piratas[i].index;
           noEncontreNinguna = 0;
         }
@@ -128,6 +133,7 @@ unsigned int sched_tick() {
       while (noEncontreNinguna == 1 && todosMuertos == 0) {
         if (jugadorB.piratas[i].vivoMuerto == 1) {
           //si esta vivo la pongo como la proxima tarea de B
+          tareaActualB = proximaTareaB;
           proximaTareaB = jugadorB.piratas[i].index;
           noEncontreNinguna = 0;
         }

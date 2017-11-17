@@ -11,6 +11,8 @@
 #include "game.h"
 #include "tss.h"
 
+uint tareaActualA;  //indice 0-7
+uint tareaActualB;  //indice 0-7
 uint proximaTareaA; //indice 0-7
 uint proximaTareaB; //indice 0-7
 uchar turnoPirata; //0 A, 1 B
