@@ -6,6 +6,7 @@
 */
 
 #include "game.h"
+#include "i386.h"
 
 #ifndef __SYSCALL_H__
 #define __SYSCALL_H__
@@ -18,6 +19,7 @@
 
 LS_INLINE unsigned int syscall_mover(direccion d) {
     int ret;
+    breakpoint();
 
     __asm __volatile(
         "mov $1, %%eax \n"

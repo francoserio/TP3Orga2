@@ -209,18 +209,13 @@ void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 
 void memcpy(unsigned int src, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us) {
   unsigned int cr3 = rcr3();
-  breakpoint();
 	mmu_mapear_pagina(dest, cr3, dest, rd, us);
-  breakpoint();
 	char* srcp = (char*)src;
 	char* destp = (char*)dest;
-  breakpoint();
 	for (int i = 0; i < len; ++i) {
 		destp[i] = srcp[i];
 	}
-  breakpoint();
 	mmu_unmapear_pagina(dest, cr3);
-  breakpoint();
   tlbflush();
 }
 

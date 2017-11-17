@@ -197,17 +197,22 @@ void screen_inicializar() {
 }
 
 void screen_pintar_pirata(jugador_t *j, pirata_t *pirata) {
+  for (int i = 0; i < 45; i++) {
+    for (int p = 0; p < 80; p++) {
+      if (j->posicionesXVistas[p] == 1 && j->posicionesYVistas[i] == 1) {
+        screen_pintar(' ', j->colorJug, i, p);
+      }
+    }
+  }
   if (pirata->tipo == minero) {
-    screen_pintar(' ', j->colorJug, pirata->posicionX, pirata->posicionY);
-    screen_pintar('M', C_FG_BLACK,  pirata->posicionX, pirata->posicionY);
+    screen_pintar('M', j->colorJug, pirata->posicionY, pirata->posicionX);
   } else {
-    screen_pintar(' ', j->colorJug, pirata->posicionX, pirata->posicionY);
-    screen_pintar('E', C_FG_BLACK, pirata->posicionX, pirata->posicionY);
+    screen_pintar('E', j->colorJug, pirata->posicionY, pirata->posicionX);
   }
 }
 
 void screen_borrar_pirata(jugador_t *j, pirata_t *pirata) {
-  screen_pintar(' ', j->colorJug, pirata->posicionX, pirata->posicionY);
+  screen_pintar(' ', j->colorJug, pirata->posicionY, pirata->posicionX);
 }
 
 void screen_stop_game_show_winner(jugador_t *j) {

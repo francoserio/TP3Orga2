@@ -233,7 +233,7 @@ void game_pirata_inicializar(pirata_t *pirata, jugador_t *j, uint index, uint id
   pirata->tipo = explorador;
   if (j->index == JUGADOR_A) {
     pirata->posicionX = 1;
-    pirata->posicionY = 1;
+    pirata->posicionY = 2;
   } else {
     pirata->posicionX = 78;
     pirata->posicionY = 43;
@@ -294,6 +294,7 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
       //minero
       memcpy((unsigned int)0x11000, pos2mapFis(1, 2), PAGE_SIZE, 1, 1);
     }
+    mmu_mapear_pagina(0X00400000, tss_jugadorA[proximaTareaA].cr3, pos2mapFis(1, 2), 1, 1);
     screen_pintar_pirata(j, &tareaPirata);
   } else {
     //turno proximo de jugador B. Tengo que explorar las paginas de alrededor
@@ -309,11 +310,12 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
     tss_agregar_piratas_a_gdt(j);
     if (tareaPirata.tipo == explorador) {
       //explorador
-      memcpy(0x12000, pos2mapVir(78,43), PAGE_SIZE, 1, 1);
+      memcpy(0x12000, pos2mapFis(78,43), PAGE_SIZE, 1, 1);
     } else {
       //minero
-      memcpy(0x13000, pos2mapVir(78,43), PAGE_SIZE, 1, 1);
+      memcpy(0x13000, pos2mapFis(78,43), PAGE_SIZE, 1, 1);
     }
+    mmu_mapear_pagina(0X00400000, tss_jugadorB[proximaTareaB].cr3, pos2mapFis(78,43), 1, 1);
     screen_pintar_pirata(j, &tareaPirata);
   }
 }
@@ -374,8 +376,10 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
       //va a pasar a una posicion valida en el juego
       if ((tareaPirata->jugador)->index == 0) {
         memcpy((unsigned int)0x10000, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
+        mmu_mapear_pagina(0X00400000, tss_jugadorA[proximaTareaA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
       } else {
         memcpy((unsigned int)0x12000, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
+        mmu_mapear_pagina(0X00400000, tss_jugadorB[proximaTareaB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
       }
       game_explorar_posicion(tareaPirata->jugador, *x, *y);
       screen_pintar_pirata(tareaPirata->jugador, tareaPirata);
@@ -431,6 +435,7 @@ uint game_syscall_pirata_posicion(uint id, int idx)
 
 uint game_syscall_manejar(uint syscall, uint param1)
 {
+  breakpoint();
   if (turnoPirata == 0) {
     //turno pirata A
     pirata_t pirataA = jugadorA.piratas[proximaTareaA];
@@ -571,11 +576,11 @@ void game_atender_teclado(unsigned char tecla)
       break;
     case KB_shiftR:
       print("shiftR", 65, 0, 0xF);
-      // game_jugador_lanzar_pirata(jugadorB);
+      game_jugador_lanzar_pirata(&jugadorB, explorador, 78, 43);
       break;
     case KB_y:
       print("      ", 65, 0, 0x0);
-      screen_pintar('y', 0xF, 0, 65);
+      screen_pintar('Y', 0xF, 0, 65);
       sched_toggle_debug();
       break;
   }
