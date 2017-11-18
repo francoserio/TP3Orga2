@@ -358,8 +358,8 @@ uint game_posicion_ya_vista(pirata_t* tareaPir, direccion dir) {
 
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
-  breakpoint();
   pirata_t* tareaPirata = id_pirata2pirata(id);
+  breakpoint();
   if (tareaPirata->tipo == minero) {
     //MINERO. tengo que checkear que sea valida
     int* x = 0;
@@ -455,6 +455,8 @@ uint game_syscall_pirata_posicion(uint id, int idx)
 
 uint game_syscall_manejar(uint syscall, uint param1)
 {
+  print_dec(syscall, 5, 35, 20, C_FG_WHITE);
+  breakpoint();
   if (turnoPirataActual == 0) {
     //turno pirata A
     pirata_t pirataA = jugadorA.piratas[tareaActualA];

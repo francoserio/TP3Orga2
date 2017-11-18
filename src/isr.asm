@@ -172,15 +172,13 @@ _isr33:
 
 global _isr70
 _isr70:
-  ;en eax tengo el primer parámetro
   xchg bx, bx
   pushad
-  call fin_intr_pic1
-  push eax
   push ecx
+  push eax
   call game_syscall_manejar
-  pop ecx
   pop eax
+  pop ecx
 fin:
   popad
   iret
