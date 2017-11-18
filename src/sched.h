@@ -16,6 +16,7 @@ uint tareaActualB;  //indice 0-7
 uint proximaTareaA; //indice 0-7
 uint proximaTareaB; //indice 0-7
 uchar turnoPirata; //0 A, 1 B
+uchar turnoPirataActual; //0 A, 1 B
 uchar estaEnIdle; // 0 NO, 1 SI
 uint modoDebug;
 

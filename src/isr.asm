@@ -82,6 +82,7 @@ extern game_atender_teclado
 extern sched_tick
 extern sched_tarea_actual
 
+extern game_syscall_manejar
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -143,6 +144,7 @@ _isr32:
   str cx
   cmp ax, cx
   je .fin
+  ; xchg bx, bx
   mov [sched_tarea_selector], ax
   jmp far [sched_tarea_offset]
 .fin:
@@ -167,11 +169,11 @@ _isr33:
 
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
-extern game_syscall_manejar
 
-global _isr46
-_isr46:
+global _isr70
+_isr70:
   ;en eax tengo el primer parámetro
+  xchg bx, bx
   pushad
   call fin_intr_pic1
   push eax

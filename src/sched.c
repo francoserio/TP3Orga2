@@ -7,6 +7,7 @@ definicion de funciones del scheduler
 
 #include "sched.h"
 #include "i386.h"
+#include "screen.h"
 
 void sched_inicializar() {
     turnoPirata = 0;
@@ -16,9 +17,11 @@ void sched_inicializar() {
     modoDebug = 0;
     tareaActualA = 0;
     tareaActualB = 0;
+    turnoPirataActual = 0;
 }
 
 unsigned int sched_tick() {
+  turnoPirataActual = turnoPirata;
   if (estaEnIdle == 1) {
     estaEnIdle = 0;
     if (turnoPirata == 0) {
@@ -37,7 +40,7 @@ unsigned int sched_tick() {
           noEncontreNinguna = 0;
         }
 
-        if (i == proximaTareaA) {
+        if (i == proximaTareaA && jugadorA.piratas[i].vivoMuerto == 0) {
           todosMuertos = 1;
         }
 
@@ -52,6 +55,9 @@ unsigned int sched_tick() {
         //salto a la idle
         return (13) << 3;
       }
+
+      print_dec(proxTarea, 3, 35, 20, C_FG_WHITE);
+      breakpoint();
 
       return (proxTarea << 3);
     } else {
@@ -70,7 +76,7 @@ unsigned int sched_tick() {
           noEncontreNinguna = 0;
         }
 
-        if (i == proximaTareaA) {
+        if (i == proximaTareaA && jugadorB.piratas[i].vivoMuerto == 0) {
           todosMuertos = 1;
         }
 
@@ -105,7 +111,7 @@ unsigned int sched_tick() {
           noEncontreNinguna = 0;
         }
 
-        if (i == proximaTareaA) {
+        if (i == proximaTareaA && jugadorA.piratas[i].vivoMuerto == 0) {
           todosMuertos = 1;
         }
 
@@ -120,6 +126,9 @@ unsigned int sched_tick() {
         //salto a la idle
         return (13) << 3;
       }
+
+      // print_dec(proxTarea, 1, 35, 20, C_FG_WHITE);
+      // breakpoint();
 
       return (proxTarea) << 3;
     } else {
@@ -138,7 +147,7 @@ unsigned int sched_tick() {
           noEncontreNinguna = 0;
         }
 
-        if (i == proximaTareaA) {
+        if (i == proximaTareaA && jugadorB.piratas[i].vivoMuerto == 0) {
           todosMuertos = 1;
         }
 
@@ -152,6 +161,7 @@ unsigned int sched_tick() {
         //salto a la idle
         return (13) << 3;
       }
+
       return (proxTarea) << 3;
     }
   }

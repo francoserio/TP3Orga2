@@ -16,7 +16,7 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD } direccio
 #define JUGADOR_A                         0
 #define JUGADOR_B                         1
 
-#define MAPA_ANCHO                       78
+#define MAPA_ANCHO                       80
 #define MAPA_ALTO                        44
 #define MAPA_MEM_ANCHO                   (MAPA_ANCHO * PAGE_SIZE)
 #define MAPA_START                       0x500000

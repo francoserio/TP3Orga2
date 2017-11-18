@@ -72,7 +72,13 @@ void mmu_inicializar_dir_pirataConocidas(jugador_t* jugador) {
     for (int j = 0; j < 80; j++) {
       for (int k = 0; k < 45; k++) {
         if (jugador->posicionesXVistas[j] == 1 && jugador->posicionesYVistas[k] == 1) {
-          mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorA[i].cr3, pos2mapFis(j, k), 0, 1);
+          if (jugador->index == 0) {
+            //jugadorA
+            mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorA[i].cr3, pos2mapFis(j, k), 0, 1);
+          } else {
+            //jugadorB
+            mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorB[i].cr3, pos2mapFis(j, k), 0, 1);
+          }
         }
       }
     }
@@ -137,7 +143,6 @@ unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
     mmu_mapear_pagina(pos2mapVir(77,44), page_directory_address, pos2mapFis(77,44), 0, 1);//abajo-izquierda
   }
 
-  tlbflush();
   return page_directory_address;
 }
 
@@ -198,9 +203,8 @@ void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
   page_directory_entry* pd = (page_directory_entry*)(cr3);
   unsigned int indiceDirectory = virtual >> 22;
   unsigned int indiceTable = (virtual << 10) >> 22;
-  page_directory_entry pde = pd[indiceDirectory];
-  if (pde.present != 1) {
-    page_table_entry* pt = (page_table_entry*)(pde.base_address << 12);
+  if (pd[indiceDirectory].present != 1) {
+    page_table_entry* pt = (page_table_entry*)(pd[indiceDirectory].base_address << 12);
     pt[indiceTable].present = 0;
   }
 
