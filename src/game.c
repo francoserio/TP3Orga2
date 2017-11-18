@@ -346,10 +346,10 @@ void game_explorar_posicion(jugador_t *jugador, int c, int f)
 }
 
 uint game_posicion_ya_vista(pirata_t* tareaPir, direccion dir) {
-  int* x = 0;
-  int* y = 0;
-  game_dir2xy(dir, x, y);
-  if ((tareaPir->jugador)->posicionesYVistas[*y] == 1 && (tareaPir->jugador)->posicionesXVistas[*x] == 1) {
+  int x = 0;
+  int y = 0;
+  game_dir2xy(dir, &x, &y);
+  if ((tareaPir->jugador)->posicionesYVistas[y] == 1 && (tareaPir->jugador)->posicionesXVistas[x] == 1) {
     return 1;
   } else {
     return 0;
@@ -362,10 +362,10 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
   breakpoint();
   if (tareaPirata->tipo == minero) {
     //MINERO. tengo que checkear que sea valida
-    int* x = 0;
-    int* y = 0;
-    game_dir2xy(dir, x, y);
-    if (game_posicion_valida(tareaPirata->posicionX + *x, tareaPirata->posicionY + *y) == 1) {
+    int x = 0;
+    int y = 0;
+    game_dir2xy(dir, &x, &y);
+    if (game_posicion_valida(tareaPirata->posicionX + x, tareaPirata->posicionY + y) == 1) {
       //tengo que checkear que la posicion ya esté mapeada
       if (game_posicion_ya_vista(tareaPirata, dir) == 0) {
         //si no está mapeada, lo mato
@@ -373,8 +373,8 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
         screen_borrar_pirata(tareaPirata->jugador, tareaPirata);
       } else {
         //puedo seguir
-        tareaPirata->posicionX = tareaPirata->posicionX + *x;
-        tareaPirata->posicionY = tareaPirata->posicionY + *y;
+        tareaPirata->posicionX = tareaPirata->posicionX + x;
+        tareaPirata->posicionY = tareaPirata->posicionY + y;
         if ((tareaPirata->jugador)->index == 0) {
           memcpy((unsigned int)0x11000, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
           mmu_mapear_pagina(0x00400000, tss_jugadorA[tareaActualA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
@@ -387,24 +387,33 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
     }
   } else {
     //EXPLORADOR. tengo que checkear que sea valida
-    int* x = 0;
-    int* y = 0;
-    game_dir2xy(dir, x, y);
-    if (game_posicion_valida(tareaPirata->posicionX + *x, tareaPirata->posicionY + *y)) {
+    breakpoint();
+    int x = 0;
+    int y = 0;
+    game_dir2xy(dir, &x, &y);
+    if (game_posicion_valida(tareaPirata->posicionX + x, tareaPirata->posicionY + y)) {
       //va a pasar a una posicion valida en el juego
-      tareaPirata->posicionX = tareaPirata->posicionX + *x;
-      tareaPirata->posicionY = tareaPirata->posicionY + *y;
-      game_explorar_posicion(tareaPirata->jugador, *x, *y);
+      breakpoint();
+      tareaPirata->posicionX = tareaPirata->posicionX + x;
+      tareaPirata->posicionY = tareaPirata->posicionY + y;
+      game_explorar_posicion(tareaPirata->jugador, tareaPirata->posicionY, tareaPirata->posicionX);
       if ((tareaPirata->jugador)->index == 0) {
+        breakpoint();
         memcpy((unsigned int)0x10000, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
+        breakpoint();
         mmu_mapear_pagina(0X00400000, tss_jugadorA[tareaActualA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
+        breakpoint();
       } else {
         memcpy((unsigned int)0x12000, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
         mmu_mapear_pagina(0X00400000, tss_jugadorB[tareaActualB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
       }
-      screen_pintar_pirata(tareaPirata->jugador, tareaPirata);
+      breakpoint();
       mmu_inicializar_dir_pirataConocidas(tareaPirata->jugador);
+      breakpoint();
+      screen_pintar_pirata(tareaPirata->jugador, tareaPirata);
+      breakpoint();
     } else {
+      breakpoint();
       //si no va a ir a una posicion valida lo mato
       game_pirata_exploto(id);
       screen_borrar_pirata(tareaPirata->jugador, tareaPirata);
@@ -455,7 +464,7 @@ uint game_syscall_pirata_posicion(uint id, int idx)
 
 uint game_syscall_manejar(uint syscall, uint param1)
 {
-  print_dec(syscall, 5, 35, 20, C_FG_WHITE);
+  // print_dec(syscall, 5, 35, 20, C_FG_WHITE);
   breakpoint();
   if (turnoPirataActual == 0) {
     //turno pirata A

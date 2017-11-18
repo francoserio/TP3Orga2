@@ -69,15 +69,17 @@ unsigned int pos2mapVir(unsigned int x, unsigned int y) {
 void mmu_inicializar_dir_pirataConocidas(jugador_t* jugador) {
   for (int i = 0; i < 8; i++) {
     //cada pirata del jugador.
-    for (int j = 0; j < 80; j++) {
-      for (int k = 0; k < 45; k++) {
-        if (jugador->posicionesXVistas[j] == 1 && jugador->posicionesYVistas[k] == 1) {
-          if (jugador->index == 0) {
-            //jugadorA
-            mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorA[i].cr3, pos2mapFis(j, k), 0, 1);
-          } else {
-            //jugadorB
-            mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorB[i].cr3, pos2mapFis(j, k), 0, 1);
+    if (jugador->piratas[i].vivoMuerto == 1) {
+      for (int j = 0; j < 80; j++) {
+        for (int k = 0; k < 45; k++) {
+          if (jugador->posicionesXVistas[j] == 1 && jugador->posicionesYVistas[k] == 1) {
+            if (jugador->index == 0) {
+              //jugadorA
+              mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorA[i].cr3, pos2mapFis(j, k), 0, 1);
+            } else {
+              //jugadorB
+              mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorB[i].cr3, pos2mapFis(j, k), 0, 1);
+            }
           }
         }
       }
@@ -212,13 +214,17 @@ void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 }
 
 void memcpy(unsigned int src, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us) {
+  breakpoint();
   unsigned int cr3 = rcr3();
 	mmu_mapear_pagina(dest, cr3, dest, rd, us);
-	char* srcp = (char*)src;
+  breakpoint();
+  char* srcp = (char*)src;
 	char* destp = (char*)dest;
+  breakpoint();
 	for (int i = 0; i < len; ++i) {
 		destp[i] = srcp[i];
 	}
+  breakpoint();
 	mmu_unmapear_pagina(dest, cr3);
   tlbflush();
 }

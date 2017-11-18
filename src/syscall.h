@@ -22,7 +22,7 @@ LS_INLINE unsigned int syscall_mover(direccion d) {
     breakpoint();
 
     __asm __volatile(
-        "mov $0x1, %%eax \n"
+        "mov $1, %%eax \n"
         "mov %0, %%ecx \n"
         "int $0x46     \n"
         : /* no output*/
