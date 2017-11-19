@@ -1,0 +1,185 @@
+El \textit{Modo Protegido}, es un poco mas completo que el \textit{Modo Real}, tenemos 4GB de memoria disponible, 4 niveles de protecci\'on de memoria y rutinas de atencii\'on con privilegios.
+
+\subsection{Segmentacion}
+Nos encargamos de setear los offset de los descriptores de los selectores de segmentos. Luego seteamos la pila del kernel en la direcci\'on 0x27000
+
+\begin{algorithmic}
+\State \tab BITS 32
+\State \tab mp:
+
+    \State \tab \tab ; Establecer selectores de segmentos
+    \State \tab \tab xor eax, eax
+    \State \tab \tab  mov ax, 1011000b
+    \State \tab \tab  mov ds, ax
+    \State \tab \tab  mov ss, ax
+    \State \tab \tab  mov es, ax
+    \State \tab \tab  mov gs, ax
+    \State \tab \tab  mov ax, 1100000b
+    \State \tab \tab  mov fs, ax
+    \State \tab \tab  ; Establecer la base de la pila
+    \State \tab \tab  xchg bx, bx
+    \State \tab \tab  mov esp, 0x27000
+    \State \tab \tab  mov ebp, 0x27000    
+\end{algorithmic}
+
+Luego de esto imprimimos en pantalla un mensaje de bienvenida a nuestro sistema e inicializamos la pantalla.
+\begin{algorithmic}
+    \State \tab \tab ; Imprimir mensaje de bienvenida
+    \State \tab \tab $imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len$, 0x07, 2, 0
+    \State \tab \tab call $screen_inicializar$
+    \State \tab \tab call $screen_pintar_nombre$
+    \State \tab \tab call $screen_pintar_puntajes$
+\end{algorithmic}
+
+Las funciones \textit{$screen\_inicializar$}, \textit{$screen\_pintar\_nombre$} estan definidas en \textbf{screen.h} y desarrolladas en \textbf{screen.c}. Estos m\'etodos se encargan de pintar la pantalla, seg\'un lo pedido en el enunciado.
+
+\subsection{Paginado}
+Habilitamos la paginaci\'on en nuestro sistema de la siguiente manera:
+\begin{algorithmic}
+    \State \tab ; Cargar directorio de paginas
+    \State \tab ; Inicializar el directorio de paginas
+    \State \tab call $mmu_inicializar_dir_kernel$
+    \State \tab ; Habilitar paginacion
+    \State \tab xor eax, eax
+    \State \tab mov eax, cr0
+    \State \tab or eax, 0x80000000
+    \State \tab mov cr0, eax
+\end{algorithmic}
+
+Para mappear y unmapear definimos m\'etodos en el archivo \textit{mmu.c}.
+Para mappear:
+\begin{algorithmic}
+    \State \tab void $mmu_mapear_pagina$(unsigned int virtual, unsigned int cr3, \State \tab unsigned int fisica, unsigned char $read_write$, unsigned char $user_supervisor$) {
+
+  \State \tab \tab $page_directory_entry$* pd = ($page_directory_entry$*)(cr3);
+  \State \tab \tab unsigned int indiceDirectory = virtual $>>$ 22;
+  \State \tab \tab unsigned int indiceTable = (virtual $>>$ 12) $<<$ 10;
+  \State \tab \tab $page_directory_entry$ pde = pd[indiceDirectory];
+  \State \tab \tab if (pde.present == 1) {
+    \State \tab \tab \tab $page_table_entry$* pt = ($page_table_entry$*)((pde.$base_address$ << 12) >> 12);
+    \State \tab \tab \tab $page_table_entry$ pte = pt[indiceTable];
+    \State \tab \tab \tab if (pte.present == 1) {
+      \State \tab \tab \tab \tab $pte.user_supervisor$ = $user_supervisor$;
+      \State \tab \tab \tab \tab $pte.read_write$ = $read_write$;
+      \State \tab \tab \tab \tab $pte.base_address$ = (fisica $>>$ 12);
+    \State \tab \tab \tab } else {
+      \State \tab \tab \tab \tab pte.present = 1;
+      \State \tab \tab \tab \tab $pte.user_supervisor$ = $user_supervisor$;
+      \State \tab \tab \tab \tab $pte.read_write$ = $read_write$;
+      \State \tab \tab \tab \tab $pte.base_address$ = (fisica $>>$ 12);
+    \State \tab \tab \tab }
+  \State \tab \tab } else {
+    \State \tab \tab \tab unsigned int $proxima_pag$ = $mmu_proxima_pagina_fisica_libre$();
+    \State \tab \tab \tab pde.present = 1;
+    \State \tab \tab \tab $pde.read_write$ = $read_write$;
+    \State \tab \tab \tab $pde.user_supervisor$ = $user_supervisor$;
+    \State \tab \tab \tab $pde.base_address$ = $proxima_pag >>$ 12;
+    \State \tab \tab \tab $page_table_entry$* pt = ($page_table_entry$*)($proxima_pag$);
+    \State \tab \tab \tab pt[indiceTable].present = 1;
+    \State \tab \tab \tab pt[indiceTable].$user_supervisor$ = $user_supervisor$;
+    \State \tab \tab \tab pt[indiceTable].$read_write$ = $read_write$;
+    \State \tab \tab \tab pt[indiceTable].$base_address$ = (fisica $>>$ 12);
+
+\State \tab \tab  }
+
+  \State \tab \tab tlbflush();
+\State \tab }
+
+    
+    
+\end{algorithmic}
+
+Finalmente, mara unmapear una pagina, lo hacemos de la siguiente manera:
+\begin{algorithmic}
+     
+\State \tab void $mmu_unmapear_pagina$(unsigned int virtual, unsigned int cr3) {
+  \State \tab \tab $page_directory_entry$* pd = ($page_directory_entry$*)(cr3);
+  \State \tab \tab unsigned int indiceDirectory = virtual $>>$ 22;
+  \State \tab \tab unsigned int indiceTable = (virtual $>>$ 12) $<<$ 10;
+  \State \tab \tab $page_directory_entry$ pde = pd[indiceDirectory];
+  \State \tab \tab $page_table_entry$* pt = ($page_table_entry$*)(pde.$base_address <<$ 12);
+  \State \tab \tab pt[indiceTable].present = 0;
+  \State \tab \tab int i = 0;
+  \State \tab \tab int estanTodasEnNotPresent = 1;
+  \State \tab \tab while (i $<$ 1024 $\&\&$ estanTodasEnNotPresent == 1) {
+    \State \tab \tab \tab $page_table_entry$* pt = ($page_table_entry$*)(pde.$base_address <<$ 12);
+    \State \tab \tab \tab $page_table_entry$ pte = pt[i];
+    \State \tab \tab \tab if (pte.present == 1) {
+      \State \tab \tab \tab \tab estanTodasEnNotPresent = 0;
+    \State \tab \tab \tab }
+    \State \tab \tab \tab i++;
+  \State \tab \tab }
+  \State \tab \tab if (estanTodasEnNotPresent == 1) {
+    \State \tab \tab \tab pde.present = 0;
+  \State \tab \tab  }
+
+  \State \tab \tab tlbflush();
+\State \tab  }
+\end{algorithmic}
+
+Durante el juego, debemos poder paginar de manera din\'amica las direcciones de los piratas que se agregan, para poder realizarlo utilizamos el siguiente m\'etodo:
+\begin{algorithmic}
+    \State \tab unsigned int $mmu_proxima_pagina_fisica_libre$() {
+  \State \tab \tab unsigned int $pagina_libre$ = $proxima_pagina_libre$;
+  \State \tab \tab $proxima_pagina_libre$ += $PAGE_SIZE$;
+  \State \tab \tab return $pagina_libre$;
+\State \tab }
+\end{algorithmic}
+
+COPIAR METODO $mmu_inicializar_dir_pirata$
+
+
+\subsection{Manejo de Interrupciones}
+Para poder atender los distintos tipos de interrupciones, definimos las tareas de atenci\'on en \textit{isr.asm}
+Definimos una rutina para atender las interrupciones del reloj:
+\begin{algorithmic}
+    \State \tab global $_isr32$
+\State \tab $_isr32$:
+	\State \tab \tab; PRESERVAR REGISTROS
+  \State \tab \tab pushad
+  \State \tab \tab call $fin_intr_pic1$
+  \State \tab \tab cmp byte [modoDebug], 1
+  \State \tab \tab je .fin
+\State \tab \tab 	call $sched_tick$
+  \State \tab \tab str cx
+  \State \tab \tab cmp ax, cx
+  \State \tab \tab je .fin
+  \State \tab \tab mov [$sched_tarea_selector$], ax
+  \State \tab \tab jmp far [$sched_tarea_offset$]
+\State \tab \tab .fin:
+	\State \tab \tab ; RESTAURAR REGISTROS
+  \State \tab popad
+  \State \tab iret
+\end{algorithmic}
+
+Luego, para ateneder las interrupciones correspondientes al teclado lo hacemos de la siguiente manera:
+\begin{algorithmic}
+    \State \tab $global _isr33$
+\State \tab \tab $_isr33$:
+  \State \tab \tab pushad
+  \State \tab \tab call $fin_intr_pic1$
+  \State \tab \tab xor ax, ax
+	\State \tab \tab in al, 0x60
+  \State \tab \tab push eax
+	\State \tab \tab call $game_atender_teclado$
+  \State \tab \tab pop eax
+  \State \tab \tab popad
+	\State \tab iret
+\end{algorithmic}
+
+El m\'etodo \textit{$game_atender_teclado$} esta definido en nuestro archivo \textit{game.c}. Este m\'etodo lo que hace, es imprimir en el rincon derecho superior de la pantalla la tecla que se presion\'o.
+Cuenta con un switch, que evalua el caso de cada tecla posible, y en base a esto imprime lo que corresponde.
+
+
+Para atender las interrupciones por excepciones, definimos una macro:
+COPIAR MACRO
+
+De esta manera, podemos definir el mensaje correspondiente para cada interrupcion, y utilizando la macro, no tenemos que repetir el c\'odigo, ya que para todas las interrupciones va a trabajar de la misma manera. Va a imprimir en pantalla el nombre de la interrupci\'on que acaba de ocurrir.
+
+COPIAR MENSAJES DE INTERRUPCIONES
+
+\subsection{Tareas}
+
+\subsection{Scheduler}
+
+
