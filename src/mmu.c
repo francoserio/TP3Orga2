@@ -75,10 +75,14 @@ void mmu_inicializar_dir_pirataConocidas(jugador_t* jugador) {
           if (jugador->posicionesXVistas[j] == 1 && jugador->posicionesYVistas[k] == 1) {
             if (jugador->index == 0) {
               //jugadorA
-              mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorA[i].cr3, pos2mapFis(j, k), 0, 1);
+              if (jugador->piratas[i].posicionX != j && jugador->piratas[i].posicionY != k) {
+                mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorA[i].cr3, pos2mapFis(j, k), 1, 1);
+              }
             } else {
               //jugadorB
-              mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorB[i].cr3, pos2mapFis(j, k), 0, 1);
+              if (jugador->piratas[i].posicionX != j && jugador->piratas[i].posicionY != k) {
+                mmu_mapear_pagina(pos2mapVir(j, k), tss_jugadorB[i].cr3, pos2mapFis(j, k), 1, 1);
+              }
             }
           }
         }
@@ -122,27 +126,27 @@ unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
     //mapeo donde estamos parados
     mmu_mapear_pagina(pos2mapVir(1,2), page_directory_address, pos2mapFis(1,2), 1, 1);
     //se mapean las de alrededor para jugador 1
-    mmu_mapear_pagina(pos2mapVir(2,1), page_directory_address, pos2mapFis(2,1), 0, 1);//derecha
-    mmu_mapear_pagina(pos2mapVir(2,2), page_directory_address, pos2mapFis(2,2), 0, 1);//abajo-derecha
-    mmu_mapear_pagina(pos2mapVir(1,3), page_directory_address, pos2mapFis(1,3), 0, 1);//abajo
-    mmu_mapear_pagina(pos2mapVir(0,1), page_directory_address, pos2mapFis(0,1), 0, 1);//izquierda
-    mmu_mapear_pagina(pos2mapVir(0,2), page_directory_address, pos2mapFis(0,2), 0, 1);//abajo-izquierda
-    mmu_mapear_pagina(pos2mapVir(1,1), page_directory_address, pos2mapFis(1,1), 0, 1);//arriba
-    mmu_mapear_pagina(pos2mapVir(0,3), page_directory_address, pos2mapFis(0,3), 0, 1);//arriba-izquierda
-    mmu_mapear_pagina(pos2mapVir(2,3), page_directory_address, pos2mapFis(2,3), 0, 1);//arriba-derecha
+    mmu_mapear_pagina(pos2mapVir(2,1), page_directory_address, pos2mapFis(2,1), 1, 1);//derecha
+    mmu_mapear_pagina(pos2mapVir(2,2), page_directory_address, pos2mapFis(2,2), 1, 1);//abajo-derecha
+    mmu_mapear_pagina(pos2mapVir(1,3), page_directory_address, pos2mapFis(1,3), 1, 1);//abajo
+    mmu_mapear_pagina(pos2mapVir(0,1), page_directory_address, pos2mapFis(0,1), 1, 1);//izquierda
+    mmu_mapear_pagina(pos2mapVir(0,2), page_directory_address, pos2mapFis(0,2), 1, 1);//abajo-izquierda
+    mmu_mapear_pagina(pos2mapVir(1,1), page_directory_address, pos2mapFis(1,1), 1, 1);//arriba
+    mmu_mapear_pagina(pos2mapVir(0,3), page_directory_address, pos2mapFis(0,3), 1, 1);//arriba-izquierda
+    mmu_mapear_pagina(pos2mapVir(2,3), page_directory_address, pos2mapFis(2,3), 1, 1);//arriba-derecha
   } else {
     //empiezo en la ultima posicion
     //mapeo donde estamos parados
     mmu_mapear_pagina(pos2mapVir(78,43), page_directory_address, pos2mapFis(78,43), 1, 1);
     //al principio solo se mapean las paginas de la izquierda, arriba, arriba-izquierda para jug 2
-    mmu_mapear_pagina(pos2mapVir(77,43), page_directory_address, pos2mapFis(77,43), 0, 1);//izquierda
-    mmu_mapear_pagina(pos2mapVir(77,42), page_directory_address, pos2mapFis(77,42), 0, 1);//arriba-izquierda
-    mmu_mapear_pagina(pos2mapVir(78,42), page_directory_address, pos2mapFis(78,42), 0, 1);//arriba
-    mmu_mapear_pagina(pos2mapVir(79,43), page_directory_address, pos2mapFis(79,43), 0, 1);//derecha
-    mmu_mapear_pagina(pos2mapVir(79,42), page_directory_address, pos2mapFis(79,42), 0, 1);//arriba-derecha
-    mmu_mapear_pagina(pos2mapVir(78,44), page_directory_address, pos2mapFis(78,44), 0, 1);//abajo
-    mmu_mapear_pagina(pos2mapVir(79,44), page_directory_address, pos2mapFis(79,44), 0, 1);//abajo-derecha
-    mmu_mapear_pagina(pos2mapVir(77,44), page_directory_address, pos2mapFis(77,44), 0, 1);//abajo-izquierda
+    mmu_mapear_pagina(pos2mapVir(77,43), page_directory_address, pos2mapFis(77,43), 1, 1);//izquierda
+    mmu_mapear_pagina(pos2mapVir(77,42), page_directory_address, pos2mapFis(77,42), 1, 1);//arriba-izquierda
+    mmu_mapear_pagina(pos2mapVir(78,42), page_directory_address, pos2mapFis(78,42), 1, 1);//arriba
+    mmu_mapear_pagina(pos2mapVir(79,43), page_directory_address, pos2mapFis(79,43), 1, 1);//derecha
+    mmu_mapear_pagina(pos2mapVir(79,42), page_directory_address, pos2mapFis(79,42), 1, 1);//arriba-derecha
+    mmu_mapear_pagina(pos2mapVir(78,44), page_directory_address, pos2mapFis(78,44), 1, 1);//abajo
+    mmu_mapear_pagina(pos2mapVir(79,44), page_directory_address, pos2mapFis(79,44), 1, 1);//abajo-derecha
+    mmu_mapear_pagina(pos2mapVir(77,44), page_directory_address, pos2mapFis(77,44), 1, 1);//abajo-izquierda
   }
 
   return page_directory_address;
@@ -205,7 +209,7 @@ void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
   page_directory_entry* pd = (page_directory_entry*)(cr3);
   unsigned int indiceDirectory = virtual >> 22;
   unsigned int indiceTable = (virtual << 10) >> 22;
-  if (pd[indiceDirectory].present != 1) {
+  if (pd[indiceDirectory].present == 1) {
     page_table_entry* pt = (page_table_entry*)(pd[indiceDirectory].base_address << 12);
     pt[indiceTable].present = 0;
   }
@@ -226,7 +230,29 @@ void memcpy(unsigned int src, unsigned int dest, unsigned int len, unsigned char
 	}
   breakpoint();
 	mmu_unmapear_pagina(dest, cr3);
-  tlbflush();
+}
+
+void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us) {
+	// cr3 = rcr3();
+  breakpoint();
+	mmu_mapear_pagina(src, cr3, src, rd, us);
+	mmu_mapear_pagina(dest, cr3, dest, rd, us);
+	char* srcp = (char*)src;
+	char* destp = (char*)dest;
+	unsigned int i;
+	for (i = 0; i < len; ++i) {
+		destp[i] = srcp[i];
+	}
+  breakpoint();
+	mmu_unmapear_pagina(src, cr3);
+	mmu_unmapear_pagina(dest, cr3);
+}
+
+void memcpyPila(unsigned int destVir, unsigned int size, unsigned char rd, unsigned char us, unsigned int value) {
+  char* destVirp = (char*)destVir;
+  for (int i = 0; i < size; ++i) {
+    destVirp[i] = value;
+  }
 }
 
 /* Direcciones fisicas de codigos */

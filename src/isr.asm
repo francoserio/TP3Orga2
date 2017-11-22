@@ -91,7 +91,7 @@ extern game_syscall_manejar
 global _isr%1
 
 _isr%1:
-    mov eax, %1
+    mov eax, 1
     imprimir_texto_mp desc_%1, desc_len_%1, 0x07, 3, 0
     jmp $
 
@@ -132,10 +132,12 @@ ISR 19
 ;;
 extern screen_actualizar_reloj_global
 extern modoDebug
+extern sched_intercambiar_por_idle
 
 global _isr32
 _isr32:
 	; PRESERVAR REGISTROS
+  xchg bx, bx
   pushad
   call fin_intr_pic1
   cmp byte [modoDebug], 1
@@ -144,7 +146,6 @@ _isr32:
   str cx
   cmp ax, cx
   je .fin
-  ; xchg bx, bx
   mov [sched_tarea_selector], ax
   jmp far [sched_tarea_offset]
 .fin:
@@ -177,6 +178,10 @@ _isr70:
   push ecx
   push eax
   call game_syscall_manejar
+  call sched_intercambiar_por_idle
+  mov ax, 13<<3
+  mov [sched_tarea_selector], ax
+  jmp far [sched_tarea_offset]
   pop eax
   pop ecx
 fin:

@@ -11,7 +11,7 @@
 #include "defines.h"
 #include "game.h"
 
-#define CODIGO_BASE       0X00400000
+#define CODIGO_BASE       0x00400000
 
 #define MAPA_BASE_FISICA  0x500000
 #define MAPA_BASE_VIRTUAL 0x0800000
@@ -58,5 +58,6 @@ unsigned int pos2mapVir(unsigned int x, unsigned int y);
 void mmu_inicializar_dir_pirataConocidas(jugador_t* jugador);
 void mmu_moverCodigo(pirata_t* tarea, uint x, uint y, uint indexJug);
 void memcpy(unsigned int src, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us);
-
+void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us);
+void memcpyPila(unsigned int destVir, unsigned int size, unsigned char rd, unsigned char us, unsigned int value);
 #endif	/* !__MMU_H__ */

@@ -20,7 +20,7 @@
 LS_INLINE unsigned int syscall_mover(direccion d) {
     int ret;
     breakpoint();
-
+    
     __asm __volatile(
         "mov $1, %%eax \n"
         "mov %0, %%ecx \n"

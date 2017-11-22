@@ -43,8 +43,10 @@ void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata) {
   if (pirata->vivoMuerto == 0) {
     //si se murio
     pirata->reloj = 0;
+    reloj_pirata[pirata->id] = 0;
   } else {
     pirata->reloj = (pirata->reloj + 1) % reloj_size;
+    reloj_pirata[pirata->id] = pirata->reloj;
   }
 }
 
@@ -130,10 +132,10 @@ void screen_pintar_reloj_pirata(jugador_t* j, pirata_t* pirata) {
     //esta vivo
     if (j->index == 0) {
       //jugadorA
-      screen_pintar(reloj[reloj_pirata[pirata->id]], C_BW, 48, pirata->index*2 + 4);
+      screen_pintar(reloj[pirata->reloj], C_BW, 48, pirata->index*2 + 4);
     } else {
       //jugadorB
-      screen_pintar(reloj[reloj_pirata[pirata->id]], C_BW, 48, pirata->index*2 + 60);
+      screen_pintar(reloj[pirata->reloj], C_BW, 48, pirata->index*2 + 60);
     }
   }
 }
