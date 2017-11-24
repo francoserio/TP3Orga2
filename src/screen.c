@@ -198,11 +198,24 @@ void screen_inicializar() {
   screen_pintar_reloj_piratas(&jugadorB);
 }
 
+void screen_pintar_piratas() {
+  for (int i = 0; i < 8; i++) {
+    screen_pintar_pirata(&jugadorA, &(jugadorA.piratas[i]));
+    screen_pintar_pirata(&jugadorB, &(jugadorB.piratas[i]));
+  }
+}
+
 void screen_pintar_pirata(jugador_t *j, pirata_t *pirata) {
   for (int i = 0; i < 45; i++) {
     for (int p = 0; p < 80; p++) {
-      if (j->posicionesXVistas[p] == 1 && j->posicionesYVistas[i] == 1) {
+      if (j->posicionesXVistas[p] == 1 && j->posicionesYVistas[i] == 1 && game_pirata_en_posicion(p, i) == NULL) {
         screen_pintar(' ', j->colorJug, i, p);
+      } else if (game_pirata_en_posicion(p, i) != NULL) {
+        if (game_pirata_en_posicion(p, i)->tipo == minero) {
+          screen_pintar('M', j->colorJug, pirata->posicionY, pirata->posicionX);
+        } else {
+          screen_pintar('E', j->colorJug, pirata->posicionY, pirata->posicionX);
+        }
       }
     }
   }

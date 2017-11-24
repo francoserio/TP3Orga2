@@ -194,20 +194,30 @@ void sched_toggle_debug() {
 void sched_agregar(jugador_t* jugador) {
   if (jugador->index == 0) {
     //es un pirata de A
-    for (int i = 0; i < 8; i++) {
-      if (jugador->piratas[i].vivoMuerto == 0) {
-        //si esta muerto, es decir se puede usar
-        proxTareaAMuerta = i;
+    int i = tareaActualA;
+    while (i < 8 && jugador->piratas[i].vivoMuerto == 1) {
+
+      i++;
+
+      if (i == 8) {
+        i = 0;
       }
     }
+
+    proxTareaAMuerta = i;
   } else {
     //es un pirata de B
-    for (int i = 0; i < 8; i++) {
-      if (jugador->piratas[i].vivoMuerto == 0) {
-        //si esta muerto, es decir se puede usar
-        proxTareaBMuerta = i;
+    int i = tareaActualB + 1;
+    while (i < 8 && jugador->piratas[i].vivoMuerto == 1) {
+
+      i++;
+
+      if (i == 8) {
+        i = 0;
       }
     }
+
+    proxTareaBMuerta = i;
   }
 }
 

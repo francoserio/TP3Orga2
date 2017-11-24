@@ -13,8 +13,8 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD } direccio
 
 #define MAX_CANT_PIRATAS_VIVOS           8
 
-#define JUGADOR_A                         0
-#define JUGADOR_B                         1
+#define JUGADOR_A                        0
+#define JUGADOR_B                        1
 
 #define MAPA_ANCHO                       80
 #define MAPA_ALTO                        44
@@ -77,6 +77,8 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y);
 pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo);
 void game_jugador_anotar_punto(jugador_t *j);
 void game_explorar_posicion(jugador_t *jugador, int x, int y);
+
+uchar existeMineroParaEse(unsigned int x, unsigned int y);
 
 uint game_valor_tesoro(uint x, uint y);
 uint game_valores_tesoros();

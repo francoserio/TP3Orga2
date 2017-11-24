@@ -233,7 +233,7 @@ void memcpy(unsigned int src, unsigned int dest, unsigned int len, unsigned char
 }
 
 void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us) {
-	// cr3 = rcr3();
+	lcr3(cr3);
   breakpoint();
 	mmu_mapear_pagina(src, cr3, src, rd, us);
 	mmu_mapear_pagina(dest, cr3, dest, rd, us);
@@ -248,11 +248,14 @@ void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int 
 	mmu_unmapear_pagina(dest, cr3);
 }
 
-void memcpyPila(unsigned int destVir, unsigned int size, unsigned char rd, unsigned char us, unsigned int value) {
-  char* destVirp = (char*)destVir;
-  for (int i = 0; i < size; ++i) {
-    destVirp[i] = value;
-  }
+void memcpyPila(unsigned int destVir, unsigned int cr3, int size, unsigned char rd, unsigned char us, unsigned int value) {
+  breakpoint();
+  lcr3(cr3);
+  mmu_mapear_pagina(destVir, cr3, destVir, rd, us);
+  unsigned int* destVirp = (unsigned int*)destVir;
+  *destVirp = value;
+  mmu_unmapear_pagina(destVir, cr3);
+  breakpoint();
 }
 
 /* Direcciones fisicas de codigos */

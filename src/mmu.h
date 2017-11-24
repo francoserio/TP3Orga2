@@ -59,5 +59,5 @@ void mmu_inicializar_dir_pirataConocidas(jugador_t* jugador);
 void mmu_moverCodigo(pirata_t* tarea, uint x, uint y, uint indexJug);
 void memcpy(unsigned int src, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us);
 void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us);
-void memcpyPila(unsigned int destVir, unsigned int size, unsigned char rd, unsigned char us, unsigned int value);
+void memcpyPila(unsigned int destVir, unsigned int cr3, int size, unsigned char rd, unsigned char us, unsigned int value);
 #endif	/* !__MMU_H__ */
