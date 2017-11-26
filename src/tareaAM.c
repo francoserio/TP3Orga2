@@ -9,7 +9,7 @@
 #include "game.h"
 #include "syscall.h"
 #include "i386.h"
-
+#include "screen.h"
 
 void task(int x_target, int y_target) {
     /* Tarea */
@@ -22,9 +22,11 @@ void task(int x_target, int y_target) {
     int i;
     for(i=x; i < x_target; i++)
         syscall_mover(DER);
+        breakpoint();
 
     for(i=y; i < y_target; i++)
         syscall_mover(ABA);
+        breakpoint();
 
     while(1) {syscall_cavar();}
 

@@ -60,8 +60,9 @@ unsigned int sched_tick() {
         return (13) << 3;
       }
 
-      // print_dec(proxTarea, 3, 35, 20, C_FG_WHITE);
+      print_dec(proxTarea, 3, 35, 20, C_FG_WHITE);
       breakpoint();
+
 
       return (proxTarea << 3);
     } else {
@@ -131,8 +132,8 @@ unsigned int sched_tick() {
         return (13) << 3;
       }
 
-      // print_dec(proxTarea, 3, 35, 20, C_FG_WHITE);
-      // breakpoint();
+      print_dec(proxTarea, 3, 35, 20, C_FG_WHITE);
+      breakpoint();
 
       return (proxTarea << 3);
     } else {
@@ -207,7 +208,7 @@ void sched_agregar(jugador_t* jugador) {
     proxTareaAMuerta = i;
   } else {
     //es un pirata de B
-    int i = tareaActualB + 1;
+    int i = tareaActualB;
     while (i < 8 && jugador->piratas[i].vivoMuerto == 1) {
 
       i++;

@@ -248,13 +248,13 @@ void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int 
 	mmu_unmapear_pagina(dest, cr3);
 }
 
-void memcpyPila(unsigned int destVir, unsigned int cr3, int size, unsigned char rd, unsigned char us, unsigned int value) {
+void memcpyPila(unsigned int destVir, unsigned int cr3, unsigned char rd, unsigned char us, int value) {
   breakpoint();
   lcr3(cr3);
-  mmu_mapear_pagina(destVir, cr3, destVir, rd, us);
-  unsigned int* destVirp = (unsigned int*)destVir;
-  *destVirp = value;
-  mmu_unmapear_pagina(destVir, cr3);
+  breakpoint();
+  // mmu_mapear_pagina(0x00401000, cr3, 0x00401000, rd, us);
+  *((int*)(tss_jugadorA[proxTareaAMuerta].ebp + destVir)) = (int)value;
+  // mmu_unmapear_pagina(0x00401000, cr3);
   breakpoint();
 }
 

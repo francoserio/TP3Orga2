@@ -342,6 +342,8 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
     }
     breakpoint();
     tss_agregar_piratas_a_gdt(j, proxTareaAMuerta);
+    breakpoint();
+    // print_hex(proxTareaAMuerta, 20, 13, 13, 0x0F);
     mmu_mapear_pagina(0x00400000, tss_jugadorA[proxTareaAMuerta].cr3, pos2mapFis(1, 2), 1, 1);
     breakpoint();
     if (tareaPirata->tipo == explorador) {
@@ -349,9 +351,9 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
       memcpy((unsigned int)0x10000, pos2mapFis(1, 2), PAGE_SIZE, 1, 1);
     } else {
       //minero
-      memcpyPila((unsigned int) 0x401000 - 4, tss_jugadorA[proxTareaAMuerta].cr3, 32, 1, 1, tareaPirata->posicionXObjetivo);
-      memcpyPila((unsigned int) 0x401000 - 8, tss_jugadorA[proxTareaAMuerta].cr3, 32, 1, 1, tareaPirata->posicionYObjetivo);
       memcpy((unsigned int)0x11000, pos2mapFis(1, 2), PAGE_SIZE, 1, 1);
+      memcpyPila(4, tss_jugadorA[proxTareaAMuerta].cr3, 1, 1, tareaPirata->posicionYObjetivo);
+      memcpyPila(8, tss_jugadorA[proxTareaAMuerta].cr3, 1, 1, tareaPirata->posicionXObjetivo);
       breakpoint();
     }
     screen_pintar_piratas();
@@ -376,9 +378,9 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
       memcpy(0x12000, pos2mapFis(78,43), PAGE_SIZE, 1, 1);
     } else {
       //minero
-      memcpyPila((unsigned int) 0x401000 - 8, tss_jugadorB[proxTareaBMuerta].cr3, 32, 1, 1, x);
-      memcpyPila((unsigned int) 0x401000 - 4, tss_jugadorB[proxTareaBMuerta].cr3, 32, 1, 1, y);
       memcpy(0x13000, pos2mapFis(78,43), PAGE_SIZE, 1, 1);
+      memcpyPila(4, tss_jugadorB[proxTareaBMuerta].cr3, 1, 1, tareaPirata->posicionYObjetivo);
+      memcpyPila(8, tss_jugadorB[proxTareaBMuerta].cr3, 1, 1, tareaPirata->posicionXObjetivo);
     }
     screen_pintar_piratas();
     sched_agregar(&jugadorB);
@@ -400,6 +402,8 @@ uint game_posicion_ya_vista(pirata_t* tareaPir, direccion dir) {
   int x = 0;
   int y = 0;
   game_dir2xy(dir, &x, &y);
+  // print_dec(x, 3, 15, 15, 0x0F);
+  // print_dec(y, 3, 14, 14, 0x0F);
   if ((tareaPir->jugador)->posicionesYVistas[y] == 1 && (tareaPir->jugador)->posicionesXVistas[x] == 1) {
     return 1;
   } else {
@@ -451,7 +455,6 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
       //va a pasar a una posicion valida en el juego
       tareaPirata->posicionX = tareaPirata->posicionX + x;
       tareaPirata->posicionY = tareaPirata->posicionY + y;
-      game_explorar_posicion(tareaPirata->jugador, tareaPirata->posicionX, tareaPirata->posicionY);
       mmu_inicializar_dir_pirataConocidas(tareaPirata->jugador);
       if ((tareaPirata->jugador)->index == 0) {
         breakpoint();
@@ -465,6 +468,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
         mmu_mapear_pagina(0x00400000, tss_jugadorB[tareaActualB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
         mmu_mapear_pagina(pos2mapVir(tareaPirata->posicionX, tareaPirata->posicionY), tss_jugadorB[tareaActualB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
       }
+      game_explorar_posicion(tareaPirata->jugador, tareaPirata->posicionX, tareaPirata->posicionY);
       breakpoint();
       screen_pintar_pirata(tareaPirata->jugador, tareaPirata);
       breakpoint();
@@ -480,6 +484,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
 
 uint game_syscall_cavar(uint id)
 {
+  breakpoint();
   pirata_t* tareaPirata = id_pirata2pirata(id);
   if (game_valor_tesoro(tareaPirata->posicionX, tareaPirata->posicionY) == 0) {
     //lo mato
@@ -503,6 +508,8 @@ uint game_syscall_pirata_posicion(uint id, int idx)
   if (idx == -1) {
     //tengo que dar la posicion del propio pirata.
     pirata_t* tareaPirata = id_pirata2pirata(id);
+    print_dec(tareaPirata->posicionX, 3, 20, 20, 0x0F);
+    print_dec(tareaPirata->posicionY, 3, 21, 21, 0x0F);
     return (tareaPirata->posicionY << 8 | tareaPirata->posicionX);
   } else {
     //sino es un indice del 0-7 para indicar el indice de pirata del propio jugador.
