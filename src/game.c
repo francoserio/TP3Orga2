@@ -524,8 +524,10 @@ void game_pirata_exploto(uint id)
   breakpoint();
   sched_intercambiar_por_idle();
   pirata_t* tareaPirata = id_pirata2pirata(id);
+  (tareaPirata->jugador)->piratasRestantes++;
   tareaPirata->vivoMuerto = 0;
   tareaPirata->reloj = 0;
+  sched_sacar(tareaPirata->jugador, tareaPirata->index);
 }
 
 pirata_t* game_pirata_en_posicion(uint x, uint y)

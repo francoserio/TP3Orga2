@@ -222,6 +222,16 @@ void sched_agregar(jugador_t* jugador) {
   }
 }
 
-void sched_sacar(unsigned int idx) {
-
+void sched_sacar(jugador_t* jug, uint idx) {
+  if (jug->index == 0) {
+    //es jugadorA
+    if (proxTareaAMuerta > idx) {
+      proxTareaAMuerta = idx;
+    }
+  } else {
+    //es jugadorB
+    if (proxTareaBMuerta > idx) {
+      proxTareaAMuerta = idx;
+    }
+  }
 }

@@ -29,6 +29,6 @@ void sched_toggle_debug();
 void sched_nointercambiar_por_idle();
 void sched_intercambiar_por_idle();
 void sched_agregar(jugador_t* jugador);
-void sched_sacar(unsigned int idx);
+void sched_sacar(jugador_t* jug, uint idx);
 
 #endif	/* !__SCHED_H__ */

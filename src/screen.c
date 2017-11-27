@@ -220,19 +220,15 @@ void screen_pintar_pirata(jugador_t *j, pirata_t *pirata) {
     for (int p = 0; p < 80; p++) {
       if (j->posicionesXYVistas[p][i] == 1 && game_pirata_en_posicion(p, i) == NULL) {
         screen_pintar(' ', j->colorJug, i, p);
-      } else if (game_pirata_en_posicion(p, i) != NULL) {
-        if (game_pirata_en_posicion(p, i)->tipo == minero) {
-          screen_pintar('M', j->colorJug, pirata->posicionY, pirata->posicionX);
-        } else {
-          screen_pintar('E', j->colorJug, pirata->posicionY, pirata->posicionX);
-        }
       }
     }
   }
-  if (pirata->tipo == minero) {
-    screen_pintar('M', j->colorJug, pirata->posicionY, pirata->posicionX);
-  } else {
-    screen_pintar('E', j->colorJug, pirata->posicionY, pirata->posicionX);
+  if (pirata->vivoMuerto == 1) {
+    if (pirata->tipo == minero) {
+      screen_pintar('M', j->colorJug, pirata->posicionY, pirata->posicionX);
+    } else {
+      screen_pintar('E', j->colorJug, pirata->posicionY, pirata->posicionX);
+    }
   }
 }
 
