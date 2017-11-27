@@ -118,6 +118,10 @@ void screen_pintar_puntajes() {
   print("000", j, i, 0xF);
 }
 
+void screen_actualizar_puntajes() {
+  
+}
+
 void screen_pintar_reloj_pirata(jugador_t* j, pirata_t* pirata) {
   if (pirata->vivoMuerto == 0) {
     //si es 0 esta muerto

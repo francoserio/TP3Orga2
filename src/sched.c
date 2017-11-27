@@ -60,7 +60,7 @@ unsigned int sched_tick() {
         return (13) << 3;
       }
 
-      print_dec(proxTarea, 3, 35, 20, C_FG_WHITE);
+      print_dec(proxTarea, 10, 35, 20, C_FG_WHITE);
       breakpoint();
 
 
@@ -132,7 +132,7 @@ unsigned int sched_tick() {
         return (13) << 3;
       }
 
-      print_dec(proxTarea, 3, 35, 20, C_FG_WHITE);
+      print_dec(proxTarea, 10, 35, 20, C_FG_WHITE);
       breakpoint();
 
       return (proxTarea << 3);

@@ -69,4 +69,21 @@ LS_INLINE unsigned int syscall_posicion(int idx) {
     return ret;
 }
 
+LS_INLINE unsigned int syscall_debug(int idx) {
+    int ret;
+
+    __asm __volatile(
+        "mov $4, %%eax \n"
+        "mov %0, %%ecx \n"
+        "int $0x46     \n"
+        : /* no output*/
+        : "m" (idx)
+        : "eax"
+    );
+
+    __asm __volatile("mov %%eax, %0" : "=r" (ret));
+
+    return ret;
+}
+
 #endif  /* !__SYSCALL_H__ */

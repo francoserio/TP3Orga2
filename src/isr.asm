@@ -174,6 +174,8 @@ _isr33:
 global _isr70
 _isr70:
   xchg bx, bx
+  cmp eax, 3
+  je .posicion
   pushad
   push ecx
   push eax
@@ -184,6 +186,16 @@ _isr70:
   jmp far [sched_tarea_offset]
   pop eax
   pop ecx
-fin:
+  jmp .fin
+.posicion:
+  mov edi, eax
+  push ecx
+  push edi
+  call game_syscall_manejar
+  pop ecx
+  pop edi
+  jmp .fin2
+.fin:
   popad
+.fin2:
   iret
