@@ -51,8 +51,7 @@ typedef struct jugador_t
     uint puntaje;
     uint piratasRestantes;
     uint minerosPendientes;
-    uint posicionesXVistas[80];
-    uint posicionesYVistas[45];
+    uint posicionesXYVistas[80][45];
     uint puertoX;
     uint puertoY;
     uint colorJug;

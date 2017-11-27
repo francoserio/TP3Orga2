@@ -7,6 +7,7 @@ definicion de funciones del scheduler
 
 #include "screen.h"
 #include "game.h"
+#include "i386.h"
 
 
 extern jugador_t jugadorA, jugadorB;
@@ -119,7 +120,12 @@ void screen_pintar_puntajes() {
 }
 
 void screen_actualizar_puntajes() {
-  
+  breakpoint();
+  int i = 47;
+  int j = 35;
+  print_dec(jugadorA.puntaje, 3, j, i, 0x0F);
+  j = j + 7;
+  print_dec(jugadorB.puntaje, 3, j, i, 0x0F);
 }
 
 void screen_pintar_reloj_pirata(jugador_t* j, pirata_t* pirata) {
@@ -212,7 +218,7 @@ void screen_pintar_piratas() {
 void screen_pintar_pirata(jugador_t *j, pirata_t *pirata) {
   for (int i = 0; i < 45; i++) {
     for (int p = 0; p < 80; p++) {
-      if (j->posicionesXVistas[p] == 1 && j->posicionesYVistas[i] == 1 && game_pirata_en_posicion(p, i) == NULL) {
+      if (j->posicionesXYVistas[p][i] == 1 && game_pirata_en_posicion(p, i) == NULL) {
         screen_pintar(' ', j->colorJug, i, p);
       } else if (game_pirata_en_posicion(p, i) != NULL) {
         if (game_pirata_en_posicion(p, i)->tipo == minero) {

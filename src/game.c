@@ -31,43 +31,6 @@ uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
 jugador_t jugadorA;
 jugador_t jugadorB;
 
-// pirata_t piratasA[8] = {
-//   [0] = (pirata_t) {
-// 	},
-// 	[1] = (pirata_t) {
-// 	},
-// 	[2] = (pirata_t) {
-// 	},
-// 	[3] = (pirata_t) {
-// 	},
-// 	[4] = (pirata_t) {
-// 	},
-// 	[5] = (pirata_t) {
-// 	},
-// 	[6] = (pirata_t) {
-// 	},
-// 	[7] = (pirata_t) {
-// 	}
-// };
-// pirata_t piratasB[8] = {
-//   [0] = (pirata_t) {
-// 	},
-// 	[1] = (pirata_t) {
-// 	},
-// 	[2] = (pirata_t) {
-// 	},
-// 	[3] = (pirata_t) {
-// 	},
-// 	[4] = (pirata_t) {
-// 	},
-// 	[5] = (pirata_t) {
-// 	},
-// 	[6] = (pirata_t) {
-// 	},
-// 	[7] = (pirata_t) {
-// 	}
-// };
-
 void* error()
 {
 	__asm__ ("int3");
@@ -126,8 +89,7 @@ void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y)
     //si es la primera fila no se agrega la fila 0 porque no existe
     for (int i = -1; i <= 1; i++) {
       for (int j = 0; j <= 1; j++) {
-        (jugador->posicionesXVistas)[x + i] = 1;
-        (jugador->posicionesYVistas)[y + j] = 1;
+        (jugador->posicionesXYVistas)[x + i][y + j] = 1;
         if (game_valor_tesoro(x + i, y + j) > 0) {
           if (jugador->piratasRestantes == 8) {
             //no puede mandar mas piratas
@@ -143,8 +105,7 @@ void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y)
     //si es la ultima fila no se agreg la fila 45 porque no existe
     for (int i = -1; i <= 1; i++) {
       for (int j = -1; j <= 0; j++) {
-        (jugador->posicionesXVistas)[x + i] = 1;
-        (jugador->posicionesYVistas)[y + j] = 1;
+        (jugador->posicionesXYVistas)[x + i][y + j] = 1;
         if (game_valor_tesoro(x + i, y + j) > 0) {
           if (jugador->piratasRestantes == 8) {
             //no puede mandar mas piratas
@@ -160,8 +121,7 @@ void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y)
     //si es la primera columna no se agreg la columna -1 porque no existe
     for (int i = -1; i <= 1; i++) {
       for (int j = 0; j <= 1; j++) {
-        (jugador->posicionesXVistas)[x + j] = 1;
-        (jugador->posicionesYVistas)[y + i] = 1;
+        (jugador->posicionesXYVistas)[x + j][y + i] = 1;
         if (game_valor_tesoro(x + i, y + j) > 0) {
           if (jugador->piratasRestantes == 8) {
             //no puede mandar mas piratas
@@ -177,8 +137,7 @@ void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y)
     //si es la ultima columna no se agrega la columna 80 porque no existe
     for (int i = -1; i <= 1; i++) {
       for (int j = -1; j <= 0; j++) {
-        (jugador->posicionesXVistas)[x + j] = 1;
-        (jugador->posicionesYVistas)[y + i] = 1;
+        (jugador->posicionesXYVistas)[x + j][y + i] = 1;
         if (game_valor_tesoro(x + i, y + j) > 0) {
           if (jugador->piratasRestantes == 8) {
             //no puede mandar mas piratas
@@ -192,12 +151,12 @@ void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y)
     }
   } else {
   	int i, j;
+    breakpoint();
     for (i = -1; i <= 1; i++)
     {
       for (j = -1; j <= 1; j++)
       {
-        (jugador->posicionesXVistas)[x + j] = 1;
-        (jugador->posicionesYVistas)[y + i] = 1;
+        (jugador->posicionesXYVistas)[x + j][y + i] = 1;
         if (game_valor_tesoro(x + i, y + j) > 0) {
           if (jugador->piratasRestantes == 8) {
             //no puede mandar mas piratas
@@ -256,12 +215,12 @@ void game_jugador_inicializar(jugador_t *j)
   j->puntaje = 0;
   j->piratasRestantes = 0;
   j->minerosPendientes = 0;
-  for (int k = 0; k < 45; k++) {
-    j->posicionesYVistas[k] = 0;
+  for (int k = 0; k < 80; k++) {
+    for (int p = 0; p < 45; p++) {
+      j->posicionesXYVistas[k][p] = 0;
+    }
   }
-  for (int p = 0; p < 80; p++) {
-    j->posicionesXVistas[p] = 0;
-  }
+
   j->piratasRestantes = 8;
   if (j->index == 0) {
     j->puertoX = 1;
@@ -404,7 +363,7 @@ uint game_posicion_ya_vista(pirata_t* tareaPir, direccion dir) {
   game_dir2xy(dir, &x, &y);
   // print_dec(x, 3, 15, 15, 0x0F);
   // print_dec(y, 3, 14, 14, 0x0F);
-  if ((tareaPir->jugador)->posicionesYVistas[tareaPir->posicionY + y] == 1 && (tareaPir->jugador)->posicionesXVistas[tareaPir->posicionX + x] == 1) {
+  if ((tareaPir->jugador)->posicionesXYVistas[tareaPir->posicionX + x][tareaPir->posicionY + y] == 1) {
     return 1;
   } else {
     return 0;
@@ -490,8 +449,6 @@ uint game_syscall_cavar(uint id)
   pirata_t* tareaPirata = id_pirata2pirata(id);
   if (game_valor_tesoro(tareaPirata->posicionX, tareaPirata->posicionY) == 0) {
     //lo mato
-    print_dec(tareaPirata->posicionX, 3, 22, 22, 0x0F);
-    print_dec(tareaPirata->posicionY, 3, 23, 21, 0x0F);
     game_pirata_exploto(id);
     screen_borrar_pirata(tareaPirata->jugador, tareaPirata);
   } else {
@@ -508,19 +465,13 @@ uint game_syscall_cavar(uint id)
 
 uint game_syscall_pirata_posicion(uint id, int idx)
 {
-  print_dec(id, 2, 9, 9, 0x0F);
   // print_dec(idx, int size, uint x, uint y, unsigned short attr)
   if (idx == -1) {
     //tengo que dar la posicion del propio pirata.
-    breakpoint();
     pirata_t* tareaPirata = id_pirata2pirata(id);
     // print_dec(res, 7, 10, 10, 0x0F);
     uint res = (((tareaPirata->posicionY) << 8) | (tareaPirata->posicionX));
-    // int x = res & 0xFF;
-    // int y = res >> 8;
-    // print_hex(x, 7, 10, 10, 0x0F);
-    // print_hex(y, 7, 11, 11, 0x0F);
-    print_dec(res, 7, 12, 12, 0x0F);
+    // print_dec(res, 7, 12, 12, 0x0F);
     return res;
   } else {
     //sino es un indice del 0-7 para indicar el indice de pirata del propio jugador.
@@ -540,7 +491,6 @@ uint game_syscall_pirata_posicion(uint id, int idx)
 uint game_syscall_manejar(uint syscall, uint param1)
 {
   // print_dec(syscall, 5, 35, 20, C_FG_WHITE);
-  breakpoint();
   if (syscall == 0x4) { //debug
     print_dec(param1, 4, 7, 7, 0x0F);
   }
@@ -607,6 +557,8 @@ void game_jugador_anotar_punto(jugador_t *j)
   } else if (contador_de_tiempo == MAX_SIN_CAMBIOS && siempreIgual == 1) {
     game_terminar_si_es_hora();
   }
+  breakpoint();
+  screen_actualizar_puntajes();
 
   siempreIgual = 0;
   contador_de_tiempo = 0;

@@ -72,7 +72,7 @@ void mmu_inicializar_dir_pirataConocidas(jugador_t* jugador) {
     if (jugador->piratas[i].vivoMuerto == 1) {
       for (int j = 0; j < 80; j++) {
         for (int k = 0; k < 45; k++) {
-          if (jugador->posicionesXVistas[j] == 1 && jugador->posicionesYVistas[k] == 1) {
+          if (jugador->posicionesXYVistas[j][k] == 1) {
             if (jugador->index == 0) {
               //jugadorA
               if (jugador->piratas[i].posicionX != j && jugador->piratas[i].posicionY != k) {
