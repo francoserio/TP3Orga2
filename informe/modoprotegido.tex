@@ -325,6 +325,225 @@ Por ejemplo, cuando queremos identificar la interrupci\'on de "Divide Error", de
 De esta misma manera definimos todos los mensajes correspondientes a las interrupciones, en nuestro archivo \textit{isr.asm}.
 \subsection{Tareas}
 
+Completamos las TSS utilizando c\'odigo c, en el archivo \textit{tss.c}
+Para completar la \textit{idle}  y la \textit{inicial}:
+
+\begin{algorithmic}
+\State \tab void tss$\_$inicializar$() \{$\\
+  \State \tab \tab //tss$\_$idle\\
+
+  \State \tab \tab tss$\_$idle.ptl = 0;
+  \State \tab \tab tss$\_$idle.unused0 = 0;
+  \State \tab \tab tss$\_$idle.esp0 = 0;
+  \State \tab \tab tss$\_$idle.ss0 = 0;
+  \State \tab \tab tss$\_$idle.unused1 = 0;
+  \State \tab \tab tss$\_$idle.esp1 = 0;
+  \State \tab \tab tss$\_$idle.ss1 = 0;
+  \State \tab \tab tss$\_$idle.unused2 = 0;
+  \State \tab \tab tss$\_$idle.esp2 = 0;
+  \State \tab \tab tss$\_$idle.ss2 = 0;
+  \State \tab \tab tss$\_$idle.unused3 = 0;
+  \State \tab \tab tss$\_$idle.cr3 = $($unsigned int$)$0x27000;
+  \State \tab \tab tss$\_$idle.eip = $($unsigned int$)$0x16000;
+  \State \tab \tab tss$\_$idle.eflags = $($unsigned int$)$0x00202;
+  \State \tab \tab tss$\_$idle.eax = 0;
+  \State \tab \tab tss$\_$idle.ecx = 0;
+  \State \tab \tab tss$\_$idle.edx = 0;
+  \State \tab \tab tss$\_$idle.ebx = 0;
+  \State \tab \tab tss$\_$idle.esp = $($unsigned int$)$0x27000;
+  \State \tab \tab tss$\_$idle.ebp = $($unsigned int$)$0x27000;
+  \State \tab \tab tss$\_$idle.esi = 0;
+  \State \tab \tab tss$\_$idle.edi = 0;
+  \State \tab \tab tss$\_$idle.es = $($unsigned int$)$0x48;
+  \State \tab \tab tss$\_$idle.unused4 = 0;
+  \State \tab \tab tss$\_$idle.cs = $($unsigned int$)$0x58;
+  \State \tab \tab tss$\_$idle.unused5 = 0;
+  \State \tab \tab tss$\_$idle.ss = $($unsigned int$)$0x48;
+  \State \tab \tab tss$\_$idle.unused6 = 0;
+  \State \tab \tab tss$\_$idle.ds = $($unsigned int$)$0x48;
+  \State \tab \tab tss$\_$idle.unused7 = 0;
+  \State \tab \tab tss$\_$idle.fs = $($unsigned int$)$0x00060;
+  \State \tab \tab tss$\_$idle.unused8 = 0;
+  \State \tab \tab tss$\_$idle.gs = $($unsigned int$)$0x48;
+  \State \tab \tab tss$\_$idle.unused9 = 0;
+  \State \tab \tab tss$\_$idle.ldt = 0;
+  \State \tab \tab tss$\_$idle.unused10 = 0;
+  \State \tab \tab tss$\_$idle.dtrap = 0;
+  \State \tab \tab tss$\_$idle.iomap = 0;\\
+
+  \State \tab \tab //tss$\_$inicial\\
+
+  \State \tab \tab tss$\_$inicial.ptl = 0;
+  \State \tab \tab tss$\_$inicial.unused0 = 0;
+  \State \tab \tab tss$\_$inicial.esp0 = 0;
+  \State \tab \tab tss$\_$inicial.ss0 = 0;
+  \State \tab \tab tss$\_$inicial.unused1 = 0;
+  \State \tab \tab tss$\_$inicial.esp1 = 0;
+  \State \tab \tab tss$\_$inicial.ss1 = 0;
+  \State \tab \tab tss$\_$inicial.unused2 = 0;
+  \State \tab \tab tss$\_$inicial.esp2 = 0;
+  \State \tab \tab tss$\_$inicial.ss2 = 0;
+  \State \tab \tab tss$\_$inicial.unused3 = 0;
+  \State \tab \tab tss$\_$inicial.cr3 = 0;
+  \State \tab \tab tss$\_$inicial.eip = 0;
+  \State \tab \tab tss$\_$inicial.eflags = 0;
+  \State \tab \tab tss$\_$inicial.eax = 0;
+  \State \tab \tab tss$\_$inicial.ecx = 0;
+  \State \tab \tab tss$\_$inicial.edx = 0;
+  \State \tab \tab tss$\_$inicial.ebx = 0;
+  \State \tab \tab tss$\_$inicial.esp = 0;
+  \State \tab \tab tss$\_$inicial.ebp = 0;
+  \State \tab \tab tss$\_$inicial.esi = 0;
+  \State \tab \tab tss$\_$inicial.edi = 0;
+  \State \tab \tab tss$\_$inicial.es = 0;
+  \State \tab \tab tss$\_$inicial.unused4 = 0;
+  \State \tab \tab tss$\_$inicial.cs = 0;
+  \State \tab \tab tss$\_$inicial.unused5 = 0;
+  \State \tab \tab tss$\_$inicial.ss = 0;
+  \State \tab \tab tss$\_$inicial.unused6 = 0;
+  \State \tab \tab tss$\_$inicial.ds = 0;
+  \State \tab \tab tss$\_$inicial.unused7 = 0;
+  \State \tab \tab tss$\_$inicial.fs = 0;
+  \State \tab \tab tss$\_$inicial.unused8 = 0;
+  \State \tab \tab tss$\_$inicial.gs = 0;
+  \State \tab \tab tss$\_$inicial.unused9 = 0;
+  \State \tab \tab tss$\_$inicial.ldt = 0;
+  \State \tab \tab tss$\_$inicial.unused10 = 0;
+  \State \tab \tab tss$\_$inicial.dtrap = 0;
+  \State \tab \tab tss$\_$inicial.iomap = 0;
+\State \tab $\}$
+\end{algorithmic}
+
+
+Debemos agregar las \textit{TSS} correspondientes a la tarea \textit{idle} y la tarea \textit{inicial} a nuestra \textit{GDT}, para poder realizar esto, definimos un m\'etodo llamado \textit{tss$\_$agregar$\_$a$\_$gdt}
+El m\'etodo realiza lo siguiente:
+
+\begin{algorithmic}
+\State \tab  void tss$\_$agregar$\_$a$\_$gdt$() \{$
+  \State \tab \tab gdt[GDT$\_$TSS$\_$IDLE] = $($gdt$\_$entry$)$ {
+      \State \tab \tab \tab $($unsigned short$)$    0x0067,         /* limit[0:15]  */
+      \State \tab \tab \tab $($unsigned short$)$    $($int$)$$($$\&$tss$\_$idle$)$ $\&$ 0xFFFF,         /* base[0:15]   */
+      \State \tab \tab \tab $($unsigned char$)$     $($int$)$$($$($int$)$$($$\&$tss$\_$idle$)$ $\gg$ 16$)$ $\&$ 0x00FF,   /* base[23:16]  */
+      \State \tab \tab \tab $($unsigned char$)$     0x09,           /* type         */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* s            */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* dpl          */
+      \State \tab \tab \tab $($unsigned char$)$     0x01,           /* p            */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* limit[16:19] */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* avl          */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* l            */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* db           */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* g            */
+      \State \tab \tab \tab $($unsigned char$)$     $($int$)$$($$\&$tss$\_$idle$)$ $\gg$ 24,           /* base[31:24]  */
+  \State \tab \tab };
+  \State \tab \tab gdt[GDT$\_$TSS$\_$INICIAL] = $($gdt$\_$entry$)$ {
+      \State \tab \tab \tab $($unsigned short$)$    0x0067,         /* limit[0:15]  */
+      \State \tab \tab \tab $($unsigned short$)$    $($int$)$$($$\&$tss$\_$inicial$)$ $\&$ 0xFFFF, /* base[0:15]   */
+      \State \tab \tab \tab $($unsigned char$)$     $($int$)$$($$($int$)$$($$\&$tss$\_$inicial$)$ $\gg$ 16$)$ $\&$ 0x00FF,           /* base[23:16]  */
+      \State \tab \tab \tab $($unsigned char$)$     0x09,           /* type         */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* s            */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* dpl          */
+      \State \tab \tab \tab $($unsigned char$)$     0x01,           /* p            */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* limit[16:19] */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* avl          */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* l            */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* db           */
+      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* g            */
+      \State \tab \tab \tab $($unsigned char$)$     $($int$)$$($$\&$tss$\_$inicial$)$ $\gg$ 24,           /* base[31:24]  */
+  \State \tab \tab };
+\State \tab $\}$
+\end{algorithmic}
+
+Luego necesitamos completar la TSS correspondiente a cada pirata, para esto realizamos el siguiente m\'etodo:
+
+\begin{algorithmic}
+\State \tab void completarTssPirata$($pirata$\_$t tarea$) \{$
+  \State \tab \tab unsigned int paginaParaPilaCero = mmu$\_$proxima$\_$pagina$\_$fisica$\_$libre$()$ + 0x1000;
+\State \tab \tab 
+  \State \tab \tab tss* tss$\_$pirata = $($*$($tarea.jugador$)$$)$.index == JUGADOR$\_$A ? $\&$tss$\_$jugadorA[tarea.id] : $\&$tss$\_$jugadorB[tarea.id];
+\State \tab \tab 
+  \State \tab \tab tss$\_$pirata$\to$eip = 0x00400000;
+  \State \tab \tab tss$\_$pirata$\to$ptl = 0;
+  \State \tab \tab tss$\_$pirata$\to$unused0 = 0;
+  \State \tab \tab tss$\_$pirata$\to$esp0 = paginaParaPilaCero;
+  \State \tab \tab tss$\_$pirata$\to$ss0 = $($unsigned int$)$0x40;
+  \State \tab \tab tss$\_$pirata$\to$unused1 = 0;
+  \State \tab \tab tss$\_$pirata$\to$esp1 = 0;
+  \State \tab \tab tss$\_$pirata$\to$ss1 = 0;
+  \State \tab \tab tss$\_$pirata$\to$unused2 = 0;
+  \State \tab \tab tss$\_$pirata$\to$esp2 = 0;
+  \State \tab \tab tss$\_$pirata$\to$ss2 = 0;
+  \State \tab \tab tss$\_$pirata$\to$unused3 = 0;
+  \State \tab \tab tss$\_$pirata$\to$cr3 = mmu$\_$inicializar$\_$dir$\_$pirata$($tarea.jugador, $\&$tarea$)$;
+  \State \tab \tab tss$\_$pirata$\to$eflags = $($unsigned int$)$0x00202;
+  \State \tab \tab tss$\_$pirata$\to$eax = 0;
+  \State \tab \tab tss$\_$pirata$\to$ecx = 0;
+  \State \tab \tab tss$\_$pirata$\to$edx = 0;
+  \State \tab \tab tss$\_$pirata$\to$ebx = 0;
+  \State \tab \tab tss$\_$pirata$\to$esp = 0x00401000 - 12;
+  \State \tab \tab tss$\_$pirata$\to$ebp = 0x00401000 - 12;
+  \State \tab \tab tss$\_$pirata$\to$esi = 0;
+  \State \tab \tab tss$\_$pirata$\to$edi = 0;
+  \State \tab \tab tss$\_$pirata$\to$es = $($unsigned int$)$0x40 | 0x3;
+  \State \tab \tab tss$\_$pirata$\to$unused4 = 0;
+  \State \tab \tab tss$\_$pirata$\to$cs = $($unsigned int$)$0x50 | 0x3;
+  \State \tab \tab tss$\_$pirata$\to$unused5 = 0;
+  \State \tab \tab tss$\_$pirata$\to$ss = $($unsigned int$)$0x40 | 0x3;
+  \State \tab \tab tss$\_$pirata$\to$unused6 = 0;
+  \State \tab \tab tss$\_$pirata$\to$ds = $($unsigned int$)$0x40 | 0x3;
+  \State \tab \tab tss$\_$pirata$\to$unused7 = 0;
+  \State \tab \tab tss$\_$pirata$\to$fs = $($unsigned int$)$0x40 | 0x3;
+  \State \tab \tab tss$\_$pirata$\to$unused8 = 0;
+  \State \tab \tab tss$\_$pirata$\to$gs = $($unsigned int$)$0x40 | 0x3;
+  \State \tab \tab tss$\_$pirata$\to$unused9 = 0;
+  \State \tab \tab tss$\_$pirata$\to$ldt = 0;
+  \State \tab \tab tss$\_$pirata$\to$unused10 = 0;
+  \State \tab \tab tss$\_$pirata$\to$dtrap = 0;
+  \State \tab \tab tss$\_$pirata$\to$iomap = 0xFFFF;
+\State \tab $\}$
+\end{algorithmic}
+
+Al igual que hicimos con la tarea \textit{idle} y la tarea \textit{inicial}, debemos agregar las tareas correspondientes a los piratas a nuestra \textit{GDT}, para esto desarrollamos el m\'etodo \textit{tss$\_$agretar$\_$piratas$\_$a$\_$gdt}
+
+\begin{algorithmic}
+\State \tab  void tss$\_$agregar$\_$piratas$\_$a$\_$gdt$($jugador$\_$t* j$)$ $\{$
+\State \tab \tab    if $($j$\to$index == 0$)$  $\{$
+\State \tab \tab      gdt[EMPIEZAN$\_$TSS + proximaTareaA] = $($gdt$\_$entry$)$ $\{$
+\State \tab \tab \tab       $($unsigned short$)$    0x0067,         /* limit[0:15]  */
+\State \tab \tab \tab       $($unsigned short$)$    $($int$)$$($$\&$tss$\_$jugadorA[jugadorA.piratas[proximaTareaA].index]$)$ $\&$ 0xFFFF, /* base[0:15]   */
+\State \tab \tab \tab       $($unsigned char$)$     $($int$)$$($$($int$)$$($$\&$tss$\_$jugadorA[jugadorA.piratas[proximaTareaA].index]$)$ $\gg$ 16$)$ $\&$ 0x00FF,           /* base[23:16]  */
+\State \tab \tab \tab       $($unsigned char$)$     0x09,           /* type         */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* s            */
+\State \tab \tab \tab       $($unsigned char$)$     0x03,           /* dpl          */
+\State \tab \tab \tab       $($unsigned char$)$     0x01,           /* p            */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* limit[16:19] */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* avl          */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* l            */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* db           */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* g            */
+\State \tab \tab \tab       $($unsigned char$)$     $($int$)$$($$\&$tss$\_$jugadorA[jugadorA.piratas[proximaTareaA].index]$)$ $\gg$ 24,           /* base[31:24]  */
+\State \tab \tab \tab     $\}$;
+\State \tab \tab \tab     completarTssPirata$($jugadorA.piratas[proximaTareaA]$)$;
+\State \tab \tab \tab   $\}$ else $\{$
+\State \tab \tab \tab     gdt[EMPIEZAN$\_$TSS + 8 + proximaTareaB] = $($gdt$\_$entry$)$ $\{$
+\State \tab \tab \tab       $($unsigned short$)$    0x0067,         /* limit[0:15]  */
+\State \tab \tab \tab       $($unsigned short$)$    $($int$)$$($$\&$tss$\_$jugadorB[jugadorB.piratas[proximaTareaB].index]$)$ $\&$ 0xFFFF, /* base[0:15]   */
+\State \tab \tab \tab       $($unsigned char$)$     $($int$)$$($$($int$)$$($$\&$tss$\_$jugadorB[jugadorB.piratas[proximaTareaB].index]$)$ $\gg$ 16$)$ $\&$ 0x00FF,           /* base[23:16]  */
+\State \tab \tab \tab       $($unsigned char$)$     0x09,           /* type         */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* s            */
+\State \tab \tab \tab       $($unsigned char$)$     0x03,           /* dpl          */
+\State \tab \tab \tab       $($unsigned char$)$     0x01,           /* p            */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* limit[16:19] */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* avl          */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* l            */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* db           */
+\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* g            */
+\State \tab \tab \tab       $($unsigned char$)$     $($int$)$$($$\&$tss$\_$jugadorB[jugadorB.piratas[proximaTareaB].id]$)$ $\gg$ 24,           /* base[31:24]  */
+\State \tab \tab \tab     $\}$;
+\State \tab \tab \tab     completarTssPirata$($jugadorB.piratas[proximaTareaB]$)$;
+\State \tab \tab $\}$
+\State \tab $\}$
+\end{algorithmic}
+
 \subsection{Scheduler}
 
 Decidimos representar al \textit{Scheduler} de la siguiente manera:
