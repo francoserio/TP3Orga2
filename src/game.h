@@ -26,11 +26,9 @@ uint reloj_pirata[16];
 uint contador_de_tiempo;
 uchar siempreIgual;
 
-struct jugador_t;
-
 typedef struct pirata_t
 {
-    uint index;
+    uchar index;
     struct jugador_t* jugador;
     uint id;
     uint posicionX;
@@ -46,12 +44,12 @@ typedef struct pirata_t
 
 typedef struct jugador_t
 {
-    uint index;
+    uchar index;
     pirata_t piratas[MAX_CANT_PIRATAS_VIVOS];
     uint puntaje;
     uint piratasRestantes;
     uint minerosPendientes;
-    uint posicionesXYVistas[80][45];
+    uchar posicionesXYVistas[80][45];
     uint puertoX;
     uint puertoY;
     uint colorJug;
@@ -92,5 +90,7 @@ void game_tick(uint id_pirata);
 void game_terminar_si_es_hora();
 void game_atender_teclado(unsigned char tecla);
 
+void game_modoDebug_open(unsigned int* info);
+void game_modoDebug_close();
 
 #endif  /* !__GAME_H__ */

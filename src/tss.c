@@ -173,12 +173,12 @@ void completarTssPirata(pirata_t tarea) {
   tss_pirata->unused10 = 0;
   tss_pirata->dtrap = 0;
   tss_pirata->iomap = 0xFFFF;
-  breakpoint();
+  // breakpoint();
 }
 
 void tss_agregar_piratas_a_gdt(jugador_t* j, int indice) {
   if (j->index == 0)  {
-    print_dec(indice, 5, 30, 30, 0x0F);
+    // print_dec(indice, 5, 30, 30, 0x0F);
     gdt[EMPIEZAN_TSS + indice] = (gdt_entry) {
       (unsigned short)    0x0067,         /* limit[0:15]  */
       (unsigned short)    (int)(&(tss_jugadorA[indice])) & 0xFFFF, /* base[0:15]   */

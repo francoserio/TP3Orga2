@@ -218,23 +218,23 @@ void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 }
 
 void memcpy(unsigned int src, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us) {
-  breakpoint();
+  // breakpoint();
   unsigned int cr3 = rcr3();
 	mmu_mapear_pagina(dest, cr3, dest, rd, us);
-  breakpoint();
+  // breakpoint();
   char* srcp = (char*)src;
 	char* destp = (char*)dest;
-  breakpoint();
+  // breakpoint();
 	for (int i = 0; i < len; ++i) {
 		destp[i] = srcp[i];
 	}
-  breakpoint();
+  // breakpoint();
 	mmu_unmapear_pagina(dest, cr3);
 }
 
 void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us) {
 	lcr3(cr3);
-  breakpoint();
+  // breakpoint();
 	mmu_mapear_pagina(src, cr3, src, rd, us);
 	mmu_mapear_pagina(dest, cr3, dest, rd, us);
 	char* srcp = (char*)src;
@@ -243,19 +243,19 @@ void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int 
 	for (i = 0; i < len; ++i) {
 		destp[i] = srcp[i];
 	}
-  breakpoint();
+  // breakpoint();
 	mmu_unmapear_pagina(src, cr3);
 	mmu_unmapear_pagina(dest, cr3);
 }
 
 void memcpyPila(unsigned int destVir, unsigned int cr3, unsigned char rd, unsigned char us, int value) {
-  breakpoint();
+  // breakpoint();
   lcr3(cr3);
-  breakpoint();
+  // breakpoint();
   // mmu_mapear_pagina(0x00401000, cr3, 0x00401000, rd, us);
   *((int*)(tss_jugadorA[proxTareaAMuerta].ebp + destVir)) = (int)value;
   // mmu_unmapear_pagina(0x00401000, cr3);
-  breakpoint();
+  // breakpoint();
 }
 
 /* Direcciones fisicas de codigos */

@@ -13,13 +13,11 @@
 
 void task(int x_target, int y_target) {
     /* Tarea */
-    breakpoint();
 
     uint pos = syscall_posicion(-1);
-    breakpoint();
     int x = pos & 0xFF;
     int y = pos >> 8;
-    syscall_debug(pos);
+    // syscall_debug(pos);
     // syscall_debug(x);
     int i;
     for(i=x; i < x_target; i++)

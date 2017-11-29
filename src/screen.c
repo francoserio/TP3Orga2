@@ -120,7 +120,7 @@ void screen_pintar_puntajes() {
 }
 
 void screen_actualizar_puntajes() {
-  breakpoint();
+  // breakpoint();
   int i = 47;
   int j = 35;
   print_dec(jugadorA.puntaje, 3, j, i, 0x0F);
@@ -237,5 +237,10 @@ void screen_borrar_pirata(jugador_t *j, pirata_t *pirata) {
 }
 
 void screen_stop_game_show_winner(jugador_t *j) {
-  print("GANADOR:" + j->index, 39, 22, 0xF);
+  if (j->index == 0) {
+    print("GANADOR: JUGADOR A FELICITACIONES CAMPEON", 20, 22, 0xF);
+  } else {
+    print("GANADOR: JUGADOR B FELICITACIONES CAMPEON", 39, 22, 0xF);
+  }
+
 }

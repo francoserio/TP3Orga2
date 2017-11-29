@@ -83,6 +83,9 @@ extern sched_tick
 extern sched_tarea_actual
 
 extern game_syscall_manejar
+extern game_modoDebug_open
+extern game_modoDebug_close
+extern game_pirata_exploto
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -91,9 +94,36 @@ extern game_syscall_manejar
 global _isr%1
 
 _isr%1:
-    mov eax, 1
-    imprimir_texto_mp desc_%1, desc_len_%1, 0x07, 3, 0
-    jmp $
+    pushad
+    ; mov eax, 1
+    ; imprimir_texto_mp desc_%1, desc_len_%1, 0x07, 3, 0 ;ESTE ERA UNO DE LOS PRIMEROS EJERCICIOS
+    ; jmp $
+    call game_pirata_exploto
+    cmp byte [modoDebug], 1
+    jne .fin
+
+    mov eax, cr0
+    push eax
+    mov eax, cr2
+    push eax
+    mov eax, cr3
+    push eax
+    mov eax, cr4
+    push eax
+
+    push cs ; push segmentos
+    push ds
+    push es
+    push fs
+    push gs
+    push ss
+
+    push esp ; push array con toda la info de los registros
+    call game_modoDebug_open
+    call game_modoDebug_close
+
+  .fin:
+    jmp 0x68:0
 
 %endmacro
 
@@ -137,7 +167,7 @@ extern sched_intercambiar_por_idle
 global _isr32
 _isr32:
 	; PRESERVAR REGISTROS
-  xchg bx, bx
+  ; xchg bx, bx
   pushad
   call fin_intr_pic1
   cmp byte [modoDebug], 1
@@ -173,7 +203,7 @@ _isr33:
 
 global _isr70
 _isr70:
-  xchg bx, bx
+  ; xchg bx, bx
   cmp eax, 3
   je .posicion
   pushad
