@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.10.8)  28 NOV 2017 16:28
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.10.8)  29 NOV 2017 20:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -709,29 +709,71 @@ LaTeX Info: Redefining \% on input line 1.
 
 
 ]
-(./modoreal.tex
-Underfull \hbox (badness 10000) in paragraph at lines 10--12
+(./ejercicio1.tex
+! Missing $ inserted.
+<inserted text> 
+                $
+l.4 [GDT_
+         IDX_NULL_DESC] = (gdt_entry) {
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
 
+)
+! Missing $ inserted.
+<inserted text> 
+                $
+l.89 \clearpage
+               
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (1715.10776pt too wide) in paragraph at lines 1--89
+\T1/cmr/m/n/10 [GDT$[]\OML/cmm/m/it/10 DX[]ULL[]ESC\OT1/cmr/m/n/10 ] = (\OML/cm
+m/m/it/10 gdt[]ntry\OT1/cmr/m/n/10 )[]\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 [\OML/
+cmm/m/it/10 GDT[]ATA[]SER\OT1/cmr/m/n/10 ] =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 17--19
-
+Overfull \hbox (1618.72949pt too wide) in paragraph at lines 1--89
+\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 gdt[]ntry\OT1/cmr/m/n/10 )[]\OML/cmm/m/it/10 
+; \OT1/cmr/m/n/10 [\OML/cmm/m/it/10 GDT[]ATA[]ERNEL\OT1/cmr/m/n/10 ] =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 25--27
-
+Overfull \hbox (1601.62135pt too wide) in paragraph at lines 1--89
+\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 gdt[]ntry\OT1/cmr/m/n/10 )[]\OML/cmm/m/it/10 
+; \OT1/cmr/m/n/10 [\OML/cmm/m/it/10 GDT[]ODE[]SER\OT1/cmr/m/n/10 ] =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 31--33
-
+Overfull \hbox (1622.31346pt too wide) in paragraph at lines 1--89
+\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 gdt[]ntry\OT1/cmr/m/n/10 )[]\OML/cmm/m/it/10 
+; \OT1/cmr/m/n/10 [\OML/cmm/m/it/10 GDT[]ODE[]ERNEL\OT1/cmr/m/n/10 ] =
  []
 
-) [4
 
-] (./modoprotegido.tex
+Overfull \hbox (1501.69728pt too wide) in paragraph at lines 1--89
+\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 gdt[]ntry\OT1/cmr/m/n/10 )[]$ 
+ []
+
+[4
+
+] (./ejercicio2.tex) [5
+
+] (./ejercicio3.tex) [6
+
+] (./ejercicio4.tex) [7
+
+]
+(./ejercicio5.tex) [8
+
+] (./ejercicio6.tex) [9
+
+] (./ejercicio7.tex) [10
+
+]
+(./modoprotegido.tex
 Overfull \hbox (2.66129pt too wide) in paragraph at lines 34--35
 []\T1/cmr/m/n/10 Las fun-cio-nes $\OML/cmm/m/it/10 screen[]inicializar$\T1/cmr/
 m/n/10 , $\OML/cmm/m/it/10 screen[]pintar[]nombre$ \T1/cmr/m/n/10 es-tan de-fi-
@@ -739,9 +781,9 @@ ni-das en \T1/cmr/bx/n/10 screen.h \T1/cmr/m/n/10 y desa-rro-lla-das en \T1/cmr
 /bx/n/10 screen.c\T1/cmr/m/n/10 .
  []
 
-[5
+[11
 
-] [6]
+] [12]
 Overfull \hbox (5.83852pt too wide) in paragraph at lines 182--183
 []| | | | | $\OT1/cmr/m/n/10 ((\OML/cmm/m/it/10 unsignedint\OMS/cmsy/m/n/10 ^^C
 \OT1/cmr/m/n/10 )((\OML/cmm/m/it/10 unsignedint\OT1/cmr/m/n/10 )0\OML/cmm/m/it/
@@ -783,7 +825,7 @@ m/it/10 mapFis\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2)\OML/cmm/m
 10 ==abajo \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 izquierda$ 
  []
 
-[7]
+[13]
 Overfull \hbox (27.14261pt too wide) in paragraph at lines 213--214
 []| | | $\OML/cmm/m/it/10 mmu[]apear[]agina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 po
 s\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ; \
@@ -889,7 +931,7 @@ m/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cmm/m/
 it/10 ==abajo \OMS/cmsy/m/n/10 ^^@
  []
 
-[8] [9] [10] [11]
+[14] [15] [16] [17]
 Overfull \hbox (38.00006pt too wide) in paragraph at lines 462--463
 []| | \T1/cmr/m/n/10 tss* tss$[]$pirata = $\OT1/cmr/m/n/10 ($\T1/cmr/m/n/10 *$\
 OT1/cmr/m/n/10 ($\T1/cmr/m/n/10 tarea.jugador$\OT1/cmr/m/n/10 )$$)$\T1/cmr/m/n/
@@ -906,13 +948,35 @@ $($$&$\T1/cmr/m/n/10 tss$[]$jugadorA[jugadorA.piratas[proximaTareaA].index]$\OT
  \T1/cmr/m/n/10 0x00FF,
  []
 
-[12] [13] [14] [15]) [16] (./main.aux
+[18] [19] [20] [21]) [22] (./modoreal.tex
+Underfull \hbox (badness 10000) in paragraph at lines 10--12
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 17--19
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 25--27
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 31--33
+
+ []
+
+) [23
+
+] (./main.aux
 LaTeX Info: Redefining \. on input line 6.
 LaTeX Info: Redefining \% on input line 6.
 ) ) 
 Here is how much of TeX's memory you used:
- 5173 strings out of 493029
- 67636 string characters out of 6136234
+ 5194 strings out of 493029
+ 67916 string characters out of 6136234
  165569 words of memory out of 5000000
  8588 multiletter control sequences out of 15000+600000
  16443 words of font info for 38 fonts, out of 8000000 for 9000
@@ -931,10 +995,10 @@ onts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm
 </usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fo
 nts/type1/public/cm-super/sfti1000.pfb></usr/share/texmf/fonts/type1/public/cm-
 super/sftt1000.pfb>
-Output written on main.pdf (16 pages, 234090 bytes).
+Output written on main.pdf (23 pages, 244025 bytes).
 PDF statistics:
- 113 PDF objects out of 1000 (max. 8388607)
- 80 compressed objects within 1 object stream
+ 135 PDF objects out of 1000 (max. 8388607)
+ 95 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
