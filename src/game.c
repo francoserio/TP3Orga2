@@ -138,6 +138,7 @@ void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y)
     }
   } else if (y == 44) {
     //si es la ultima fila no se agreg la fila 45 porque no existe
+    // breakpoint();
     for (int i = -1; i <= 1; i++) {
       for (int j = -1; j <= 0; j++) {
         (jugador->posicionesXYVistas)[x + i][y + j] = 1;
@@ -232,7 +233,7 @@ void game_inicializar()
 }
 
 void game_modoDebug_open(unsigned int* info) {
-  breakpoint();
+  // breakpoint();
 
   for (int i = 0; i < 6; i++) {
     segmentos_debug[i] = info[i];
@@ -288,7 +289,7 @@ void game_modoDebug_open(unsigned int* info) {
       print(" ", i + DEBUG_CORNER_X, j + DEBUG_CORNER_Y, C_BG_BLACK);
     }
   }
-  breakpoint();
+  // breakpoint();
 
   //pinto interior
   for(i = 1; i < DEBUG_WIDTH - 1; i++) {
@@ -296,7 +297,7 @@ void game_modoDebug_open(unsigned int* info) {
       print(" ", i + DEBUG_CORNER_X , j + DEBUG_CORNER_Y, C_BG_LIGHT_GREY);
     }
   }
-  breakpoint();
+  // breakpoint();
 
   // imprimo segmentos
   for(i = 0; i < 6; i++) {
@@ -304,7 +305,7 @@ void game_modoDebug_open(unsigned int* info) {
       print_hex(segmentos_debug[i], 4, DEBUG_REGISTROS_X + 24, DEBUG_REGISTROS_Y + i*2, C_FG_WHITE | C_BG_LIGHT_GREY);
   }
 
-  breakpoint();
+  // breakpoint();
 
   //imprimo registros comunes
   for(i = 0; i < 9; i++) {
@@ -312,7 +313,7 @@ void game_modoDebug_open(unsigned int* info) {
       print_hex(registros_debug[i], 8, DEBUG_REGISTROS_X + 4, DEBUG_REGISTROS_Y + i*2, C_FG_WHITE | C_BG_LIGHT_GREY);
   }
 
-  breakpoint();
+  // breakpoint();
 
   //imprimo registros de control
   for (i = 0; i < 4; i++) {
@@ -320,7 +321,7 @@ void game_modoDebug_open(unsigned int* info) {
     print_hex(registros_control_debug[i], 8, DEBUG_REGISTROS_X + 4, DEBUG_REGISTROS_Y + 18 + i*2, C_FG_WHITE | C_BG_LIGHT_GREY);
   }
 
-  breakpoint();
+  // breakpoint();
 
   //imprimo stack
   print("Stack: ", DEBUG_REGISTROS_X + 20, DEBUG_REGISTROS_Y + 12, C_FG_BLACK | C_BG_LIGHT_GREY);
@@ -331,23 +332,23 @@ void game_modoDebug_open(unsigned int* info) {
       stack_debug++;
   }
 
-  breakpoint();
+  // breakpoint();
   //imprimo eflags
   print("eflags", DEBUG_REGISTROS_X + 20, DEBUG_REGISTROS_Y + 20, C_FG_BLACK | C_BG_LIGHT_GREY);
   print_hex(eflags_debug, 8, DEBUG_REGISTROS_X + 27, DEBUG_REGISTROS_Y +20, C_FG_WHITE | C_BG_LIGHT_GREY);
 
-  breakpoint();
+  // breakpoint();
 
   modoDebugPantalla = 1;
 
-  breakpoint();
+  // breakpoint();
 }
 
 void game_modoDebug_close() {
 	//vuelve el mapa a como estaba antes
-  breakpoint();
+  // breakpoint();
   unsigned int* video = (unsigned int*) VIDEO;
-  breakpoint();
+  // breakpoint();
   for(int j = 0; j < 80*25; j++) {
     // print(" ", i + DEBUG_CORNER_X, j + DEBUG_CORNER_Y, C_BG_BLACK);
     video[j] = mapa_backup[j];
@@ -366,7 +367,6 @@ void game_jugador_inicializar(jugador_t *j)
 
 	j->index = indexJug++;
   j->puntaje = 0;
-  j->piratasRestantes = 0;
   j->minerosPendientes = 0;
   for (int k = 0; k < 80; k++) {
     for (int p = 0; p < 45; p++) {
@@ -423,6 +423,7 @@ void game_tick(uint id_pirata)
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
 {
   // print_hex((unsigned int)(mapa_backup), 11, 15, 15, 0x0F);
+  // breakpoint();
   j->piratasRestantes--;
   if (j->index == 0) {
     //turno de jugador A. Tengo que explorar las paginas de alrededor
@@ -439,7 +440,6 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
       tareaPirata->posicionYObjetivo = y;
     }
     tss_agregar_piratas_a_gdt(j, proxTareaAMuerta);
-    // print_hex(proxTareaAMuerta, 20, 13, 13, 0x0F);
     mmu_mapear_pagina(0x00400000, tss_jugadorA[proxTareaAMuerta].cr3, pos2mapFis(1, 2), 1, 1);
     if (tareaPirata->tipo == explorador) {
       //explorador
@@ -447,12 +447,10 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
     } else {
       //minero
       memcpy((unsigned int)0x11000, pos2mapFis(1, 2), PAGE_SIZE, 1, 1);
-      memcpyPila(8, tss_jugadorA[proxTareaAMuerta].cr3, 1, 1, tareaPirata->posicionYObjetivo);
-      memcpyPila(4, tss_jugadorA[proxTareaAMuerta].cr3, 1, 1, tareaPirata->posicionXObjetivo);
+      memcpyPila(8, tss_jugadorA[proxTareaAMuerta].cr3, 1, 1, tareaPirata->posicionYObjetivo, j);
+      memcpyPila(4, tss_jugadorA[proxTareaAMuerta].cr3, 1, 1, tareaPirata->posicionXObjetivo, j);
     }
-    screen_pintar_piratas();
     sched_agregar(&jugadorA);
-    // breakpoint();
   } else {
     //turno de jugador B. Tengo que explorar las paginas de alrededor
     if (tipo != minero) {
@@ -475,12 +473,12 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
     } else {
       //minero
       memcpy(0x13000, pos2mapFis(78,43), PAGE_SIZE, 1, 1);
-      memcpyPila(8, tss_jugadorB[proxTareaBMuerta].cr3, 1, 1, tareaPirata->posicionYObjetivo);
-      memcpyPila(4, tss_jugadorB[proxTareaBMuerta].cr3, 1, 1, tareaPirata->posicionXObjetivo);
+      memcpyPila(8, tss_jugadorB[proxTareaBMuerta].cr3, 1, 1, tareaPirata->posicionYObjetivo, j);
+      memcpyPila(4, tss_jugadorB[proxTareaBMuerta].cr3, 1, 1, tareaPirata->posicionXObjetivo, j);
     }
-    screen_pintar_piratas();
     sched_agregar(&jugadorB);
   }
+  screen_pintar_piratas();
 }
 
 void game_explorar_posicion(jugador_t *jugador, int c, int f)
@@ -503,9 +501,10 @@ uint game_posicion_ya_vista(pirata_t* tareaPir, direccion dir) {
 
 uint game_syscall_pirata_mover(uint id, direccion dir)
 {
+  // print_dec(proxTareaAMuerta, 3, 10, 10, 0x0F);
+  // print_dec(proxTareaBMuerta, 3, 11, 11, 0x0F);
   pirata_t* tareaPirata = id_pirata2pirata(id);
   // print_dec(id, 3, 25, 25, 0x0F);
-  // breakpoint();
   // print_dec(id, 3, 25, 25, 0x0F);
   if (tareaPirata->tipo == minero) {
     //MINERO. tengo que checkear que sea valida
@@ -514,8 +513,8 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
     game_dir2xy(dir, &x, &y);
     if (game_posicion_valida(tareaPirata->posicionX + x, tareaPirata->posicionY + y) == 1) {
       //tengo que checkear que la posicion ya esté mapeada
-      // print_dec(tareaPirata->posicionX, 3, 20, 20, 0x0F);
-      // print_dec(tareaPirata->posicionY, 3, 21, 21, 0x0F);
+      // print_dec(tareaPirata->posicionX, 3, 18, 18, 0x0F);
+      // print_dec(tareaPirata->posicionY, 3, 19, 19, 0x0F);
       if (game_posicion_ya_vista(tareaPirata, dir) == 0) {
         //si no está mapeada, lo mato
         game_pirata_exploto(id);
@@ -547,6 +546,8 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
       //va a pasar a una posicion valida en el juego
       tareaPirata->posicionX = tareaPirata->posicionX + x;
       tareaPirata->posicionY = tareaPirata->posicionY + y;
+      // print_dec(tareaPirata->posicionX, 3, 20, 20, 0x0F);
+      // print_dec(tareaPirata->posicionY, 3, 21, 21, 0x0F);
       mmu_inicializar_dir_pirataConocidas(tareaPirata->jugador);
       if ((tareaPirata->jugador)->index == 0) {
         mmu_unmapear_pagina(0x00400000, tss_jugadorA[tareaActualA].cr3);
@@ -559,8 +560,11 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
         mmu_mapear_pagina(0x00400000, tss_jugadorB[tareaActualB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
         mmu_mapear_pagina(pos2mapVir(tareaPirata->posicionX, tareaPirata->posicionY), tss_jugadorB[tareaActualB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
       }
+      // breakpoint();
       game_explorar_posicion(tareaPirata->jugador, tareaPirata->posicionX, tareaPirata->posicionY);
+      // breakpoint();
       screen_pintar_piratas();
+      // breakpoint();
     } else {
       //si no va a ir a una posicion valida lo mato
       game_pirata_exploto(id);
@@ -666,12 +670,14 @@ void game_pirata_explotoisr()
     sched_sacar(tareaPirata->jugador, tareaPirata->index);
   } else {
     //jugador B
+    // breakpoint();
     pirata_t* tareaPirata = id_pirata2pirata(8 + tareaActualB);
     ((tareaPirata->jugador)->piratasRestantes)++;
     tareaPirata->vivoMuerto = 0;
     tareaPirata->reloj = 0;
     screen_pintar(' ', (tareaPirata->jugador)->colorJug, tareaPirata->posicionY, tareaPirata->posicionX);
     sched_sacar(tareaPirata->jugador, tareaPirata->index);
+    // breakpoint();
   }
 }
 

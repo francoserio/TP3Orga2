@@ -218,7 +218,9 @@ void screen_pintar_piratas() {
 void screen_pintar_pirata(jugador_t *j, pirata_t *pirata) {
   for (int i = 0; i < 45; i++) {
     for (int p = 0; p < 80; p++) {
-      if (j->posicionesXYVistas[p][i] == 1 && game_pirata_en_posicion(p, i) == NULL) {
+      if (jugadorA.posicionesXYVistas[p][i] == 1 && jugadorB.posicionesXYVistas[p][i] == 1 && game_pirata_en_posicion(p, i) == NULL) {
+        screen_pintar(' ', C_BG_CYAN, i, p);
+      } else if (j->posicionesXYVistas[p][i] == 1 && game_pirata_en_posicion(p, i) == NULL) {
         screen_pintar(' ', j->colorJug, i, p);
       }
     }

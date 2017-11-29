@@ -121,7 +121,7 @@ unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
     pt[i].base_address = i;
   }
   unsigned int page_directory_address = (unsigned int)pd;
-  if (jugador->index == JUGADOR_A) {
+  if (jugador->index == 0) {
     //empiezo en la primera posicion
     //mapeo donde estamos parados
     mmu_mapear_pagina(pos2mapVir(1,2), page_directory_address, pos2mapFis(1,2), 1, 1);
@@ -137,7 +137,9 @@ unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
   } else {
     //empiezo en la ultima posicion
     //mapeo donde estamos parados
+    // breakpoint();
     mmu_mapear_pagina(pos2mapVir(78,43), page_directory_address, pos2mapFis(78,43), 1, 1);
+    // breakpoint();
     //al principio solo se mapean las paginas de la izquierda, arriba, arriba-izquierda para jug 2
     mmu_mapear_pagina(pos2mapVir(77,43), page_directory_address, pos2mapFis(77,43), 1, 1);//izquierda
     mmu_mapear_pagina(pos2mapVir(77,42), page_directory_address, pos2mapFis(77,42), 1, 1);//arriba-izquierda
@@ -147,6 +149,7 @@ unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea) {
     mmu_mapear_pagina(pos2mapVir(78,44), page_directory_address, pos2mapFis(78,44), 1, 1);//abajo
     mmu_mapear_pagina(pos2mapVir(79,44), page_directory_address, pos2mapFis(79,44), 1, 1);//abajo-derecha
     mmu_mapear_pagina(pos2mapVir(77,44), page_directory_address, pos2mapFis(77,44), 1, 1);//abajo-izquierda
+    // breakpoint();
   }
 
   return page_directory_address;
@@ -156,6 +159,7 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
   page_directory_entry* pd = (page_directory_entry*)(cr3);
   unsigned int indiceDirectory = virtual >> 22;
   unsigned int indiceTable = (virtual << 10) >> 22;
+  // breakpoint();
   if (pd[indiceDirectory].present == 1) {
     page_table_entry* pt = (page_table_entry*)((pd[indiceDirectory].base_address << 12));
     if (pt[indiceTable].present == 1) {
@@ -248,12 +252,16 @@ void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int 
 	mmu_unmapear_pagina(dest, cr3);
 }
 
-void memcpyPila(unsigned int destVir, unsigned int cr3, unsigned char rd, unsigned char us, int value) {
+void memcpyPila(unsigned int destVir, unsigned int cr3, unsigned char rd, unsigned char us, int value, jugador_t* jug) {
   // breakpoint();
   lcr3(cr3);
   // breakpoint();
   // mmu_mapear_pagina(0x00401000, cr3, 0x00401000, rd, us);
-  *((int*)(tss_jugadorA[proxTareaAMuerta].ebp + destVir)) = (int)value;
+  if (jug->index == 0) {
+    *((int*)(tss_jugadorA[proxTareaAMuerta].ebp + destVir)) = (int)value;
+  } else {
+    *((int*)(tss_jugadorB[proxTareaBMuerta].ebp + destVir)) = (int)value;
+  }
   // mmu_unmapear_pagina(0x00401000, cr3);
   // breakpoint();
 }

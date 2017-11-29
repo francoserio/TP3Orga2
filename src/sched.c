@@ -235,7 +235,7 @@ void sched_sacar(jugador_t* jug, uint idx) {
   } else {
     //es jugadorB
     if (proxTareaBMuerta > idx) {
-      proxTareaAMuerta = idx;
+      proxTareaBMuerta = idx;
     }
   }
 }

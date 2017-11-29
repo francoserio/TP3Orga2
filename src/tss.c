@@ -133,7 +133,13 @@ void tss_agregar_a_gdt() {
 void completarTssPirata(pirata_t tarea) {
   unsigned int paginaParaPilaCero = mmu_proxima_pagina_fisica_libre() + PAGE_SIZE;
   // breakpoint();
-  tss* tss_pirata = (*(tarea.jugador)).index == JUGADOR_A ? &(tss_jugadorA[tarea.index]) : &(tss_jugadorB[tarea.index]);
+  tss* tss_pirata;
+  if ((tarea.jugador)->index == JUGADOR_A) {
+    tss_pirata = &(tss_jugadorA[tarea.index]);
+  } else {
+    tss_pirata = &(tss_jugadorB[tarea.index]);
+  }
+  // tss* tss_pirata = (tarea.jugador)->index == JUGADOR_A ? &(tss_jugadorA[tarea.index]) : &(tss_jugadorB[tarea.index]);
   // breakpoint();
   tss_pirata->ptl = 0;
   tss_pirata->unused0 = 0;
@@ -196,6 +202,7 @@ void tss_agregar_piratas_a_gdt(jugador_t* j, int indice) {
     };
     completarTssPirata(jugadorA.piratas[indice]);
   } else {
+    // print_dec(EMPIEZAN_TSS + 8 + indice, 3, 10, 10, 0x0F);
     gdt[EMPIEZAN_TSS + 8 + indice] = (gdt_entry) {
       (unsigned short)    0x0067,         /* limit[0:15]  */
       (unsigned short)    (int)(&(tss_jugadorB[indice])) & 0xFFFF, /* base[0:15]   */
@@ -211,6 +218,6 @@ void tss_agregar_piratas_a_gdt(jugador_t* j, int indice) {
       (unsigned char)     0x00,           /* g            */
       (unsigned char)     (int)(&(tss_jugadorB[indice])) >> 24           /* base[31:24]  */
     };
-    completarTssPirata(jugadorB.piratas[tareaActualB]);
+    completarTssPirata(jugadorB.piratas[indice]);
   }
 }
