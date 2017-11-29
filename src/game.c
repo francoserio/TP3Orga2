@@ -36,7 +36,7 @@ unsigned int registros_debug[9];
 unsigned int* stack_debug;
 unsigned int eflags_debug;
 
-unsigned short mapa_backup[DEBUG_WIDTH*DEBUG_HEIGHT];
+unsigned int mapa_backup[80*25] = {};
 
 char* segmentos[6] = {
   "ss",
@@ -231,12 +231,8 @@ void game_inicializar()
   contador_de_tiempo = 0;
 }
 
-void game_jugador_inicializar_mapa(jugador_t *jug)
-{
-
-}
-
 void game_modoDebug_open(unsigned int* info) {
+  breakpoint();
 
   for (int i = 0; i < 6; i++) {
     segmentos_debug[i] = info[i];
@@ -278,18 +274,21 @@ void game_modoDebug_open(unsigned int* info) {
   // estoy listo para imprimir
   // backapeo la pantalla
 
-  unsigned int* video = (unsigned int*) VIDEO;
-	for(uint i = 0; i < DEBUG_WIDTH*DEBUG_HEIGHT; i++) {
-    mapa_backup[i] = video[i];
-	}
-
   int j;
+
+  unsigned int* video = (unsigned int*) VIDEO;
+  for(j = 0; j < 80*25; j++) {
+    // print(" ", i + DEBUG_CORNER_X, j + DEBUG_CORNER_Y, C_BG_BLACK);
+    mapa_backup[j] = video[j];
+  }
+
   //dibujo bordes del debug
   for(i = 0; i < DEBUG_WIDTH; i++) {
     for(j = 0; j< DEBUG_HEIGHT; j++) {
       print(" ", i + DEBUG_CORNER_X, j + DEBUG_CORNER_Y, C_BG_BLACK);
     }
   }
+  breakpoint();
 
   //pinto interior
   for(i = 1; i < DEBUG_WIDTH - 1; i++) {
@@ -297,10 +296,7 @@ void game_modoDebug_open(unsigned int* info) {
       print(" ", i + DEBUG_CORNER_X , j + DEBUG_CORNER_Y, C_BG_LIGHT_GREY);
     }
   }
-  //pinto titulo
-  for(i = 1; i< DEBUG_WIDTH - 1; i++) {
-    print(" ", i + DEBUG_CORNER_X , 1 + DEBUG_CORNER_Y, C_BG_BLUE);
-  }
+  breakpoint();
 
   // imprimo segmentos
   for(i = 0; i < 6; i++) {
@@ -308,17 +304,23 @@ void game_modoDebug_open(unsigned int* info) {
       print_hex(segmentos_debug[i], 4, DEBUG_REGISTROS_X + 24, DEBUG_REGISTROS_Y + i*2, C_FG_WHITE | C_BG_LIGHT_GREY);
   }
 
+  breakpoint();
+
   //imprimo registros comunes
   for(i = 0; i < 9; i++) {
       print(registros[i], DEBUG_REGISTROS_X, DEBUG_REGISTROS_Y + i*2, C_FG_BLACK | C_BG_LIGHT_GREY);
       print_hex(registros_debug[i], 8, DEBUG_REGISTROS_X + 4, DEBUG_REGISTROS_Y + i*2, C_FG_WHITE | C_BG_LIGHT_GREY);
   }
 
+  breakpoint();
+
   //imprimo registros de control
   for (i = 0; i < 4; i++) {
-    print(registros_control[i], DEBUG_REGISTROS_X, DEBUG_REGISTROS_Y + 16 + i*2, C_FG_BLACK | C_BG_LIGHT_GREY);
-    print_hex(registros_control_debug[i], 8, DEBUG_REGISTROS_X + 4, DEBUG_REGISTROS_Y + 16 + i*2, C_FG_WHITE | C_BG_LIGHT_GREY);
+    print(registros_control[i], DEBUG_REGISTROS_X, DEBUG_REGISTROS_Y + 18 + i*2, C_FG_BLACK | C_BG_LIGHT_GREY);
+    print_hex(registros_control_debug[i], 8, DEBUG_REGISTROS_X + 4, DEBUG_REGISTROS_Y + 18 + i*2, C_FG_WHITE | C_BG_LIGHT_GREY);
   }
+
+  breakpoint();
 
   //imprimo stack
   print("Stack: ", DEBUG_REGISTROS_X + 20, DEBUG_REGISTROS_Y + 12, C_FG_BLACK | C_BG_LIGHT_GREY);
@@ -329,16 +331,26 @@ void game_modoDebug_open(unsigned int* info) {
       stack_debug++;
   }
 
+  breakpoint();
   //imprimo eflags
   print("eflags", DEBUG_REGISTROS_X + 20, DEBUG_REGISTROS_Y + 20, C_FG_BLACK | C_BG_LIGHT_GREY);
   print_hex(eflags_debug, 8, DEBUG_REGISTROS_X + 27, DEBUG_REGISTROS_Y +20, C_FG_WHITE | C_BG_LIGHT_GREY);
+
+  breakpoint();
+
+  modoDebugPantalla = 1;
+
+  breakpoint();
 }
 
 void game_modoDebug_close() {
 	//vuelve el mapa a como estaba antes
-	unsigned int* video = (unsigned int*)VIDEO;
-  for(uint i = 0; i < DEBUG_HEIGHT*DEBUG_WIDTH; i++) {
-    video[i] = mapa_backup[i];
+  breakpoint();
+  unsigned int* video = (unsigned int*) VIDEO;
+  breakpoint();
+  for(int j = 0; j < 80*25; j++) {
+    // print(" ", i + DEBUG_CORNER_X, j + DEBUG_CORNER_Y, C_BG_BLACK);
+    video[j] = mapa_backup[j];
   }
 }
 
@@ -634,10 +646,33 @@ void game_pirata_exploto(uint id)
 {
   sched_intercambiar_por_idle();
   pirata_t* tareaPirata = id_pirata2pirata(id);
-  (tareaPirata->jugador)->piratasRestantes++;
+  ((tareaPirata->jugador)->piratasRestantes)++;
   tareaPirata->vivoMuerto = 0;
   tareaPirata->reloj = 0;
+  screen_pintar(' ', (tareaPirata->jugador)->colorJug, tareaPirata->posicionY, tareaPirata->posicionX);
   sched_sacar(tareaPirata->jugador, tareaPirata->index);
+}
+
+void game_pirata_explotoisr()
+{
+  sched_intercambiar_por_idle();
+  if (turnoPirataActual == 0) {
+    //jugador A
+    pirata_t* tareaPirata = id_pirata2pirata(tareaActualA);
+    ((tareaPirata->jugador)->piratasRestantes)++;
+    tareaPirata->vivoMuerto = 0;
+    tareaPirata->reloj = 0;
+    screen_pintar(' ', (tareaPirata->jugador)->colorJug, tareaPirata->posicionY, tareaPirata->posicionX);
+    sched_sacar(tareaPirata->jugador, tareaPirata->index);
+  } else {
+    //jugador B
+    pirata_t* tareaPirata = id_pirata2pirata(8 + tareaActualB);
+    ((tareaPirata->jugador)->piratasRestantes)++;
+    tareaPirata->vivoMuerto = 0;
+    tareaPirata->reloj = 0;
+    screen_pintar(' ', (tareaPirata->jugador)->colorJug, tareaPirata->posicionY, tareaPirata->posicionX);
+    sched_sacar(tareaPirata->jugador, tareaPirata->index);
+  }
 }
 
 pirata_t* game_pirata_en_posicion(uint x, uint y)

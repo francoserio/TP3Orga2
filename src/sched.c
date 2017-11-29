@@ -14,13 +14,13 @@ void sched_inicializar() {
     proximaTareaA = 0;
     estaEnIdle = 1;
     proximaTareaB = 0;
-    modoDebug = 0;
+    modoDebugActivado = 1;
     tareaActualA = 0;
     tareaActualB = 0;
     turnoPirataActual = 0;
     proxTareaAMuerta = 0;
     proxTareaBMuerta = 0;
-    modoDebugActivado = 0;
+    modoDebugPantalla = 0;
 }
 
 unsigned int sched_tick() {
@@ -184,10 +184,15 @@ void sched_nointercambiar_por_idle() {
 }
 
 void sched_toggle_debug() {
-  if (modoDebug) {
-    modoDebug = FALSE;
+  if (modoDebugPantalla) {
+    game_modoDebug_close();
+    modoDebugPantalla = 0;
   } else {
-    modoDebug = TRUE;
+    if (modoDebugActivado) {
+      modoDebugActivado = 0;
+    } else {
+      modoDebugActivado = 1;
+    }
   }
 }
 

@@ -18,8 +18,8 @@ uint proximaTareaB; //indice 0-7
 uchar turnoPirata; //0 A, 1 B
 uchar turnoPirataActual; //0 A, 1 B
 uchar estaEnIdle; // 0 NO, 1 SI
-uint modoDebug; //pantalla debug 0 NO, 1 SI
-uint modoDebugActivado; // 
+uint modoDebugPantalla; //pantalla debug 0 NO, 1 SI
+uint modoDebugActivado; //y esta apretado o no. 0 NO, 1 SI
 int proxTareaAMuerta;
 int proxTareaBMuerta;
 

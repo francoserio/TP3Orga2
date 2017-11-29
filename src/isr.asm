@@ -85,7 +85,9 @@ extern sched_tarea_actual
 extern game_syscall_manejar
 extern game_modoDebug_open
 extern game_modoDebug_close
-extern game_pirata_exploto
+extern game_pirata_explotoisr
+extern modoDebugPantalla
+extern modoDebugActivado
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -98,8 +100,8 @@ _isr%1:
     ; mov eax, 1
     ; imprimir_texto_mp desc_%1, desc_len_%1, 0x07, 3, 0 ;ESTE ERA UNO DE LOS PRIMEROS EJERCICIOS
     ; jmp $
-    call game_pirata_exploto
-    cmp byte [modoDebug], 1
+    call game_pirata_explotoisr
+    cmp byte [modoDebugActivado], 1
     jne .fin
 
     mov eax, cr0
@@ -120,10 +122,8 @@ _isr%1:
 
     push esp ; push array con toda la info de los registros
     call game_modoDebug_open
-    call game_modoDebug_close
-
   .fin:
-    jmp 0x68:0
+    jmp 0x68:0 ;jumpeo a la idle
 
 %endmacro
 
@@ -161,7 +161,6 @@ ISR 19
 ;; -------------------------------------------------------------------------- ;;
 ;;
 extern screen_actualizar_reloj_global
-extern modoDebug
 extern sched_intercambiar_por_idle
 
 global _isr32
@@ -170,7 +169,7 @@ _isr32:
   ; xchg bx, bx
   pushad
   call fin_intr_pic1
-  cmp byte [modoDebug], 1
+  cmp byte [modoDebugPantalla], 1
   je .fin
 	call sched_tick
   str cx
