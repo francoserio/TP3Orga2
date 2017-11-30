@@ -4,6 +4,6 @@
 \contentsline {section}{\numberline {3}Modo Protegido}{5}
 \contentsline {subsection}{\numberline {3.1}Segmentacion}{5}
 \contentsline {subsection}{\numberline {3.2}Paginado}{5}
-\contentsline {subsection}{\numberline {3.3}Manejo de Interrupciones}{8}
-\contentsline {subsection}{\numberline {3.4}Tareas}{9}
+\contentsline {subsection}{\numberline {3.3}Manejo de Interrupciones}{9}
+\contentsline {subsection}{\numberline {3.4}Tareas}{10}
 \contentsline {subsection}{\numberline {3.5}Scheduler}{13}
