@@ -12,7 +12,7 @@
 void task(int x, int y) {
     /* Tarea */
     int ancho = 1;
-    int alto  = 2;
+    int alto = 2;
 
 
     while(1)
@@ -20,7 +20,6 @@ void task(int x, int y) {
         int i;
         syscall_mover(IZQ);
         ancho = ancho + 1;
-
         for (i = 1; i < alto; i++)
             syscall_mover(ARR);
 

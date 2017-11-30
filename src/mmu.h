@@ -11,10 +11,12 @@
 #include "defines.h"
 #include "game.h"
 
-#define CODIGO_BASE       0X400000
+#define CODIGO_BASE       0x00400000
 
 #define MAPA_BASE_FISICA  0x500000
-#define MAPA_BASE_VIRTUAL 0x800000
+#define MAPA_BASE_VIRTUAL 0x0800000
+
+unsigned int proxima_pagina_libre;
 
 typedef struct str_page_directory_entry {
   unsigned char present:1; //bit 0
@@ -46,6 +48,7 @@ typedef struct str_page_table_entry {
 
 void mmu_inicializar();
 void mmu_inicializar_dir_kernel();
+void mmu_mapear_dir_kernel(unsigned int page_dir, unsigned int pt);
 unsigned int mmu_inicializar_dir_pirata(jugador_t* jugador, pirata_t* tarea);
 void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica, unsigned char read_write, unsigned char user_supervisor);
 void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3);
@@ -54,5 +57,7 @@ unsigned int pos2mapFis(unsigned int x, unsigned int y);
 unsigned int pos2mapVir(unsigned int x, unsigned int y);
 void mmu_inicializar_dir_pirataConocidas(jugador_t* jugador);
 void mmu_moverCodigo(pirata_t* tarea, uint x, uint y, uint indexJug);
-
+void memcpy(unsigned int src, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us);
+void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us);
+void memcpyPila(unsigned int destVir, unsigned int cr3, unsigned char rd, unsigned char us, int value, jugador_t* jug);
 #endif	/* !__MMU_H__ */

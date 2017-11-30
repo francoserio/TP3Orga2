@@ -9,7 +9,7 @@ Nos encargamos de setear los offset de los descriptores de los selectores de seg
 
     \State \tab \tab ; Establecer selectores de segmentos
     \State \tab \tab xor eax, eax
-    \State \tab \tab  mov ax, 1011000b
+    \State \tab \tab  mov ax, 1001000b
     \State \tab \tab  mov ds, ax
     \State \tab \tab  mov ss, ax
     \State \tab \tab  mov es, ax
@@ -19,7 +19,7 @@ Nos encargamos de setear los offset de los descriptores de los selectores de seg
     \State \tab \tab  ; Establecer la base de la pila
     \State \tab \tab  xchg bx, bx
     \State \tab \tab  mov esp, 0x27000
-    \State \tab \tab  mov ebp, 0x27000    
+    \State \tab \tab  mov ebp, 0x27000
 \end{algorithmic}
 
 Luego de esto imprimimos en pantalla un mensaje de bienvenida a nuestro sistema e inicializamos la pantalla.
@@ -85,13 +85,13 @@ Para mappear:
   \State \tab \tab tlbflush();
 \State \tab }
 
-    
-    
+
+
 \end{algorithmic}
 
 Finalmente, mara unmapear una pagina, lo hacemos de la siguiente manera:
 \begin{algorithmic}
-     
+
 \State \tab void $mmu_unmapear_pagina$(unsigned int virtual, unsigned int cr3) {
   \State \tab \tab $page_directory_entry$* pd = ($page_directory_entry$*)(cr3);
   \State \tab \tab unsigned int indiceDirectory = virtual $>>$ 22;
@@ -458,9 +458,9 @@ Luego necesitamos completar la TSS correspondiente a cada pirata, para esto real
 \begin{algorithmic}
 \State \tab void completarTssPirata$($pirata$\_$t tarea$) \{$
   \State \tab \tab unsigned int paginaParaPilaCero = mmu$\_$proxima$\_$pagina$\_$fisica$\_$libre$()$ + 0x1000;
-\State \tab \tab 
+\State \tab \tab
   \State \tab \tab tss* tss$\_$pirata = $($*$($tarea.jugador$)$$)$.index == JUGADOR$\_$A ? $\&$tss$\_$jugadorA[tarea.id] : $\&$tss$\_$jugadorB[tarea.id];
-\State \tab \tab 
+\State \tab \tab
   \State \tab \tab tss$\_$pirata$\to$eip = 0x00400000;
   \State \tab \tab tss$\_$pirata$\to$ptl = 0;
   \State \tab \tab tss$\_$pirata$\to$unused0 = 0;
@@ -553,7 +553,7 @@ Decidimos representar al \textit{Scheduler} de la siguiente manera:
 \State \tab uchar turnoPirata; //0 A, 1 B
 \State \tab uchar estaEnIdle; // 0 NO, 1 SI
 \State \tab uint modoDebug;
-     
+
 \end{algorithmic}
 
 Para inicializar estos valores, definimos el siguiente m\'etodo:
@@ -718,13 +718,13 @@ Por \'ultimo, otros m\'etodos que definimos en nuestro \textit{sched.c}
 \begin{algorithmic}
     \State \tab void sched$\_$intercambiar$\_$por$\_$idle$() \{$
         \State \tab \tab estaEnIdle = 1;
-    \State \tab $\}$     
+    \State \tab $\}$
 \end{algorithmic}
 
 \begin{algorithmic}
     \State \tab void sched$\_$nointercambiar$\_$por$\_$idle$() \{$
         \State \tab \tab estaEnIdle = 0;
-    \State \tab $\}$     
+    \State \tab $\}$
 \end{algorithmic}
 
 \begin{algorithmic}
@@ -734,5 +734,5 @@ Por \'ultimo, otros m\'etodos que definimos en nuestro \textit{sched.c}
         \State \tab \tab $\}$ else $\{$
         \State \tab \tab \tab modoDebug = TRUE;
         \State \tab \tab$\}$
-    \State \tab $\}$     
+    \State \tab $\}$
 \end{algorithmic}

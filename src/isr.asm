@@ -82,6 +82,12 @@ extern game_atender_teclado
 extern sched_tick
 extern sched_tarea_actual
 
+extern game_syscall_manejar
+extern game_modoDebug_open
+extern game_modoDebug_close
+extern game_pirata_explotoisr
+extern modoDebugPantalla
+extern modoDebugActivado
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -90,9 +96,34 @@ extern sched_tarea_actual
 global _isr%1
 
 _isr%1:
-    mov eax, %1
-    imprimir_texto_mp desc_%1, desc_len_%1, 0x07, 3, 0
+    ; pushad
+    mov eax, 1
+    imprimir_texto_mp desc_%1, desc_len_%1, 0x07, 3, 0 ;ESTE ERA UNO DE LOS PRIMEROS EJERCICIOS
     jmp $
+  ;   call game_pirata_explotoisr
+  ;   cmp byte [modoDebugActivado], 1
+  ;   jne .fin
+  ;
+  ;   mov eax, cr0
+  ;   push eax
+  ;   mov eax, cr2
+  ;   push eax
+  ;   mov eax, cr3
+  ;   push eax
+  ;   mov eax, cr4
+  ;   push eax
+  ;
+  ;   push cs ; push segmentos
+  ;   push ds
+  ;   push es
+  ;   push fs
+  ;   push gs
+  ;   push ss
+  ;
+  ;   push esp ; push array con toda la info de los registros
+  ;   call game_modoDebug_open
+  ; .fin:
+  ;   jmp 0x68:0 ;jumpeo a la idle
 
 %endmacro
 
@@ -130,14 +161,15 @@ ISR 19
 ;; -------------------------------------------------------------------------- ;;
 ;;
 extern screen_actualizar_reloj_global
-extern modoDebug
+extern sched_intercambiar_por_idle
 
 global _isr32
 _isr32:
 	; PRESERVAR REGISTROS
+  ; xchg bx, bx
   pushad
   call fin_intr_pic1
-  cmp byte [modoDebug], 1
+  cmp byte [modoDebugPantalla], 1
   je .fin
 	call sched_tick
   str cx
@@ -167,18 +199,32 @@ _isr33:
 
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
-extern game_syscall_manejar
 
-global _isr46
-_isr46:
-  ;en eax tengo el primer parámetro
+global _isr70
+_isr70:
+  ; xchg bx, bx
+  cmp eax, 3
+  je .posicion
   pushad
-  call fin_intr_pic1
-  push eax
   push ecx
+  push eax
+  call game_syscall_manejar
+  call sched_intercambiar_por_idle
+  mov ax, 13<<3
+  mov [sched_tarea_selector], ax
+  jmp far [sched_tarea_offset]
+  pop eax
+  pop ecx
+  jmp .fin
+.posicion:
+  mov edi, eax
+  push ecx
+  push edi
   call game_syscall_manejar
   pop ecx
-  pop eax
-fin:
+  pop edi
+  jmp .fin2
+.fin:
   popad
+.fin2:
   iret

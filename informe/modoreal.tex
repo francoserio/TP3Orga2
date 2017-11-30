@@ -17,25 +17,22 @@ Para nuestro sistema, definimos el c\'odigo de \textit{Modo Real} en el archivo 
     \State \tab \tab int 10h ; load 8x8 font
 \newline
     \State \tab \tab ; Imprimir mensaje de bienvenida
-    \State \tab \tab $imprimir_texto_mr iniciando_mr_msg, iniciando_mr_len$, 0x07, 0, 0
+    \State \tab \tab $imprimir\_texto\_mr \ iniciando\_mr\_msg, iniciando\_mr\_len$, 0x07, 0, 0
     \State \tab \tab ; Habilitar A20
-    \State \tab \tab call $habilitar_A20$
-    \State \tab \tab xchg bx, bx
+    \State \tab \tab call $habilitar\_A20$
     \State \tab \tab ; Cargar la GDT
-    \State \tab \tab lgdt $[GDT_DESC]$
+    \State \tab \tab lgdt $[GDT\_DESC]$
     \newline
     \State \tab \tab ; Setear el bit PE del registro CR0
-    \State \tab \tab xchg bx, bx
     \State \tab \tab mov eax, cr0
     \State \tab \tab or eax, 1
     \State \tab \tab mov cr0, eax
     \newline
     \State \tab \tab ; Saltar a modo protegido
-    \State \tab \tab xchg bx, bx
     \State \tab \tab jmp 0x58:mp
-    
+
     \end{algorithmic}
-    
+
 Mediante este set de instrucciones estamos preparando nuestro sistema para poder pasar a \textit{Modo Protegido}.
 Dentro del codigo, estamos habilitando A20 que nos da accesos a direcciones superiores a los 2$^{20}$ bits.\newline
 Cargamos la \textit{GDT} (Global Descriptor Table).
@@ -43,9 +40,7 @@ La \textit{GDT} es una tabla ubicada en memoria que define los siguientes descri
 \begin{itemize}
     \item Descriptores de segmento de memoria
     \item Descriptor de Task State Segment (TSS)
-    \item Descriptor de LDT
 \end{itemize}
-El primer descriptor de la tabla siempre es \textit{nulo}. Luego seteamos el bit \textit{PE} del registro \textit{CR0}.
+El primer descriptor de la tabla siempre es \textit{nulo}. También al principio tenemos otros 4 segmentos. 1 de código nivel kernel, 1 de código nivel usuario, 1 de datos nivel usuario y 1 de datos nivel kernel. Los segmentos de user tienen dpl 3 y los de sistema 0. A su vez, el límite de los segmentos de la gdt se saca porque en el TP dice que se direccionan los primeros 500MB de memoria. Eso significa que tenemos que usar granularidad de a 4KB de lo contrario no llegamos. El limite se calcula de hacer (500MB / 4KB) - 1. Esto es porque granularity como dijimos está seteado. Luego seteamos el bit \textit{PE} del registro \textit{CR0}.
 \newline
-Una vez seteado, vamos a saltar a \textit{Modo Protegido}. Este salto lo realizamos utilizando un far jump al descriptor de segmento de c\'odigo con nivel de privilegio de sistema. Es el jmp que realizamos en la \'ultima linea.
-
+Una vez activado, vamos a saltar a \textit{Modo Protegido}. Este salto lo realizamos utilizando un far jump al descriptor de segmento de c\'odigo con nivel de privilegio de sistema. Es el jmp que realizamos en la \'ultima linea.

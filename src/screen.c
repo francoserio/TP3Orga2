@@ -7,6 +7,7 @@ definicion de funciones del scheduler
 
 #include "screen.h"
 #include "game.h"
+#include "i386.h"
 
 
 extern jugador_t jugadorA, jugadorB;
@@ -26,11 +27,28 @@ void screen_actualizar_reloj_global()
 
     screen_pintar(reloj[reloj_global], C_BW, 49, 79);
 
+    for (int i = 0; i < 8; i++) {
+      screen_actualizar_reloj_pirata(&jugadorA, &(jugadorA.piratas[i]));
+
+      screen_actualizar_reloj_pirata(&jugadorB, &(jugadorB.piratas[i]));
+    }
+
+    screen_pintar_reloj_piratas(&jugadorA);
+
+    screen_pintar_reloj_piratas(&jugadorB);
+
     contador_de_tiempo++;
 }
 
 void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata) {
-
+  if (pirata->vivoMuerto == 0) {
+    //si se murio
+    pirata->reloj = 0;
+    reloj_pirata[pirata->id] = 0;
+  } else {
+    pirata->reloj = (pirata->reloj + 1) % reloj_size;
+    reloj_pirata[pirata->id] = pirata->reloj;
+  }
 }
 
 void screen_pintar(uchar c, uchar color, uint fila, uint columna)
@@ -101,6 +119,43 @@ void screen_pintar_puntajes() {
   print("000", j, i, 0xF);
 }
 
+void screen_actualizar_puntajes() {
+  // breakpoint();
+  int i = 47;
+  int j = 35;
+  print_dec(jugadorA.puntaje, 3, j, i, 0x0F);
+  j = j + 7;
+  print_dec(jugadorB.puntaje, 3, j, i, 0x0F);
+}
+
+void screen_pintar_reloj_pirata(jugador_t* j, pirata_t* pirata) {
+  if (pirata->vivoMuerto == 0) {
+    //si es 0 esta muerto
+    if (j->index == 0) {
+      //jugadorA
+      screen_pintar('x', C_FG_RED, 48, pirata->index*2 + 4);
+    } else {
+      //jugadorB
+      screen_pintar('x', C_FG_BLUE, 48, pirata->index*2 + 60);
+    }
+  } else {
+    //esta vivo
+    if (j->index == 0) {
+      //jugadorA
+      screen_pintar(reloj[pirata->reloj], C_BW, 48, pirata->index*2 + 4);
+    } else {
+      //jugadorB
+      screen_pintar(reloj[pirata->reloj], C_BW, 48, pirata->index*2 + 60);
+    }
+  }
+}
+
+void screen_pintar_reloj_piratas(jugador_t* j) {
+  for (int i = 0; i < 8; i++) {
+    screen_pintar_reloj_pirata(j, &(j->piratas[i]));
+  }
+}
+
 void screen_inicializar() {
   int i = 0;
   int j;
@@ -149,22 +204,45 @@ void screen_inicializar() {
   print("1 2 3 4 5 6 7 8", j, i, 0xF);
   j = j + 56;
   print("1 2 3 4 5 6 7 8", j, i, 0xF);
+  screen_pintar_reloj_piratas(&jugadorA);
+  screen_pintar_reloj_piratas(&jugadorB);
+}
+
+void screen_pintar_piratas() {
+  for (int i = 0; i < 8; i++) {
+    screen_pintar_pirata(&jugadorA, &(jugadorA.piratas[i]));
+    screen_pintar_pirata(&jugadorB, &(jugadorB.piratas[i]));
+  }
 }
 
 void screen_pintar_pirata(jugador_t *j, pirata_t *pirata) {
-  if (pirata->tipo == minero) {
-    screen_pintar(' ', j->colorJug, pirata->posicionX, pirata->posicionY);
-    screen_pintar('M', C_FG_BLACK,  pirata->posicionX, pirata->posicionY);
-  } else {
-    screen_pintar(' ', j->colorJug, pirata->posicionX, pirata->posicionY);
-    screen_pintar('E', C_FG_BLACK, pirata->posicionX, pirata->posicionY);
+  for (int i = 0; i < 45; i++) {
+    for (int p = 0; p < 80; p++) {
+      if (jugadorA.posicionesXYVistas[p][i] == 1 && jugadorB.posicionesXYVistas[p][i] == 1 && game_pirata_en_posicion(p, i) == NULL) {
+        screen_pintar(' ', C_BG_CYAN, i, p);
+      } else if (j->posicionesXYVistas[p][i] == 1 && game_pirata_en_posicion(p, i) == NULL) {
+        screen_pintar(' ', j->colorJug, i, p);
+      }
+    }
+  }
+  if (pirata->vivoMuerto == 1) {
+    if (pirata->tipo == minero) {
+      screen_pintar('M', j->colorJug, pirata->posicionY, pirata->posicionX);
+    } else {
+      screen_pintar('E', j->colorJug, pirata->posicionY, pirata->posicionX);
+    }
   }
 }
 
 void screen_borrar_pirata(jugador_t *j, pirata_t *pirata) {
-  screen_pintar(' ', j->colorJug, pirata->posicionX, pirata->posicionY);
+  screen_pintar(' ', j->colorJug, pirata->posicionY, pirata->posicionX);
 }
 
 void screen_stop_game_show_winner(jugador_t *j) {
-  print("GANADOR:" + j->index, 39, 22, 0xF);
+  if (j->index == 0) {
+    print("GANADOR: JUGADOR A FELICITACIONES CAMPEON", 20, 22, 0xF);
+  } else {
+    print("GANADOR: JUGADOR B FELICITACIONES CAMPEON", 39, 22, 0xF);
+  }
+
 }

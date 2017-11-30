@@ -9,15 +9,16 @@
 #include "game.h"
 #include "syscall.h"
 #include "i386.h"
+#include "screen.h"
 
 void task(int x_target, int y_target) {
     /* Tarea */
 
-    //breakpoint();
     uint pos = syscall_posicion(-1);
     int x = pos & 0xFF;
     int y = pos >> 8;
-    //breakpoint();
+    // syscall_debug(pos);
+    // syscall_debug(x);
     int i;
     for(i=x; i < x_target; i++)
         syscall_mover(DER);

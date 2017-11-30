@@ -39,6 +39,12 @@ idt_descriptor IDT_DESC = {
     idt[numero].attr = (unsigned short) 0x8E00;                                                                  \
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 
+#define IDT_ENTRY_SYSCALL(numero)                                                                                        \
+    idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
+    idt[numero].segsel = (unsigned short) 0x58;                                                                  \
+    idt[numero].attr = (unsigned short) 0xEE00;                                                                  \
+    idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
+
 
 
 void idt_inicializar() {
@@ -67,5 +73,5 @@ void idt_inicializar() {
     IDT_ENTRY(32);
     IDT_ENTRY(33);
 
-    IDT_ENTRY(46);
+    IDT_ENTRY_SYSCALL(70);
 }
