@@ -1,16 +1,9 @@
 \select@language {spanish}
 \contentsline {section}{\numberline {1}Introduccion}{3}
-\contentsline {section}{\numberline {2}Ejercicio 1}{4}
-\contentsline {section}{\numberline {3}Ejercicio 2}{5}
-\contentsline {section}{\numberline {4}Ejercicio 3}{6}
-\contentsline {section}{\numberline {5}Ejercicio 4}{7}
-\contentsline {section}{\numberline {6}Ejercicio 5}{8}
-\contentsline {section}{\numberline {7}Ejercicio 6}{9}
-\contentsline {section}{\numberline {8}Ejercicio 7}{10}
-\contentsline {section}{\numberline {9}Ejercicio 7}{11}
-\contentsline {subsection}{\numberline {9.1}Segmentacion}{11}
-\contentsline {subsection}{\numberline {9.2}Paginado}{11}
-\contentsline {subsection}{\numberline {9.3}Manejo de Interrupciones}{14}
-\contentsline {subsection}{\numberline {9.4}Tareas}{15}
-\contentsline {subsection}{\numberline {9.5}Scheduler}{19}
-\contentsline {section}{\numberline {10}Ejercicio 7}{23}
+\contentsline {section}{\numberline {2}Modo Real}{4}
+\contentsline {section}{\numberline {3}Modo Protegido}{5}
+\contentsline {subsection}{\numberline {3.1}Segmentacion}{5}
+\contentsline {subsection}{\numberline {3.2}Paginado}{5}
+\contentsline {subsection}{\numberline {3.3}Manejo de Interrupciones}{8}
+\contentsline {subsection}{\numberline {3.4}Tareas}{9}
+\contentsline {subsection}{\numberline {3.5}Scheduler}{13}
