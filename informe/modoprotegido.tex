@@ -25,10 +25,10 @@ Nos encargamos de setear los offset de los descriptores de los selectores de seg
 Luego de esto imprimimos en pantalla un mensaje de bienvenida a nuestro sistema e inicializamos la pantalla.
 \begin{algorithmic}
     \State \tab \tab ; Imprimir mensaje de bienvenida
-    \State \tab \tab $imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len$, 0x07, 2, 0
-    \State \tab \tab call $screen_inicializar$
-    \State \tab \tab call $screen_pintar_nombre$
-    \State \tab \tab call $screen_pintar_puntajes$
+    \State \tab \tab $imprimir\_texto\_mp iniciando\_mp\_msg, iniciando\_mp\_len$, 0x07, 2, 0
+    \State \tab \tab call $screen\_inicializar$
+    \State \tab \tab call $screen\_pintar\_nombre$
+    \State \tab \tab call $screen\_pintar\_puntajes$
 \end{algorithmic}
 
 Las funciones \textit{$screen\_inicializar$}, \textit{$screen\_pintar\_nombre$} estan definidas en \textbf{screen.h} y desarrolladas en \textbf{screen.c}. Estos m\'etodos se encargan de pintar la pantalla, seg\'un lo pedido en el enunciado.
@@ -38,7 +38,7 @@ Habilitamos la paginaci\'on en nuestro sistema de la siguiente manera:
 \begin{algorithmic}
     \State \tab ; Cargar directorio de paginas
     \State \tab ; Inicializar el directorio de paginas
-    \State \tab call $mmu_inicializar_dir_kernel$
+    \State \tab call $mmu\_inicializar\_dir\_kernel$
     \State \tab ; Habilitar paginacion
     \State \tab xor eax, eax
     \State \tab mov eax, cr0
@@ -49,34 +49,34 @@ Habilitamos la paginaci\'on en nuestro sistema de la siguiente manera:
 Para mappear y unmapear definimos m\'etodos en el archivo \textit{mmu.c}.
 Para mappear:
 \begin{algorithmic}
-    \State \tab void $mmu_mapear_pagina$(unsigned int virtual, unsigned int cr3, \State \tab unsigned int fisica, unsigned char $read_write$, unsigned char $user_supervisor$) {
+    \State \tab void $mmu\_mapear\_pagina$(unsigned int virtual, unsigned int cr3, \State \tab unsigned int fisica, unsigned char $read\_write$, unsigned char $user\_supervisor$) {
 
-  \State \tab \tab $page_directory_entry$* pd = ($page_directory_entry$*)(cr3);
+  \State \tab \tab $page\_directory\_entry$* pd = ($page\_directory\_entry$*)(cr3);
   \State \tab \tab unsigned int indiceDirectory = virtual $>>$ 22;
   \State \tab \tab unsigned int indiceTable = (virtual $>>$ 12) $<<$ 10;
-  \State \tab \tab $page_directory_entry$ pde = pd[indiceDirectory];
+  \State \tab \tab $page\_directory\_entry$ pde = pd[indiceDirectory];
   \State \tab \tab if (pde.present == 1) {
-    \State \tab \tab \tab $page_table_entry$* pt = ($page_table_entry$*)((pde.$base_address$ << 12) >> 12);
-    \State \tab \tab \tab $page_table_entry$ pte = pt[indiceTable];
+    \State \tab \tab \tab $page\_table\_entry$* pt = ($page\_table\_entry$*)((pde.$base\_address$ << 12) >> 12);
+    \State \tab \tab \tab $page\_table\_entry$ pte = pt[indiceTable];
     \State \tab \tab \tab if (pte.present == 1) {
-      \State \tab \tab \tab \tab $pte.user_supervisor$ = $user_supervisor$;
-      \State \tab \tab \tab \tab $pte.read_write$ = $read_write$;
-      \State \tab \tab \tab \tab $pte.base_address$ = (fisica $>>$ 12);
+      \State \tab \tab \tab \tab $pte.user\_supervisor$ = $user\_supervisor$;
+      \State \tab \tab \tab \tab $pte.read\_write$ = $read\_write$;
+      \State \tab \tab \tab \tab $pte.base\_address$ = (fisica $>>$ 12);
     \State \tab \tab \tab } else {
       \State \tab \tab \tab \tab pte.present = 1;
-      \State \tab \tab \tab \tab $pte.user_supervisor$ = $user_supervisor$;
-      \State \tab \tab \tab \tab $pte.read_write$ = $read_write$;
-      \State \tab \tab \tab \tab $pte.base_address$ = (fisica $>>$ 12);
+      \State \tab \tab \tab \tab $pte.user\_supervisor$ = $user\_supervisor$;
+      \State \tab \tab \tab \tab $pte.read\_write$ = $read\_write$;
+      \State \tab \tab \tab \tab $pte.base\_address$ = (fisica $>>$ 12);
     \State \tab \tab \tab }
   \State \tab \tab } else {
-    \State \tab \tab \tab unsigned int $proxima_pag$ = $mmu_proxima_pagina_fisica_libre$();
+    \State \tab \tab \tab unsigned int $proxima\_pag$ = $mmu\_proxima\_pagina\_fisica\_libre$();
     \State \tab \tab \tab pde.present = 1;
-    \State \tab \tab \tab $pde.read_write$ = $read_write$;
-    \State \tab \tab \tab $pde.user_supervisor$ = $user_supervisor$;
-    \State \tab \tab \tab $pde.base_address$ = $proxima_pag >>$ 12;
-    \State \tab \tab \tab $page_table_entry$* pt = ($page_table_entry$*)($proxima_pag$);
+    \State \tab \tab \tab $pde.read\_write$ = $read\_write$;
+    \State \tab \tab \tab $pde.user\_supervisor$ = $user\_supervisor$;
+    \State \tab \tab \tab $pde.base\_address$ = $proxima\_pag >>$ 12;
+    \State \tab \tab \tab $page\_table\_entry$* pt = ($page\_table\_entry$*)($proxima\_pag$);
     \State \tab \tab \tab pt[indiceTable].present = 1;
-    \State \tab \tab \tab pt[indiceTable].$user_supervisor$ = $user_supervisor$;
+    \State \tab \tab \tab pt[indiceTable].$user\_supervisor$ = $user\_supervisor$;
     \State \tab \tab \tab pt[indiceTable].$read_write$ = $read_write$;
     \State \tab \tab \tab pt[indiceTable].$base_address$ = (fisica $>>$ 12);
 

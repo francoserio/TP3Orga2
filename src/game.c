@@ -543,28 +543,30 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
     int y = 0;
     game_dir2xy(dir, &x, &y);
     if (game_posicion_valida(tareaPirata->posicionX + x, tareaPirata->posicionY + y)) {
-      //va a pasar a una posicion valida en el juego
-      tareaPirata->posicionX = tareaPirata->posicionX + x;
-      tareaPirata->posicionY = tareaPirata->posicionY + y;
-      // print_dec(tareaPirata->posicionX, 3, 20, 20, 0x0F);
-      // print_dec(tareaPirata->posicionY, 3, 21, 21, 0x0F);
-      mmu_inicializar_dir_pirataConocidas(tareaPirata->jugador);
-      if ((tareaPirata->jugador)->index == 0) {
-        mmu_unmapear_pagina(0x00400000, tss_jugadorA[tareaActualA].cr3);
-        memmov(pos2mapFis(tareaPirata->posicionX - x, tareaPirata->posicionY - y), tss_jugadorA[tareaActualA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
-        mmu_mapear_pagina(0x00400000, tss_jugadorA[tareaActualA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
-        mmu_mapear_pagina(pos2mapVir(tareaPirata->posicionX, tareaPirata->posicionY), tss_jugadorA[tareaActualA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
-      } else {
-        mmu_unmapear_pagina(0x00400000, tss_jugadorB[tareaActualB].cr3);
-        memmov(pos2mapFis(tareaPirata->posicionX - x, tareaPirata->posicionY - y), tss_jugadorB[tareaActualB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
-        mmu_mapear_pagina(0x00400000, tss_jugadorB[tareaActualB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
-        mmu_mapear_pagina(pos2mapVir(tareaPirata->posicionX, tareaPirata->posicionY), tss_jugadorB[tareaActualB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
+      if (game_pirata_en_posicion(tareaPirata->posicionX + x, tareaPirata->posicionY + y) == 0) {
+        //va a pasar a una posicion valida en el juego
+        tareaPirata->posicionX = tareaPirata->posicionX + x;
+        tareaPirata->posicionY = tareaPirata->posicionY + y;
+        // print_dec(tareaPirata->posicionX, 3, 20, 20, 0x0F);
+        // print_dec(tareaPirata->posicionY, 3, 21, 21, 0x0F);
+        mmu_inicializar_dir_pirataConocidas(tareaPirata->jugador);
+        if ((tareaPirata->jugador)->index == 0) {
+          mmu_unmapear_pagina(0x00400000, tss_jugadorA[tareaActualA].cr3);
+          memmov(pos2mapFis(tareaPirata->posicionX - x, tareaPirata->posicionY - y), tss_jugadorA[tareaActualA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
+          mmu_mapear_pagina(0x00400000, tss_jugadorA[tareaActualA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
+          mmu_mapear_pagina(pos2mapVir(tareaPirata->posicionX, tareaPirata->posicionY), tss_jugadorA[tareaActualA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
+        } else {
+          mmu_unmapear_pagina(0x00400000, tss_jugadorB[tareaActualB].cr3);
+          memmov(pos2mapFis(tareaPirata->posicionX - x, tareaPirata->posicionY - y), tss_jugadorB[tareaActualB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
+          mmu_mapear_pagina(0x00400000, tss_jugadorB[tareaActualB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
+          mmu_mapear_pagina(pos2mapVir(tareaPirata->posicionX, tareaPirata->posicionY), tss_jugadorB[tareaActualB].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
+        }
+        // breakpoint();
+        game_explorar_posicion(tareaPirata->jugador, tareaPirata->posicionX, tareaPirata->posicionY);
+        // breakpoint();
+        screen_pintar_piratas();
+        // breakpoint();
       }
-      // breakpoint();
-      game_explorar_posicion(tareaPirata->jugador, tareaPirata->posicionX, tareaPirata->posicionY);
-      // breakpoint();
-      screen_pintar_piratas();
-      // breakpoint();
     } else {
       //si no va a ir a una posicion valida lo mato
       game_pirata_exploto(id);
