@@ -39,7 +39,7 @@ LS_INLINE unsigned int syscall_cavar() {
 
     __asm __volatile(
         "mov $2, %%eax \n"
-        "int $0x46     \n"
+        "int $0x46 \n"
         : /* no output*/
         :
         : "eax"

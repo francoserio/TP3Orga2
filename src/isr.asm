@@ -98,7 +98,7 @@ global _isr%1
 _isr%1:
     pushad
     ; mov eax, 1
-    ; imprimir_texto_mp desc_%1, desc_len_%1, 0x07, 3, 0 ;ESTE ERA UNO DE LOS PRIMEROS EJERCICIOS
+    ; imprimir_texto_mp desc_%1, desc_len_%1, 0x07, 3, 0 ;ESTE ES EL EJERCICIO 2
     ; jmp $
     call game_pirata_explotoisr
     cmp byte [modoDebugActivado], 1

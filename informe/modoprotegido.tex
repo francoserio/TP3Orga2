@@ -1,6 +1,9 @@
 El \textit{Modo Protegido}, es un poco mas completo que el \textit{Modo Real}, tenemos 4GB de memoria disponible, 4 niveles de protecci\'on de memoria y rutinas de atencii\'on con privilegios.
 
 \subsection{Segmentacion}
+Para el mecanismo de segmentación necesitamos inicializar la GDT.
+El primer descriptor de la tabla siempre es \textit{nulo}. También al principio tenemos otros 4 segmentos. 1 de código nivel kernel, 1 de código nivel usuario, 1 de datos nivel usuario y 1 de datos nivel kernel. Los segmentos de user tienen dpl 3 y los de sistema 0. A su vez, el límite de los segmentos de la gdt se saca porque en el TP dice que se direccionan los primeros 500MB de memoria. Eso significa que tenemos que usar granularidad de a 4KB de lo contrario no llegamos a los 500MB pedidos. El limite se calcula de hacer (500MB / 4KB) - 1. Esto es porque granularity como dijimos está seteado. El dpl es 3 si se trata de usuario y 0 si se trata de kernel. El tipo es 10 si se trata de  de código y 2 si se trata de datos. Hay otro descriptor al comienzo de nuestro sistema para el video. Aquí la base es 0xB8000 a diferencia del cero de las demás entradas. Ésto lo dice la página 2 del enunciado del TP. Todos los segmentos se ponen en presentes.
+\newline
 Nos encargamos de setear los offset de los descriptores de los selectores de segmentos. Luego seteamos la pila del kernel en la direcci\'on 0x27000 que indica el enunciado del TP. Al primer ax le cargamos el indice de la gdt de los datos de nivel 0 y al segundo el indice de la gdt del segmento de video, que son el 9 y el 12 respectivamente.
 
 \begin{algorithmic}
@@ -50,76 +53,22 @@ Habilitamos la paginaci\'on en nuestro sistema de la siguiente manera:
     \State \tab mov cr0, eax
 \end{algorithmic}
 
-Para mappear y unmapear definimos m\'etodos en el archivo \textit{mmu.c}.
-Para mappear:
-\begin{algorithmic}
-    \State \tab void $mmu\_mapear\_pagina$(unsigned int virtual, unsigned int cr3, \State \tab unsigned int fisica, unsigned char $read\_write$, unsigned char $user\_supervisor$) {
+Para mappear y unmapear definimos m\'etodos en el archivo \textit{mmu.c}, para ser mas preciso, mmu$\_$mapear$\_$pagina que devuelve void y recibe una direccion virtual y fisica para el que tiene que mapear, un cr3 que es nuestra dirección de comienzo del page$\_$directory$\_$address y flags de read-write y user-supervisor.
+Durante el mapeo, lo que se hace es lo siguiente:
+\begin{itemize}
+    \item Se saca el índice del page directory shifteando la virtual para la derecha 22 bits.
+    \item Se saca el índice del page table shifteando la virtual 10 bits para la izquierda y despues 22 para la derecha (así nos quedamos con lo del medio).
+    \item Se busca si el page directory en ese índice está presente. Si no lo está se lo pone presente y se pide una pagina libre para el page table. Se establece como base$\_$address del page directory esta nueva página pedida shifteada 12 its para la derecha y en éste nuevo page table se pone como base$\_$address la fisica que nos pasan como parámetro shifteada 12 bits para la derecha.
+    \item Si el page directory en ese índice sí esta presente, sólo se pide el page table al que apunta el base$\_$address de ese page directory. A éste último se le establece como base$\_$address la física que nos pasaron como parámetro shifteada 12 bits para la derecha.
+    \item Luego sólo resta poner los bits correspondientes prendidos, apagados, o los read-write y user-supervisor que nos pasan como parámetro.
+\end{itemize}
 
-  \State \tab \tab $page\_directory\_entry$* pd = ($page\_directory\_entry$*)(cr3);
-  \State \tab \tab unsigned int indiceDirectory = virtual $>>$ 22;
-  \State \tab \tab unsigned int indiceTable = (virtual $>>$ 12) $<<$ 10;
-  \State \tab \tab $page\_directory\_entry$ pde = pd[indiceDirectory];
-  \State \tab \tab if (pde.present == 1) {
-    \State \tab \tab \tab $page\_table\_entry$* pt = ($page\_table\_entry$*)((pde.$base\_address$ << 12) >> 12);
-    \State \tab \tab \tab $page\_table\_entry$ pte = pt[indiceTable];
-    \State \tab \tab \tab if (pte.present == 1) {
-      \State \tab \tab \tab \tab $pte.user\_supervisor$ = $user\_supervisor$;
-      \State \tab \tab \tab \tab $pte.read\_write$ = $read\_write$;
-      \State \tab \tab \tab \tab $pte.base\_address$ = (fisica $>>$ 12);
-    \State \tab \tab \tab } else {
-      \State \tab \tab \tab \tab pte.present = 1;
-      \State \tab \tab \tab \tab $pte.user\_supervisor$ = $user\_supervisor$;
-      \State \tab \tab \tab \tab $pte.read\_write$ = $read\_write$;
-      \State \tab \tab \tab \tab $pte.base\_address$ = (fisica $>>$ 12);
-    \State \tab \tab \tab }
-  \State \tab \tab } else {
-    \State \tab \tab \tab unsigned int $proxima\_pag$ = $mmu\_proxima\_pagina\_fisica\_libre$();
-    \State \tab \tab \tab pde.present = 1;
-    \State \tab \tab \tab $pde.read\_write$ = $read\_write$;
-    \State \tab \tab \tab $pde.user\_supervisor$ = $user\_supervisor$;
-    \State \tab \tab \tab $pde.base\_address$ = $proxima\_pag >>$ 12;
-    \State \tab \tab \tab $page\_table\_entry$* pt = ($page\_table\_entry$*)($proxima\_pag$);
-    \State \tab \tab \tab pt[indiceTable].present = 1;
-    \State \tab \tab \tab pt[indiceTable].$user\_supervisor$ = $user\_supervisor$;
-    \State \tab \tab \tab pt[indiceTable].$read\_write$ = $read\_write$;
-    \State \tab \tab \tab pt[indiceTable].$base\_address$ = (fisica $>>$ 12);
-
-\State \tab \tab  }
-
-  \State \tab \tab tlbflush();
-\State \tab }
-
-
-
-\end{algorithmic}
-
-Finalmente, mara unmapear una pagina, lo hacemos de la siguiente manera:
-\begin{algorithmic}
-
-\State \tab void $mmu\_unmapear\_pagina$(unsigned int virtual, unsigned int cr3) {
-  \State \tab \tab $page\_directory\_entry$* pd = ($page\_directory\_entry$*)(cr3);
-  \State \tab \tab unsigned int indiceDirectory = virtual $>>$ 22;
-  \State \tab \tab unsigned int indiceTable = (virtual $>>$ 12) $<<$ 10;
-  \State \tab \tab $page\_directory\_entry$ pde = pd[indiceDirectory];
-  \State \tab \tab $page\_table\_entry$* pt = ($page_table_entry$*)(pde.$base\_address <<$ 12);
-  \State \tab \tab pt[indiceTable].present = 0;
-  \State \tab \tab int i = 0;
-  \State \tab \tab int estanTodasEnNotPresent = 1;
-  \State \tab \tab while (i $<$ 1024 $\&\&$ estanTodasEnNotPresent == 1) {
-    \State \tab \tab \tab $page\_table\_entry$* pt = ($page\_table\_entry$*)(pde.$base\_address <<$ 12);
-    \State \tab \tab \tab $page\_table\_entry$ pte = pt[i];
-    \State \tab \tab \tab if (pte.present == 1) {
-      \State \tab \tab \tab \tab estanTodasEnNotPresent = 0;
-    \State \tab \tab \tab }
-    \State \tab \tab \tab i++;
-  \State \tab \tab }
-  \State \tab \tab if (estanTodasEnNotPresent == 1) {
-    \State \tab \tab \tab pde.present = 0;
-  \State \tab \tab  }
-
-  \State \tab \tab tlbflush();
-\State \tab  }
-\end{algorithmic}
+Finalmente, mara desmapear una pagina, usamos mmu$\_$unmapear$\_$pagina que toma una dirección virtual y un cr3. Lo que se hace para esto es:
+\begin{itemize}
+	\item Se shiftea 22 bits a la derecha la virtual pasada por parámetro para sacar el índice dle page directory.
+	\item Se shiftea 10 bits para la izquierda y 22 para la derecha para quedarse con el índice del page table de la dirección virtual pasada por parámetro.
+	\item Se va al page table de esa dirección virtual sacando lo que apunta la base$\_$address del page directory en el primer índice resuelto y se la pone como no presente.
+\end{itemize}
 
 Durante el juego, debemos poder paginar de manera din\'amica las direcciones de los piratas que se agregan, para poder realizarlo utilizamos el siguiente m\'etodo:
 \begin{algorithmic}
@@ -128,138 +77,6 @@ Durante el juego, debemos poder paginar de manera din\'amica las direcciones de 
   \State \tab \tab $proxima\_pagina\_libre$ += $PAGE\_SIZE$;
   \State \tab \tab return $pagina\_libre$;
 \State \tab }
-\end{algorithmic}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\begin{algorithmic}
-\State \tab unsigned $ int mmu\_inicializar\_dir\_pirata(jugador\_t* jugador, pirata\_t* tarea) \{$
-  //aca ya tengo la page directory y table de la tarea.
-
-\State \tab \tab  $ page\_directory\_entry* pd = (page\_directory\_entry*) mmu\_proxima\_pagina\_fisica\_libre();$
-\State \tab \tab  $ page\_table\_entry* pt = (page\_table\_entry*) mmu\_proxima\_pagina\_fisica\_libre();$
-
-\State \tab \tab  $ pd[0].present = 1;$
-\State \tab \tab  $ pd[0].read\_write = 1;$
-\State \tab \tab  $ pd[0].user\_supervisor = 0;$
-\State \tab \tab  $ pd[0].write\_through = 0;$
-\State \tab \tab  $ pd[0].cache\_disable = 0;$
-\State \tab \tab  $ pd[0].accessed = 0;$
-\State \tab \tab  $ pd[0].ignored = 0;$
-\State \tab \tab  $ pd[0].page\_size = 0;$
-\State \tab \tab  $ pd[0].global = 0;$
-\State \tab \tab  $ unsigned int page\_table\_address = (unsigned int)pt;$
-\State \tab \tab  $ pd[0].base\_address = page\_table\_address >> 12;$
-\State \tab \tab  $ for (int i = 0; i < 1024; i++) \{$
- \State \tab \tab \tab $    pt[i].present = 1;$
- \State \tab \tab \tab $    pt[i].read\_write = 1;$
- \State \tab \tab \tab $    pt[i].user\_supervisor = 0;$
- \State \tab \tab \tab $    pt[i].write\_through = 0;$
- \State \tab \tab \tab $    pt[i].cache\_disable = 0;$
- \State \tab \tab \tab $    pt[i].accessed = 0;$
- \State \tab \tab \tab $    pt[i].dirty = 0;$
- \State \tab \tab \tab $    pt[i].attribute_index = 0;$
- \State \tab \tab \tab $    pt[i].global = 0;$
- \State \tab \tab \tab $   pt[i].base\_address = i;$
-\State \tab \tab $  \}$
-\State \tab \tab  $ unsigned int page_directory_address = (unsigned int)pd;$
-\State \tab \tab  $ if (jugador->index == JUGADOR_A) \{$
-    //empiezo en la primera posicion
-    //mapeo la 0x400000
-  \State \tab \tab \tab $   mmu\_mapear\_pagina((unsigned int)0x00400000, (page\_directory\_address), pos2mapFis(1,2), 1, 1);$
-  \State \tab \tab \tab $   breakpoint();$
-  \State \tab \tab \tab $   if (tarea->tipo == explorador) \{$
-      \State \tab \tab \tab \tab $ for (int i = 0; i < 1024; i++) \{$
-        \State \tab \tab \tab \tab \tab $ ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x10000))[i];$
-      \State \tab \tab \tab \tab $ \}$
-   \State \tab \tab \tab $  \} else \{$
-      \State \tab \tab \tab \tab $ for (int i = 0; i < 1024; i++) \{$
-        \State \tab \tab \tab \tab \tab $ ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x11000))[i];$
-      \State \tab \tab \tab \tab $ \}$
-       \State \tab \tab \tab $ \} $
-  \State \tab \tab \tab $   breakpoint();$
-    //mapeo donde estamos parados
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(1,2), (page\_directory\_address), pos2mapFis(1,2), 1, 1);$
-  \State \tab \tab \tab $   if (tarea->tipo == explorador) \{$
-      //explorador
-      \State \tab \tab \tab \tab $ for (int i = 0; i < 1024; i++) \{$
-        ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x10000))[i];
-      \State \tab \tab \tab \tab $ \}$
-  \State \tab \tab \tab $   \} else \{$
-      //minero
-      \State \tab \tab \tab \tab $ for (int i = 0; i < 1024; i++) \{$
-        ((unsigned int*)(pos2mapVir(1,2)))[i] = ((unsigned int*)((unsigned int)0x11000))[i];
-     \State \tab \tab \tab \tab $  \}$
-  \State \tab \tab \tab $   \}$
-
-  \State \tab \tab \tab $   mmu\_unmapear\_pagina(pos2mapVir(1,2), (page\_directory\_address));$
-\State \tab \tab \tab $ $
-    //se mapean las de alrededor para jugador 1
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(2,1), (page\_directory\_address), pos2mapFis(2,1), 0, 1);//derecha$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(2,2), (page\_directory\_address), pos2mapFis(2,2), 0, 1);//abajo-derecha$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(1,3), (page\_directory\_address), pos2mapFis(1,3), 0, 1);//abajo$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(0,1), (page\_directory\_address), pos2mapFis(0,1), 0, 1);//izquierda$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(0,2), (page\_directory\_address), pos2mapFis(0,2), 0, 1);//abajo-izquierda$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(1,1), (page\_directory\_address), pos2mapFis(1,1), 0, 1);//arriba$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(0,3), (page\_directory\_address), pos2mapFis(0,3), 0, 1);//arriba-izquierda$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(2,3), (page\_directory\_address), pos2mapFis(2,3), 0, 1);//arriba-derecha$
- \State \tab \tab $ \} else \{$
-    //empiezo en la ultima posicion
-  \State \tab \tab \tab $   breakpoint();$
-    //mapeo la 0x400000
-  \State \tab \tab \tab $   mmu\_mapear\_pagina((unsigned int)0x00400000, (page\_directory\_address), pos2mapFis(1,2), 1, 1);$
-  \State \tab \tab \tab $   if (tarea->tipo == explorador) \{$
-      \State \tab \tab \tab \tab $ for (int i = 0; i < 1024; i++) \{$
-        ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
-      \State \tab \tab \tab \tab $ \}$
-  \State \tab \tab \tab $   \} else \{$
-      \State \tab \tab \tab \tab $  for (int i = 0; i < 1024; i++) \{$
-        \State \tab \tab \tab \tab $  \tab ((unsigned int*)((unsigned int)0x00400000))[i] = ((unsigned int*)((unsigned int)0x13000))[i];$
-      \State \tab \tab \tab \tab $ \}$
-    \State \tab \tab \tab $ \}$
-  \State \tab \tab \tab $   breakpoint();$
-    //mapeo donde estamos parados
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(78,43), (page\_directory\_address), pos2mapFis(78,43), 0, 1);$
-  \State \tab \tab \tab $   if (tarea->tipo == explorador) \{$
-      //explorador
-     \State \tab \tab \tab \tab $  for (int i = 0; i < 1024; i++) \{$
-        ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x12000))[i];
-      \State \tab \tab \tab \tab $ \}$
-  \State \tab \tab \tab $  \} else \{$
-      //minero
-     \State \tab \tab \tab \tab $  for (int i = 0; i < 1024; i++) \{$
-       \State \tab \tab \tab \tab $  \tab ((unsigned int*)(pos2mapVir(78,43)))[i] = ((unsigned int*)((unsigned int)0x13000))[i];$
-    \State \tab \tab \tab \tab $   \}$
-  \State \tab \tab \tab $   \}$
-
-  \State \tab \tab \tab $   mmu\_unmapear\_pagina(pos2mapVir(78,43), (page\_directory\_address));$
-
-    //al principio solo se mapean las paginas de la izquierda, arriba, arriba-izquierda para jug 2
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(77,43), (page\_directory\_address), pos2mapFis(77,43), 0, 1);//izquierda$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(77,42), (page\_directory\_address), pos2mapFis(77,42), 0, 1);//arriba-izquierda$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(78,42), (page\_directory\_address), pos2mapFis(78,42), 0, 1);//arriba$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(79,43), (page\_directory\_address), pos2mapFis(79,43), 0, 1);//derecha$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(79,42), (page\_directory\_address), pos2mapFis(79,42), 0, 1);//arriba-derecha$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(78,44), (page\_directory\_address), pos2mapFis(78,44), 0, 1);//abajo$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(79,44), (page\_directory\_address), pos2mapFis(79,44), 0, 1);//abajo-derecha$
-  \State \tab \tab \tab $   mmu\_mapear\_pagina(pos2mapVir(77,44), (page\_directory\_address), pos2mapFis(77,44), 0, 1);//abajo-izquierda$
-\State \tab \tab $  \}$
-\State \tab \tab  $ breakpoint();$
-\State \tab \tab  $ return \ page\_directory\_address;$
-\State \tab $ \}$
 \end{algorithmic}
 
 
@@ -304,6 +121,37 @@ Luego, para ateneder las interrupciones correspondientes al teclado lo hacemos d
 El m\'etodo \textit{$game\_atender\_teclado$} esta definido en nuestro archivo \textit{game.c}. Este m\'etodo lo que hace, es imprimir en el rincon derecho superior de la pantalla la tecla que se presion\'o.
 Cuenta con un switch, que evalua el caso de cada tecla posible, y en base a esto imprime lo que corresponde.
 
+La interrupción del software la realizamos con
+\begin{algorithmic}
+\State global $\_$isr70
+\State $\_$isr70:
+\State \tab cmp eax, 3
+\State \tab je .posicion
+\State \tab pushad
+\State \tab push ecx
+\State \tab push eax
+\State \tab call game$\_$syscall$\_$manejar
+\State \tab call sched$\_$intercambiar$\_$por$\_$idle
+\State \tab mov ax, 13$<<$3
+\State \tab mov [sched$\_$tarea$\_$selector], ax
+\State \tab jmp far [sched$\_$tarea$\_$offset]
+\State \tab pop eax
+\State \tab pop ecx
+\State \tab jmp .fin
+\State .posicion:
+\State \tab mov edi, eax
+\State \tab push ecx
+\State \tab push edi
+\State \tab call game$\_$syscall$\_$manejar
+\State \tab pop ecx
+\State \tab pop edi
+\State \tab jmp .fin2
+\State .fin:
+\State \tab popad
+\State .fin2:
+\State \tab iret
+\end{algorithmic}
+Ésto compara si la interrupción es por la función posición, en cuyo caso se hace aparte para poder devolver el resultado en eax. En el otro caso, llamamos a manejar e intercambiamos por idle. Después hacemos el jmp far para cambiar la tarea.
 
 Para atender las interrupciones de excepciones que describe el ejercicio 2 del TP, definimos una macro:
 \begin{algorithmic}
@@ -327,250 +175,81 @@ Por ejemplo, cuando queremos identificar la interrupci\'on de "Divide Error", de
 \end{algorithmic}
 
 De esta misma manera definimos todos los mensajes correspondientes a las interrupciones, en nuestro archivo \textit{isr.asm}.
+\newline
+En el kernel.asm las interrupciones están representadas por el siguiente código:
+\begin{algorithmic}
+\State call idt$\_$inicializar
+\State lidt[IDT$\_$DESC]
+\State call resetear$\_$pic
+\State call habilitar$\_$pic
+\end{algorithmic}
+
+Donde lo que se hace es inicializar las entries de la idt, inclusive la entry de la syscall que necesita otro dpl (en este caso 3, de usuario) a diferencia del 0 que es kernel. Por eso hay IDT$\_$entry y IDT$\_$entry$\_$syscall en \textbf{idt.c}. La IDT se carga con la instrucción lidt con la dirección de la idt y se resetea y habilita el Programmable Interrupt Controller, que es el mismo al cual le avisamos en las isr's cuando se atiende cada una de las interrupciones. La linea $sti$ activa las interrupciones (set interrupts). Ésto lo hacemos después de cargar la tarea inicial.
 \subsection{Tareas}
 
-Completamos las TSS utilizando c\'odigo c, en el archivo \textit{tss.c}. Se necesita un idle que va a hacer como pivot en todo cambio de tareas y una inicial para que el primer context switch pueda tirar sus datos en algún lado, por eso no es importante que tiene y se llena toda con ceros (o basura).
-Para completar la \textit{idle}  y la \textit{inicial} hicimos lo siguiente:
+Completamos las TSS utilizando c\'odigo c, en el archivo \textit{tss.c}. Se necesita un idle que va a hacer como pivot en todo cambio de tareas y una inicial para que el primer context switch pueda tirar sus datos en algún lado, por eso no es importante qué tiene y se llena toda con ceros (o basura).
 
+Debemos agregar los \textit{descriptores de TSS} correspondientes a la tarea \textit{idle} y la tarea \textit{inicial} a nuestra \textit{GDT}, para poder realizar esto, definimos un m\'etodo llamado \textit{tss$\_$agregar$\_$a$\_$gdt}
+
+Luego necesitamos completar la TSS correspondiente a cada pirata.
+
+En el kernel.asm que es lo que se corre en bochs, las tareas estan representadas por el siguiente código:
 \begin{algorithmic}
-\State \tab void tss$\_$inicializar$() \{$\\
-  \State \tab \tab //tss$\_$idle\\
-
-  \State \tab \tab tss$\_$idle.ptl = 0;
-  \State \tab \tab tss$\_$idle.unused0 = 0;
-  \State \tab \tab tss$\_$idle.esp0 = 0;
-  \State \tab \tab tss$\_$idle.ss0 = 0;
-  \State \tab \tab tss$\_$idle.unused1 = 0;
-  \State \tab \tab tss$\_$idle.esp1 = 0;
-  \State \tab \tab tss$\_$idle.ss1 = 0;
-  \State \tab \tab tss$\_$idle.unused2 = 0;
-  \State \tab \tab tss$\_$idle.esp2 = 0;
-  \State \tab \tab tss$\_$idle.ss2 = 0;
-  \State \tab \tab tss$\_$idle.unused3 = 0;
-  \State \tab \tab tss$\_$idle.cr3 = $($unsigned int$)$0x27000;
-  \State \tab \tab tss$\_$idle.eip = $($unsigned int$)$0x16000;
-  \State \tab \tab tss$\_$idle.eflags = $($unsigned int$)$0x00202;
-  \State \tab \tab tss$\_$idle.eax = 0;
-  \State \tab \tab tss$\_$idle.ecx = 0;
-  \State \tab \tab tss$\_$idle.edx = 0;
-  \State \tab \tab tss$\_$idle.ebx = 0;
-  \State \tab \tab tss$\_$idle.esp = $($unsigned int$)$0x27000;
-  \State \tab \tab tss$\_$idle.ebp = $($unsigned int$)$0x27000;
-  \State \tab \tab tss$\_$idle.esi = 0;
-  \State \tab \tab tss$\_$idle.edi = 0;
-  \State \tab \tab tss$\_$idle.es = $($unsigned int$)$0x48;
-  \State \tab \tab tss$\_$idle.unused4 = 0;
-  \State \tab \tab tss$\_$idle.cs = $($unsigned int$)$0x58;
-  \State \tab \tab tss$\_$idle.unused5 = 0;
-  \State \tab \tab tss$\_$idle.ss = $($unsigned int$)$0x48;
-  \State \tab \tab tss$\_$idle.unused6 = 0;
-  \State \tab \tab tss$\_$idle.ds = $($unsigned int$)$0x48;
-  \State \tab \tab tss$\_$idle.unused7 = 0;
-  \State \tab \tab tss$\_$idle.fs = $($unsigned int$)$0x00060;
-  \State \tab \tab tss$\_$idle.unused8 = 0;
-  \State \tab \tab tss$\_$idle.gs = $($unsigned int$)$0x48;
-  \State \tab \tab tss$\_$idle.unused9 = 0;
-  \State \tab \tab tss$\_$idle.ldt = 0;
-  \State \tab \tab tss$\_$idle.unused10 = 0;
-  \State \tab \tab tss$\_$idle.dtrap = 0;
-  \State \tab \tab tss$\_$idle.iomap = 0;\\
-
-  \State \tab \tab //tss$\_$inicial\\
-
-  \State \tab \tab tss$\_$inicial.ptl = 0;
-  \State \tab \tab tss$\_$inicial.unused0 = 0;
-  \State \tab \tab tss$\_$inicial.esp0 = 0;
-  \State \tab \tab tss$\_$inicial.ss0 = 0;
-  \State \tab \tab tss$\_$inicial.unused1 = 0;
-  \State \tab \tab tss$\_$inicial.esp1 = 0;
-  \State \tab \tab tss$\_$inicial.ss1 = 0;
-  \State \tab \tab tss$\_$inicial.unused2 = 0;
-  \State \tab \tab tss$\_$inicial.esp2 = 0;
-  \State \tab \tab tss$\_$inicial.ss2 = 0;
-  \State \tab \tab tss$\_$inicial.unused3 = 0;
-  \State \tab \tab tss$\_$inicial.cr3 = 0;
-  \State \tab \tab tss$\_$inicial.eip = 0;
-  \State \tab \tab tss$\_$inicial.eflags = 0;
-  \State \tab \tab tss$\_$inicial.eax = 0;
-  \State \tab \tab tss$\_$inicial.ecx = 0;
-  \State \tab \tab tss$\_$inicial.edx = 0;
-  \State \tab \tab tss$\_$inicial.ebx = 0;
-  \State \tab \tab tss$\_$inicial.esp = 0;
-  \State \tab \tab tss$\_$inicial.ebp = 0;
-  \State \tab \tab tss$\_$inicial.esi = 0;
-  \State \tab \tab tss$\_$inicial.edi = 0;
-  \State \tab \tab tss$\_$inicial.es = 0;
-  \State \tab \tab tss$\_$inicial.unused4 = 0;
-  \State \tab \tab tss$\_$inicial.cs = 0;
-  \State \tab \tab tss$\_$inicial.unused5 = 0;
-  \State \tab \tab tss$\_$inicial.ss = 0;
-  \State \tab \tab tss$\_$inicial.unused6 = 0;
-  \State \tab \tab tss$\_$inicial.ds = 0;
-  \State \tab \tab tss$\_$inicial.unused7 = 0;
-  \State \tab \tab tss$\_$inicial.fs = 0;
-  \State \tab \tab tss$\_$inicial.unused8 = 0;
-  \State \tab \tab tss$\_$inicial.gs = 0;
-  \State \tab \tab tss$\_$inicial.unused9 = 0;
-  \State \tab \tab tss$\_$inicial.ldt = 0;
-  \State \tab \tab tss$\_$inicial.unused10 = 0;
-  \State \tab \tab tss$\_$inicial.dtrap = 0;
-  \State \tab \tab tss$\_$inicial.iomap = 0;
-\State \tab $\}$
+\State call tss$\_$inicializar
+\State call tss$\_$agregar$\_$a$\_$gdt
 \end{algorithmic}
-
-
-Debemos agregar las \textit{TSS} correspondientes a la tarea \textit{idle} y la tarea \textit{inicial} a nuestra \textit{GDT}, para poder realizar esto, definimos un m\'etodo llamado \textit{tss$\_$agregar$\_$a$\_$gdt}
-El m\'etodo realiza lo siguiente:
-
+Esto lo que hace es inicializar los valores de las tss$\_$idle y tss$\_$inicial que están declaradas en \textbf{tss.h} y agregar sus respectivos descriptores a la GDT.
+El código
 \begin{algorithmic}
-\State \tab  void tss$\_$agregar$\_$a$\_$gdt$() \{$
-  \State \tab \tab gdt[GDT$\_$TSS$\_$IDLE] = $($gdt$\_$entry$)$ {
-      \State \tab \tab \tab $($unsigned short$)$    0x0067,         /* limit[0:15]  */
-      \State \tab \tab \tab $($unsigned short$)$    $($int$)$$($$\&$tss$\_$idle$)$ $\&$ 0xFFFF,         /* base[0:15]   */
-      \State \tab \tab \tab $($unsigned char$)$     $($int$)$$($$($int$)$$($$\&$tss$\_$idle$)$ $\gg$ 16$)$ $\&$ 0x00FF,   /* base[23:16]  */
-      \State \tab \tab \tab $($unsigned char$)$     0x09,           /* type         */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* s            */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* dpl          */
-      \State \tab \tab \tab $($unsigned char$)$     0x01,           /* p            */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* limit[16:19] */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* avl          */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* l            */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* db           */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* g            */
-      \State \tab \tab \tab $($unsigned char$)$     $($int$)$$($$\&$tss$\_$idle$)$ $\gg$ 24,           /* base[31:24]  */
-  \State \tab \tab };
-  \State \tab \tab gdt[GDT$\_$TSS$\_$INICIAL] = $($gdt$\_$entry$)$ {
-      \State \tab \tab \tab $($unsigned short$)$    0x0067,         /* limit[0:15]  */
-      \State \tab \tab \tab $($unsigned short$)$    $($int$)$$($$\&$tss$\_$inicial$)$ $\&$ 0xFFFF, /* base[0:15]   */
-      \State \tab \tab \tab $($unsigned char$)$     $($int$)$$($$($int$)$$($$\&$tss$\_$inicial$)$ $\gg$ 16$)$ $\&$ 0x00FF,           /* base[23:16]  */
-      \State \tab \tab \tab $($unsigned char$)$     0x09,           /* type         */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* s            */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* dpl          */
-      \State \tab \tab \tab $($unsigned char$)$     0x01,           /* p            */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* limit[16:19] */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* avl          */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* l            */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* db           */
-      \State \tab \tab \tab $($unsigned char$)$     0x00,           /* g            */
-      \State \tab \tab \tab $($unsigned char$)$     $($int$)$$($$\&$tss$\_$inicial$)$ $\gg$ 24,           /* base[31:24]  */
-  \State \tab \tab };
-\State \tab $\}$
+\State mov ax, 0x70
+\State ltr ax
 \end{algorithmic}
-
-Luego necesitamos completar la TSS correspondiente a cada pirata, para esto realizamos el siguiente m\'etodo:
-
+carga la tarea inicial y
 \begin{algorithmic}
-\State \tab void completarTssPirata$($pirata$\_$t tarea$) \{$
-  \State \tab \tab unsigned int paginaParaPilaCero = mmu$\_$proxima$\_$pagina$\_$fisica$\_$libre$()$ + 0x1000;
-\State \tab \tab
-  \State \tab \tab tss* tss$\_$pirata = $($*$($tarea.jugador$)$$)$.index == JUGADOR$\_$A ? $\&$tss$\_$jugadorA[tarea.id] : $\&$tss$\_$jugadorB[tarea.id];
-\State \tab \tab
-  \State \tab \tab tss$\_$pirata$\to$eip = 0x00400000;
-  \State \tab \tab tss$\_$pirata$\to$ptl = 0;
-  \State \tab \tab tss$\_$pirata$\to$unused0 = 0;
-  \State \tab \tab tss$\_$pirata$\to$esp0 = paginaParaPilaCero;
-  \State \tab \tab tss$\_$pirata$\to$ss0 = $($unsigned int$)$0x48;
-  \State \tab \tab tss$\_$pirata$\to$unused1 = 0;
-  \State \tab \tab tss$\_$pirata$\to$esp1 = 0;
-  \State \tab \tab tss$\_$pirata$\to$ss1 = 0;
-  \State \tab \tab tss$\_$pirata$\to$unused2 = 0;
-  \State \tab \tab tss$\_$pirata$\to$esp2 = 0;
-  \State \tab \tab tss$\_$pirata$\to$ss2 = 0;
-  \State \tab \tab tss$\_$pirata$\to$unused3 = 0;
-  \State \tab \tab tss$\_$pirata$\to$cr3 = mmu$\_$inicializar$\_$dir$\_$pirata$($tarea.jugador, $\&$tarea$)$;
-  \State \tab \tab tss$\_$pirata$\to$eflags = $($unsigned int$)$0x00202;
-  \State \tab \tab tss$\_$pirata$\to$eax = 0;
-  \State \tab \tab tss$\_$pirata$\to$ecx = 0;
-  \State \tab \tab tss$\_$pirata$\to$edx = 0;
-  \State \tab \tab tss$\_$pirata$\to$ebx = 0;
-  \State \tab \tab tss$\_$pirata$\to$esp = 0x00401000 - 12;
-  \State \tab \tab tss$\_$pirata$\to$ebp = 0x00401000 - 12;
-  \State \tab \tab tss$\_$pirata$\to$esi = 0;
-  \State \tab \tab tss$\_$pirata$\to$edi = 0;
-  \State \tab \tab tss$\_$pirata$\to$es = $($unsigned short$)$0x40 | 0x3;
-  \State \tab \tab tss$\_$pirata$\to$unused4 = 0;
-  \State \tab \tab tss$\_$pirata$\to$cs = $($unsigned short$)$0x50 | 0x3;
-  \State \tab \tab tss$\_$pirata$\to$unused5 = 0;
-  \State \tab \tab tss$\_$pirata$\to$ss = $($unsigned short$)$0x40 | 0x3;
-  \State \tab \tab tss$\_$pirata$\to$unused6 = 0;
-  \State \tab \tab tss$\_$pirata$\to$ds = $($unsigned short$)$0x40 | 0x3;
-  \State \tab \tab tss$\_$pirata$\to$unused7 = 0;
-  \State \tab \tab tss$\_$pirata$\to$fs = $($unsigned short$)$0x40 | 0x3;
-  \State \tab \tab tss$\_$pirata$\to$unused8 = 0;
-  \State \tab \tab tss$\_$pirata$\to$gs = $($unsigned short$)$0x40 | 0x3;
-  \State \tab \tab tss$\_$pirata$\to$unused9 = 0;
-  \State \tab \tab tss$\_$pirata$\to$ldt = 0;
-  \State \tab \tab tss$\_$pirata$\to$unused10 = 0;
-  \State \tab \tab tss$\_$pirata$\to$dtrap = 0;
-  \State \tab \tab tss$\_$pirata$\to$iomap = 0xFFFF;
-\State \tab $\}$
+\State jmp 0x68:0
 \end{algorithmic}
-
-Al igual que hicimos con la tarea \textit{idle} y la tarea \textit{inicial}, debemos agregar las tareas correspondientes a los piratas a nuestra \textit{GDT}, para esto desarrollamos el m\'etodo \textit{tss$\_$agretar$\_$piratas$\_$a$\_$gdt}
-
-\begin{algorithmic}
-\State \tab  void tss$\_$agregar$\_$piratas$\_$a$\_$gdt$($jugador$\_$t* j$)$ $\{$
-\State \tab \tab    if $($j$\to$index == 0$)$  $\{$
-\State \tab \tab      gdt[EMPIEZAN$\_$TSS + proximaTareaA] = $($gdt$\_$entry$)$ $\{$
-\State \tab \tab \tab       $($unsigned short$)$    0x0067,         /* limit[0:15]  */
-\State \tab \tab \tab       $($unsigned short$)$    $($int$)$$($$\&$tss$\_$jugadorA[jugadorA.piratas[proximaTareaA].index]$)$ $\&$ 0xFFFF, /* base[0:15]   */
-\State \tab \tab \tab       $($unsigned char$)$     $($int$)$$($$($int$)$$($$\&$tss$\_$jugadorA[jugadorA.piratas[proximaTareaA].index]$)$ $\gg$ 16$)$ $\&$ 0x00FF,           /* base[23:16]  */
-\State \tab \tab \tab       $($unsigned char$)$     0x09,           /* type         */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* s            */
-\State \tab \tab \tab       $($unsigned char$)$     0x03,           /* dpl          */
-\State \tab \tab \tab       $($unsigned char$)$     0x01,           /* p            */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* limit[16:19] */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* avl          */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* l            */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* db           */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* g            */
-\State \tab \tab \tab       $($unsigned char$)$     $($int$)$$($$\&$tss$\_$jugadorA[jugadorA.piratas[proximaTareaA].index]$)$ $\gg$ 24,           /* base[31:24]  */
-\State \tab \tab \tab     $\}$;
-\State \tab \tab \tab     completarTssPirata$($jugadorA.piratas[proximaTareaA]$)$;
-\State \tab \tab \tab   $\}$ else $\{$
-\State \tab \tab \tab     gdt[EMPIEZAN$\_$TSS + 8 + proximaTareaB] = $($gdt$\_$entry$)$ $\{$
-\State \tab \tab \tab       $($unsigned short$)$    0x0067,         /* limit[0:15]  */
-\State \tab \tab \tab       $($unsigned short$)$    $($int$)$$($$\&$tss$\_$jugadorB[jugadorB.piratas[proximaTareaB].index]$)$ $\&$ 0xFFFF, /* base[0:15]   */
-\State \tab \tab \tab       $($unsigned char$)$     $($int$)$$($$($int$)$$($$\&$tss$\_$jugadorB[jugadorB.piratas[proximaTareaB].index]$)$ $\gg$ 16$)$ $\&$ 0x00FF,           /* base[23:16]  */
-\State \tab \tab \tab       $($unsigned char$)$     0x09,           /* type         */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* s            */
-\State \tab \tab \tab       $($unsigned char$)$     0x03,           /* dpl          */
-\State \tab \tab \tab       $($unsigned char$)$     0x01,           /* p            */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* limit[16:19] */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* avl          */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* l            */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* db           */
-\State \tab \tab \tab       $($unsigned char$)$     0x00,           /* g            */
-\State \tab \tab \tab       $($unsigned char$)$     $($int$)$$($$\&$tss$\_$jugadorB[jugadorB.piratas[proximaTareaB].id]$)$ $\gg$ 24,           /* base[31:24]  */
-\State \tab \tab \tab     $\}$;
-\State \tab \tab \tab     completarTssPirata$($jugadorB.piratas[proximaTareaB]$)$;
-\State \tab \tab $\}$
-\State \tab $\}$
-\end{algorithmic}
-
+cambia a la tarea idle.
+Ésta tarea tiene como cr3, base de la pila y stack el 0x27000, el eip de 0x16000 que es donde está el código de la tarea.
+\newline
+\newline
+Cada pirata es una tarea distinta y tienen cada uno un cr3 distinto.
+Cuando se lanza una tarea lo primero que se hace es agregar el descriptor de tss de ese pirata a la GDT y despues se completa la tss. Ésto se hace con los métodos tss$\_$agregar$\_$pirata$\_$a$\_$gdt y completarTssPirata, respectivamente. Ambos estan en el archivo \textbf{tss.c}
 \subsection{Scheduler}
 
 Decidimos representar al \textit{Scheduler} de la siguiente manera:
 \begin{algorithmic}
+\State \tab int tareaActualA;
+\State \tab int tareaActualB;
 \State \tab uint proximaTareaA; //indice 0-7
 \State \tab uint proximaTareaB; //indice 0-7
 \State \tab uchar turnoPirata; //0 A, 1 B
+\State \tab uchar turnoPirataActual; //0 A, 1 B
 \State \tab uchar estaEnIdle; // 0 NO, 1 SI
-\State \tab uint modoDebug;
-
+\State \tab uint modoDebugPantalla;
+\State \tab uint modoDebugActivado;
+\State \tab int proxTareaAMuerta;
+\State \tab int proxTareaBMuerta;
 \end{algorithmic}
 
 Para inicializar estos valores, definimos el siguiente m\'etodo:
 \begin{algorithmic}
     \State \tab void sched$\_$inicializar$() \{$
-    \State \tab \tab turnoPirata = 0;
-    \State \tab \tab proximaTareaA = 0;
-    \State \tab \tab estaEnIdle = 1;
-    \State \tab \tab proximaTareaB = 0;
-    \State \tab \tab modoDebug = 0;
+    \State \tab turnoPirata = 0;
+    \State \tab proximaTareaA = 0;
+    \State \tab estaEnIdle = 1;
+    \State \tab proximaTareaB = 0;
+    \State \tab modoDebugActivado = 1;
+    \State \tab tareaActualA = 0;
+    \State \tab tareaActualB = 0;
+    \State \tab turnoPirataActual = 0;
+    \State \tab proxTareaAMuerta = 0;
+    \State \tab proxTareaBMuerta = 0;
+    \State \tab modoDebugPantalla = 0; 
     \State \tab $\}$
 \end{algorithmic}
 
+El jugador que empieza el es A, la primera tarea que empieza a correr es la idle por eso está seteado. Ambos jugadores tienen como primer tarea a correr la 0 o sea la primera. El modoDebugActivado está seteado porque el enunciado dice que la primer excepción del procesador ya tiene que lanzar la pantalla y hay dos flags porque uno indica si está la pantalla debug y otra si está el debug activado.
+proximaTareaA y proximaTareaB indican las proximas tarea a correr de cada jugador. Por último, la proxTareaAMuerta y proxTareaBMuerta indican cuales son los indices de los piratas de cada jugador que van a ser usados en caso de que se lance un pirata verde o azul, respectivamente.
 
 Para atender a la proxima tarea, vamos a reutilizar la funci\'on que cambia las tareas de acuerdo al tick del clock, utilizamos a la funci\'on:
 \begin{algorithmic}
@@ -579,144 +258,8 @@ Para atender a la proxima tarea, vamos a reutilizar la funci\'on que cambia las 
     \State \tab $\}$
 \end{algorithmic}
 
-Luego, para realizar lo mencionado anteriormente, correspondiente al tick del clock:
+Luego, para realizar lo correspondiente al tick del clock usamos sched$\_$tick, que a su vez llama a game$\_$tick que sólo actualiza todos los relojes, en concordancia a lo que pide el ejercicio
 
-\begin{algorithmic}
-\State \tab unsigned int sched$\_$tick$()$ $\{$
-\State \tab \tab  if $($estaEnIdle == 1$)$ $\{$
-\State \tab \tab  \tab    estaEnIdle = 0;
-\State \tab \tab  \tab    if $($turnoPirata == 0$)$ $\{$
-\State \tab \tab  \tab \tab      //turno jug A
-\State \tab \tab  \tab \tab      uint proxTarea = EMPIEZAN$\_$TSS + proximaTareaA;
-\State \tab \tab  \tab \tab      game$\_$tick$($proxTarea$)$;
-\State \tab \tab  \tab \tab      turnoPirata = 1;
-\State \tab \tab  \tab \tab      uchar noEncontreNinguna = 1;
-\State \tab \tab  \tab \tab      uchar todosMuertos = 0;
-\State \tab \tab  \tab \tab      int i = proximaTareaA + 1;
-\State \tab \tab  \tab \tab      while $($noEncontreNinguna == 1 $\&\&$ todosMuertos == 0$)$ $\{$
-    \State \tab \tab  \tab \tab \tab    if $($jugadorA.piratas[i].vivoMuerto == 1$)$ $\{$
-          \State \tab \tab  \tab \tab \tab \tab //si esta vivo la pongo como la proxima tarea de A
-          \State \tab \tab  \tab \tab \tab \tab proximaTareaA = jugadorA.piratas[i].index;
-          \State \tab \tab  \tab \tab \tab \tab noEncontreNinguna = 0;
-    \State \tab \tab  \tab \tab \tab    $\}$
-
-    \State \tab \tab  \tab \tab \tab    if $($i == proximaTareaA$)$ $\{$
-          \newline todosMuertos = 1;
-    \State \tab \tab  \tab \tab \tab    $\}$
-
-    \State \tab \tab  \tab \tab \tab    i++;
-
-    \State \tab \tab  \tab \tab \tab    if $($i == 8$)$ $\{$
-         \State \tab \tab  \tab \tab \tab \tab  i = 0;
-    \State \tab \tab  \tab \tab \tab    $\}$
-\State \tab \tab  \tab \tab      $\}$
-
-\State \tab \tab  \tab \tab      if $($todosMuertos$)$ $\{$
-        //salto a la idle
-      \State \tab \tab  \tab \tab \tab  return $($13$)$ $\ll$ 3;
-\State \tab \tab  \tab \tab      $\}$
-
-\State \tab \tab  \tab \tab      return $($proxTarea $\ll$ 3$)$;
-\State \tab \tab  \tab    $\}$ else $\{$
- \State \tab \tab  \tab \tab     //turno jug B
- \State \tab \tab  \tab \tab     uint proxTarea = EMPIEZAN$\_$TSS + 8 + proximaTareaB;
- \State \tab \tab  \tab \tab     game$\_$tick$($proxTarea$)$;
- \State \tab \tab  \tab \tab     turnoPirata = 0;
- \State \tab \tab  \tab \tab     uchar noEncontreNinguna = 1;
- \State \tab \tab  \tab \tab     uchar todosMuertos = 0;
- \State \tab \tab  \tab \tab     int i = proximaTareaB + 1;
- \State \tab \tab  \tab \tab     while $($noEncontreNinguna == 1 $\&\&$ todosMuertos == 0$)$ $\{$
-   \State \tab \tab  \tab \tab \tab     if $($jugadorB.piratas[i].vivoMuerto == 1$)$ $\{$
-          //si esta vivo la pongo como la proxima tarea de B
-          proximaTareaB = jugadorB.piratas[i].index;
-          noEncontreNinguna = 0;
-   \State \tab \tab  \tab \tab \tab     $\}$
-
-   \State \tab \tab  \tab \tab \tab     if $($i == proximaTareaA$)$ $\{$
-          \State \tab \tab  \tab \tab \tab \tab todosMuertos = 1;
-   \State \tab \tab  \tab \tab \tab     $\}$
-
-   \State \tab \tab  \tab \tab \tab     i++;
-
-   \State \tab \tab  \tab \tab \tab     if $($i == 8$)$ $\{$
-         \State \tab \tab  \tab \tab \tab \tab  i = 0;
-   \State \tab \tab  \tab \tab \tab     $\}$
-  \State \tab \tab  \tab \tab    $\}$
-
-  \State \tab \tab  \tab \tab    if $($todosMuertos$)$ $\{$
-    \State \tab \tab  \tab \tab \tab    //salto a la idle
-    \State \tab \tab  \tab \tab \tab    return $($13$)$ $\ll$ 3;
-  \State \tab \tab  \tab \tab    $\}$
-
-  \State \tab \tab  \tab \tab    return $($proxTarea $\ll$ 3$)$;
-\State \tab \tab  \tab    $\}$
-\State \tab \tab    $\}$ else $\{$
-\State \tab \tab  \tab    if $($turnoPirata == 0$)$ $\{$
-     \State \tab \tab  \tab \tab  //turno proximo es A
-      \State \tab \tab  \tab \tab  uint proxTarea = EMPIEZAN$\_$TSS + proximaTareaA;
-      \State \tab \tab  \tab \tab  game$\_$tick$($proxTarea$)$;
-      \State \tab \tab  \tab \tab  turnoPirata = 1;
-      \State \tab \tab  \tab \tab  uchar noEncontreNinguna = 1;
-      \State \tab \tab  \tab \tab  uchar todosMuertos = 0;
-      \State \tab \tab  \tab \tab  int i = proximaTareaA + 1;
-      \State \tab \tab  \tab \tab  while $($noEncontreNinguna == 1 $\&\&$ todosMuertos == 0$)$ $\{$
-   \State \tab \tab  \tab \tab \tab     if $($jugadorA.piratas[i].vivoMuerto == 1$)$ $\{$
-         \State \tab \tab  \tab \tab  \tab \tab //si esta vivo la pongo como la proxima tarea de A
-         \State \tab \tab  \tab \tab \tab \tab proximaTareaA = jugadorA.piratas[i].index;
-          \State \tab \tab  \tab \tab \tab \tab  noEncontreNinguna = 0;
-   \State \tab \tab  \tab \tab \tab     $\}$
-
-    \State \tab \tab  \tab \tab \tab    if $($i == proximaTareaA$)$ $\{$
-         \State \tab \tab  \tab \tab \tab \tab todosMuertos = 1;
-    \State \tab \tab  \tab \tab \tab    $\}$
-
-    \State \tab \tab  \tab \tab \tab    i++;
-
-    \State \tab \tab  \tab \tab \tab    if $($i == 8$)$ $\{$
-        \State \tab \tab  \tab \tab \tab \tab  i = 0;
-    \State \tab \tab  \tab \tab \tab    $\}$
-    \State \tab \tab  \tab \tab    $\}$
-
-      \State \tab \tab  \tab \tab  if $($todosMuertos$)$ $\{$
-        //salto a la idle
-        \State \tab \tab  \tab \tab \tab return $($13$)$ $\ll$ 3;
-      \State \tab \tab  \tab \tab  $\}$
-
-      \State \tab \tab  \tab \tab  return $($proxTarea$)$ $\ll$ 3;
-   \State \tab \tab  \tab $\}$ else $\{$
-      \State \tab \tab  \tab \tab  //turno proximo es B
-      \State \tab \tab  \tab \tab  uint proxTarea = EMPIEZAN$\_$TSS + 8 + proximaTareaB;
-      \State \tab \tab  \tab \tab  game$\_$tick$($proxTarea$)$;
-      \State \tab \tab  \tab \tab  turnoPirata = 0;
-      \State \tab \tab  \tab \tab  uchar noEncontreNinguna = 1;
-      \State \tab \tab  \tab \tab  uchar todosMuertos = 0;
-      \State \tab \tab  \tab \tab  int i = proximaTareaB + 1;
-      \State \tab \tab  \tab \tab  while $($noEncontreNinguna == 1 $\&\&$ todosMuertos == 0$)$ $\{$
-    \State \tab \tab  \tab \tab \tab    if $($jugadorB.piratas[i].vivoMuerto == 1$)$ $\{$
-          //si esta vivo la pongo como la proxima tarea de B
-          \State \tab \tab  \tab \tab \tab \tab proximaTareaB = jugadorB.piratas[i].index;
-          \State \tab \tab  \tab \tab \tab \tab noEncontreNinguna = 0;
-    \State \tab \tab  \tab \tab \tab    $\}$
-
-    \State \tab \tab  \tab \tab \tab    if $($i == proximaTareaA$)$ $\{$
-          \State \tab \tab  \tab \tab \tab \tab todosMuertos = 1;
-    \State \tab \tab  \tab \tab \tab    $\}$
-
-    \State \tab \tab  \tab \tab \tab    i++;
-
-     \State \tab \tab  \tab \tab \tab   if $($i == 8$)$ $\{$
-          \State \tab \tab  \tab \tab \tab \tab i = 0;
-     \State \tab \tab  \tab \tab \tab   $\}$
-      \State \tab \tab  \tab \tab $\}$
-      \State \tab \tab  \tab \tab if $($todosMuertos$)$ $\{$
-        //salto a la idle
-        \State \tab \tab  \tab \tab \tab return $($13$)$ $\ll$ 3;
-      \State \tab \tab  \tab \tab $\}$
-      \State \tab \tab  \tab \tab return $($proxTarea$)$ $\ll$ 3;
-\State \tab \tab  \tab    $\}$
-\State \tab \tab    $\}$
-\State \tab  $\}$
-\end{algorithmic}
 
 Por \'ultimo, otros m\'etodos que definimos en nuestro \textit{sched.c}
 \begin{algorithmic}
@@ -733,10 +276,55 @@ Por \'ultimo, otros m\'etodos que definimos en nuestro \textit{sched.c}
 
 \begin{algorithmic}
     \State \tab void sched$\_$toggle$\_$debug$() \{$
-        \State \tab \tab if (modoDebug) $\{$
-        \State \tab \tab \tab modoDebug = FALSE;
+        \State \tab \tab if (modoDebugPantalla) $\{$
+        \State \tab \tab \tab game$\_$modoDebug$\_$close$();$
+        \State \tab \tab \tab modoDebugPantalla = FALSE;
         \State \tab \tab $\}$ else $\{$
-        \State \tab \tab \tab modoDebug = TRUE;
-        \State \tab \tab$\}$
+        \State \tab \tab \tab if (modoDebugActivado) $\{$
+        \State \tab \tab \tab \tab modoDebugActivado = TRUE;
+        \State \tab \tab \tab $\}$ else $\{$
+        \State \tab \tab \tab \tab modoDebugActivado = FALSE;
+        \State \tab \tab	\tab $\}$
+        \State \tab \tab $\}$
     \State \tab $\}$
 \end{algorithmic}
+
+Éste último método se llama cuando se aprieta la tecla $"y"$. Lo que hace es preguntar si está la pantalla del debug en el juego, en este caso la cierra y vuelve al juego, poniendo el flag en FALSE, que esta definido como cero. Si no está la pantalla cheque si ya se apretó la tecla $"y"$ y el modoDebugActivado está activado o no, haciendo un simple toggle de éste último valor.
+\newline
+A su vez, el scheduler se tiene que encargar de sacar una tarea cuando ésta muere y agregar una tarea cuando se lanza. Ésto se hace con sched$\_$sacar y sched$\_$agregar, respectivamente. Lo que hace el primero es fijarse cual es la próxima tarea muerta del jugador en cuestión y actualiza si la tarea que se murió viene antes. El sched$\_$agregar se fija cual esta muerto de las tareas del jugador y actualiza su variable próxima tarea muerta.
+\newline
+El scheduler si inicialize en el kernel.asm cuando se hace
+\begin{algorithmic}
+\State call sched$\_$inicializar
+\end{algorithmic}
+
+
+\subsection{modoDebug}
+Para el modo debug usamos 2 flags que están en la estructura del scheduler, modoDebugActivado y modoDebugPantalla.
+\begin{algorithmic}
+	\State \tab pushad
+    \State \tab call game$\_$pirata$\_$explotoisr
+    \State \tab cmp byte [modoDebugActivado], 1
+    \State \tab jne .fin
+    
+    \State \tab mov eax, cr0
+    \State \tab push eax
+    \State \tab mov eax, cr2
+    \State \tab push eax
+    \State \tab mov eax, cr3
+    \State \tab push eax
+    \State \tab mov eax, cr4
+    \State \tab push eax
+
+    \State \tab push cs ; push segmentos
+    \State \tab push ds
+    \State \tab push es
+    \State \tab push fs
+    \State \tab push gs
+    \State \tab push ss
+
+    \State \tab push esp ; push array con toda la info de los registros
+    \State \tab call game$\_$modoDebug$\_$open
+  	\State .fin:
+    \State \tab jmp 0x68:0 ;jumpeo a la idle\end{algorithmic}
+

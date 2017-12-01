@@ -23,8 +23,8 @@ TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 #define BOTINES_CANTIDAD 8
 
 uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
-                                      {30,  3, 50}, {31, 38, 50}, {15, 21, 100}, {45, 21, 100},
-                                      {49,  3, 50}, {48, 38, 50}, {64, 21, 100}, {34, 21, 100}
+                                      {30,  3, 50},
+                                      {49,  3, 50}
                                     };
 
 jugador_t jugadorA;

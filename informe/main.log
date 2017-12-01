@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.10.8)  30 NOV 2017 15:32
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.10.8)  1 DEC 2017 14:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -732,7 +732,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 29--31
 ) [4
 
 ] (./modoprotegido.tex
-Overfull \hbox (2.66129pt too wide) in paragraph at lines 34--35
+Overfull \hbox (2.66129pt too wide) in paragraph at lines 37--38
 []\T1/cmr/m/n/10 Las fun-cio-nes $\OML/cmm/m/it/10 screen[]inicializar$\T1/cmr/
 m/n/10 , $\OML/cmm/m/it/10 screen[]pintar[]nombre$ \T1/cmr/m/n/10 es-tan de-fi-
 ni-das en \T1/cmr/bx/n/10 screen.h \T1/cmr/m/n/10 y desa-rro-lla-das en \T1/cmr
@@ -741,286 +741,39 @@ ni-das en \T1/cmr/bx/n/10 screen.h \T1/cmr/m/n/10 y desa-rro-lla-das en \T1/cmr
 
 [5
 
-] [6]
-Overfull \hbox (6.8974pt too wide) in paragraph at lines 182--183
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 ((\OML/cmm/m/it/10
- unsignedint\OT1/cmr/m/n/10 )0\OML/cmm/m/it/10 x\OT1/cmr/m/n/10 00400000\OML/cm
-m/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[]directory[]address\OT1/cmr/
-m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapFis\OT1/cmr/
-m/n/10 (1\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/1
-0 1\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1);$ 
+] [6] [7]
+Underfull \hbox (badness 10000) in paragraph at lines 211--217
+
  []
 
-
-Overfull \hbox (5.83852pt too wide) in paragraph at lines 186--187
-[]| | | | | $\OT1/cmr/m/n/10 ((\OML/cmm/m/it/10 unsignedint\OMS/cmsy/m/n/10 ^^C
-\OT1/cmr/m/n/10 )((\OML/cmm/m/it/10 unsignedint\OT1/cmr/m/n/10 )0\OML/cmm/m/it/
-10 x\OT1/cmr/m/n/10 00400000))[\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ] = ((\OML/cmm
-/m/it/10 unsignedint\OMS/cmsy/m/n/10 ^^C\OT1/cmr/m/n/10 )((\OML/cmm/m/it/10 uns
-ignedint\OT1/cmr/m/n/10 )0\OML/cmm/m/it/10 x\OT1/cmr/m/n/10 10000))[\OML/cmm/m/
-it/10 i\OT1/cmr/m/n/10 ];$ 
- []
-
-
-Overfull \hbox (5.83852pt too wide) in paragraph at lines 190--191
-[]| | | | | $\OT1/cmr/m/n/10 ((\OML/cmm/m/it/10 unsignedint\OMS/cmsy/m/n/10 ^^C
-\OT1/cmr/m/n/10 )((\OML/cmm/m/it/10 unsignedint\OT1/cmr/m/n/10 )0\OML/cmm/m/it/
-10 x\OT1/cmr/m/n/10 00400000))[\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ] = ((\OML/cmm
-/m/it/10 unsignedint\OMS/cmsy/m/n/10 ^^C\OT1/cmr/m/n/10 )((\OML/cmm/m/it/10 uns
-ignedint\OT1/cmr/m/n/10 )0\OML/cmm/m/it/10 x\OT1/cmr/m/n/10 11000))[\OML/cmm/m/
-it/10 i\OT1/cmr/m/n/10 ];$ 
- []
-
-[7]
-Overfull \hbox (18.01811pt too wide) in paragraph at lines 211--212
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 ;
- \OT1/cmr/m/n/10 1)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[]d
-irectory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML/c
-mm/m/it/10 mapFis\OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1)\OML/cm
-m/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cmm/m/
-it/10 ==derecha$ 
- []
-
-
-Overfull \hbox (15.51527pt too wide) in paragraph at lines 212--213
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 ;
- \OT1/cmr/m/n/10 2)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[]d
-irectory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML/c
-mm/m/it/10 mapFis\OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2)\OML/cm
-m/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cmm/m/
-it/10 ==abajo \OMS/cmsy/m/n/10 ^^@
- []
-
-
-Overfull \hbox (7.73747pt too wide) in paragraph at lines 213--214
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (1\OML/cmm/m/it/10 ;
- \OT1/cmr/m/n/10 3)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[]d
-irectory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML/c
-mm/m/it/10 mapFis\OT1/cmr/m/n/10 (1\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3)\OML/cm
-m/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cmm/m/
-it/10 ==abajo$ 
- []
-
-
-Overfull \hbox (25.80075pt too wide) in paragraph at lines 214--215
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ;
- \OT1/cmr/m/n/10 1)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[]d
-irectory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML/c
-mm/m/it/10 mapFis\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1)\OML/cm
-m/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cmm/m/
-it/10 ==izquierda$ 
- []
-
-
-Overfull \hbox (15.51527pt too wide) in paragraph at lines 215--216
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ;
- \OT1/cmr/m/n/10 2)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[]d
-irectory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML/c
-mm/m/it/10 mapFis\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2)\OML/cm
-m/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cmm/m/
-it/10 ==abajo \OMS/cmsy/m/n/10 ^^@
- []
-
-
-Overfull \hbox (11.22362pt too wide) in paragraph at lines 216--217
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (1\OML/cmm/m/it/10 ;
- \OT1/cmr/m/n/10 1)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[]d
-irectory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML/c
-mm/m/it/10 mapFis\OT1/cmr/m/n/10 (1\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1)\OML/cm
-m/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cmm/m/
-it/10 ==arriba$ 
- []
-
-
-Overfull \hbox (19.00142pt too wide) in paragraph at lines 217--218
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ;
- \OT1/cmr/m/n/10 3)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[]d
-irectory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML/c
-mm/m/it/10 mapFis\OT1/cmr/m/n/10 (0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3)\OML/cm
-m/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cmm/m/
-it/10 ==arriba \OMS/cmsy/m/n/10 ^^@
- []
-
-
-Overfull \hbox (19.00142pt too wide) in paragraph at lines 218--219
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 ;
- \OT1/cmr/m/n/10 3)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[]d
-irectory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML/c
-mm/m/it/10 mapFis\OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 3)\OML/cm
-m/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cmm/m/
-it/10 ==arriba \OMS/cmsy/m/n/10 ^^@
- []
-
-
-Overfull \hbox (6.8974pt too wide) in paragraph at lines 223--224
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 ((\OML/cmm/m/it/10
- unsignedint\OT1/cmr/m/n/10 )0\OML/cmm/m/it/10 x\OT1/cmr/m/n/10 00400000\OML/cm
-m/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[]directory[]address\OT1/cmr/
-m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapFis\OT1/cmr/
-m/n/10 (1\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 2)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/1
-0 1\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1);$ 
- []
-
-
-Overfull \hbox (5.83852pt too wide) in paragraph at lines 230--231
-[]| | | | $| \OT1/cmr/m/n/10 ((\OML/cmm/m/it/10 unsignedint\OMS/cmsy/m/n/10 ^^C
-\OT1/cmr/m/n/10 )((\OML/cmm/m/it/10 unsignedint\OT1/cmr/m/n/10 )0\OML/cmm/m/it/
-10 x\OT1/cmr/m/n/10 00400000))[\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ] = ((\OML/cmm
-/m/it/10 unsignedint\OMS/cmsy/m/n/10 ^^C\OT1/cmr/m/n/10 )((\OML/cmm/m/it/10 uns
-ignedint\OT1/cmr/m/n/10 )0\OML/cmm/m/it/10 x\OT1/cmr/m/n/10 13000))[\OML/cmm/m/
-it/10 i\OT1/cmr/m/n/10 ];$ 
- []
-
-
-Overfull \hbox (7.80557pt too wide) in paragraph at lines 238--240
-[]| | | | $\OML/cmm/m/it/10 for\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 inti \OT1/cmr/
-m/n/10 = 0; \OML/cmm/m/it/10 i < \OT1/cmr/m/n/10 1024; \OML/cmm/m/it/10 i \OT1/
-cmr/m/n/10 + +)\OMS/cmsy/m/n/10 f$ \T1/cmr/m/n/10 ((un-sig-ned int*)(pos2mapVir
-(78,43)))[i] = ((un-sig-ned int*)((unsigned
- []
-
-
-Overfull \hbox (45.80081pt too wide) in paragraph at lines 251--252
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (77\OML/cmm/m/it/10 
-; \OT1/cmr/m/n/10 43)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[
-]directory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML
-/cmm/m/it/10 mapFis\OT1/cmr/m/n/10 (77\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 43)\OM
-L/cmm/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cm
-m/m/it/10 ==izquierda$ 
- []
-
-
-Overfull \hbox (39.00148pt too wide) in paragraph at lines 252--253
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (77\OML/cmm/m/it/10 
-; \OT1/cmr/m/n/10 42)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[
-]directory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML
-/cmm/m/it/10 mapFis\OT1/cmr/m/n/10 (77\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 42)\OM
-L/cmm/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cm
-m/m/it/10 ==arriba \OMS/cmsy/m/n/10 ^^@
- []
-
-
-Overfull \hbox (31.22368pt too wide) in paragraph at lines 253--254
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (78\OML/cmm/m/it/10 
-; \OT1/cmr/m/n/10 42)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[
-]directory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML
-/cmm/m/it/10 mapFis\OT1/cmr/m/n/10 (78\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 42)\OM
-L/cmm/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cm
-m/m/it/10 ==arriba$ 
- []
-
-
-Overfull \hbox (38.01817pt too wide) in paragraph at lines 254--255
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (79\OML/cmm/m/it/10 
-; \OT1/cmr/m/n/10 43)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[
-]directory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML
-/cmm/m/it/10 mapFis\OT1/cmr/m/n/10 (79\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 43)\OM
-L/cmm/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cm
-m/m/it/10 ==derecha$ 
- []
-
-
-Overfull \hbox (39.00148pt too wide) in paragraph at lines 255--256
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (79\OML/cmm/m/it/10 
-; \OT1/cmr/m/n/10 42)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[
-]directory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML
-/cmm/m/it/10 mapFis\OT1/cmr/m/n/10 (79\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 42)\OM
-L/cmm/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cm
-m/m/it/10 ==arriba \OMS/cmsy/m/n/10 ^^@
- []
-
-
-Overfull \hbox (27.73753pt too wide) in paragraph at lines 256--257
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (78\OML/cmm/m/it/10 
-; \OT1/cmr/m/n/10 44)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[
-]directory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML
-/cmm/m/it/10 mapFis\OT1/cmr/m/n/10 (78\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 44)\OM
-L/cmm/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cm
-m/m/it/10 ==abajo$ 
- []
-
-
-Overfull \hbox (35.51534pt too wide) in paragraph at lines 257--258
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (79\OML/cmm/m/it/10 
-; \OT1/cmr/m/n/10 44)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[
-]directory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML
-/cmm/m/it/10 mapFis\OT1/cmr/m/n/10 (79\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 44)\OM
-L/cmm/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cm
-m/m/it/10 ==abajo \OMS/cmsy/m/n/10 ^^@
- []
-
-
-Overfull \hbox (35.51534pt too wide) in paragraph at lines 258--259
-[]| | | $\OML/cmm/m/it/10 mmu[]mapear[]pagina\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 
-pos\OT1/cmr/m/n/10 2\OML/cmm/m/it/10 mapVir\OT1/cmr/m/n/10 (77\OML/cmm/m/it/10 
-; \OT1/cmr/m/n/10 44)\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 page[
-]directory[]address\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; pos\OT1/cmr/m/n/10 2\OML
-/cmm/m/it/10 mapFis\OT1/cmr/m/n/10 (77\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 44)\OM
-L/cmm/m/it/10 ; \OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 1); \OML/cm
-m/m/it/10 ==abajo \OMS/cmsy/m/n/10 ^^@
- []
-
-[8] [9] [10] [11]
-Overfull \hbox (38.00006pt too wide) in paragraph at lines 466--467
-[]| | \T1/cmr/m/n/10 tss* tss$[]$pirata = $\OT1/cmr/m/n/10 ($\T1/cmr/m/n/10 *$\
-OT1/cmr/m/n/10 ($\T1/cmr/m/n/10 tarea.jugador$\OT1/cmr/m/n/10 )$$)$\T1/cmr/m/n/
-10 .index == JUGADOR$[]$A ? $\OT1/cmr/m/n/10 &$\T1/cmr/m/n/10 tss$[]$jugadorA[t
-area.id] : $\OT1/cmr/m/n/10 &$\T1/cmr/m/n/10 tss$[]$jugadorB[tarea.id]; 
- []
-
-[12]
-Overfull \hbox (1.22849pt too wide) in paragraph at lines 517--518
-[]| | | $\OT1/cmr/m/n/10 ($\T1/cmr/m/n/10 unsigned char$\OT1/cmr/m/n/10 )$ $($\
-T1/cmr/m/n/10 int$\OT1/cmr/m/n/10 )$$($$($\T1/cmr/m/n/10 int$\OT1/cmr/m/n/10 )$
-$($$&$\T1/cmr/m/n/10 tss$[]$jugadorA[jugadorA.piratas[proximaTareaA].index]$\OT
-1/cmr/m/n/10 )$ $\OMS/cmsy/m/n/10 ^^]$ \T1/cmr/m/n/10 16$\OT1/cmr/m/n/10 )$ $&$
- \T1/cmr/m/n/10 0x00FF,
- []
-
-[13] [14] [15]) [16] (./main.aux
+[8] [9]) [10] (./main.aux
 LaTeX Info: Redefining \. on input line 6.
 LaTeX Info: Redefining \% on input line 6.
 ) ) 
 Here is how much of TeX's memory you used:
- 5173 strings out of 493029
- 67636 string characters out of 6136234
- 165572 words of memory out of 5000000
- 8588 multiletter control sequences out of 15000+600000
+ 5154 strings out of 493029
+ 67378 string characters out of 6136234
+ 159572 words of memory out of 5000000
+ 8569 multiletter control sequences out of 15000+600000
  16443 words of font info for 38 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 37i,13n,43p,694b,384s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,13n,43p,1016b,384s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/share/texli
 ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
-sfonts/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1000.pfb
-></usr/share/texmf/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf/f
-onts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm
--super/sfbx1728.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
-</usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fo
-nts/type1/public/cm-super/sfti1000.pfb></usr/share/texmf/fonts/type1/public/cm-
-super/sftt1000.pfb>
-Output written on main.pdf (16 pages, 231343 bytes).
+mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1
+000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/
+texmf/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/pu
+blic/cm-super/sfbx1728.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm10
+00.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/t
+exmf/fonts/type1/public/cm-super/sfti1000.pfb></usr/share/texmf/fonts/type1/pub
+lic/cm-super/sftt1000.pfb>
+Output written on main.pdf (10 pages, 210986 bytes).
 PDF statistics:
- 113 PDF objects out of 1000 (max. 8388607)
- 80 compressed objects within 1 object stream
+ 90 PDF objects out of 1000 (max. 8388607)
+ 64 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
