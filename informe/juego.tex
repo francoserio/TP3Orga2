@@ -1,0 +1,31 @@
+Antes de terminar el informe quería hablar un poco de la dinámica del juego en sí.
+El juego $Tierra Pirata$ es bastante simple en su funcionamiento. Cada jugador puede lanzar un máximo de 8 piratas. Los exploradores son los encargados de ir por el mapa y lanzar mineros cuando se descubran tesoros. El juego se termina cuando se acaba el tiempo definido como MAX$\_$SIN$\_$CAMBIOS en el archivo \textbf{game.c} sin que los dos jugadores hayan hecho ningún movimiento o cuando todos los tesoros fueron descubiertos y cavados. Resulta ganador el jugador con más puntos al momento de terminar el juego. Cada punto se le va restando a la tercer tupla del arreglo botines.
+La posición inicial de los piratas del jugador A es la (1, 2) porque se tomó que la primera linea es una línea negra que no forma parte del mapa del juego. La posicion inicial de los piratas del jugador B es (78, 43). Los colores del jugador A es el verde y del jugador B es el azul. Éstos colores son los que se van a usar cuando los piratas exploradores de cada jugador vayan moviéndose por el mapa. Las posiciones que fueron exploradas por piratas del jugador A como del jugador B serán pintadas de cyan. El explorador se denotará con una E y el minero con una M. Para todo lo demás que concierne a la pantalla se siguieron las recomendaciones de la cátedra.
+\newline
+\newline
+El juego tiene 2 estructuras definidas.
+La estructura pirata, que consta de: 
+\begin{itemize}
+\item index: El indice del pirata del jugador. Tiene un rango de 0-7.
+\item jugador: Puntero al jugador al cual pertenece ese pirata.
+\item id: Id unequívoco del pirata. Tiene un rango de 0-15.
+\item posicionX: Coordenada x de la posición actual del pirata. 
+\item posicionY: Coordenada x de la posición actual del pirata. 
+\item tipo: Tipo del pirata en cuestion. Puede ser minero o explorador. Usa el enumerado tipo pirata definido mas arriba en \textbf{game.h}.
+\item reloj: Estado del reloj del pirata. Tiene un rango de 0-3.
+\item vivoMuerto: Flag para saber si el pirata esta vivo (1) o muerto (0).
+\item posicionXObjetivo: Coordenada X del objetivo del pirata. Sólo usado para los mineros. De lo contrario vale -1.
+\item posicionYObjetivo: Coordenada X del objetivo del pirata. Sólo usado para los mineros. De lo contrario vale -1.
+\end{itemize}
+y la estructura jugador que tiene las siguientes propiedades:
+\begin{itemize}
+\item index: indice del jugador. Es 0 si se trata del jugador A y 1 del B.
+\item piratas[MAX$\_$CANT$\_$PIRATAS$\_$VIVOS]: Arreglo de piratas. Son los 8 piratas de cada jugador.
+\item puntaje: puntaje del jugador.
+\item piratasRestantes: Piratas que le quedan al jugador lanzar. 
+\item minerosPendientes: Mineros que están pendientes lanzar por ese jugador. 
+\item posicionesXYVistas[80][45]: matriz de booleanos que representa el mapa. La posicion x,y fue vista por ese jugador si y sólo si posicionesXYVistas[x][y] == 1.
+\item puertoX: Coordenada X de donde salen los piratas del jugador
+\item puertoY: Coordenada Y de donde salen los piratas del jugador. 
+\item colorJug: Color del jugador. Verde si es el jugador A y azul si es el jugador B. Utiliza los valores C$\_$BG$\_$GREEN y C$\_$BG$\_$BLUE, respectivamente, que se proveen en el archivo \textbf{colors.h}
+\end{itemize}

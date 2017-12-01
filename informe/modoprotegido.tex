@@ -5,6 +5,7 @@ Para el mecanismo de segmentación necesitamos inicializar la GDT.
 El primer descriptor de la tabla siempre es \textit{nulo}. También al principio tenemos otros 4 segmentos. 1 de código nivel kernel, 1 de código nivel usuario, 1 de datos nivel usuario y 1 de datos nivel kernel. Los segmentos de user tienen dpl 3 y los de sistema 0. A su vez, el límite de los segmentos de la gdt se saca porque en el TP dice que se direccionan los primeros 500MB de memoria. Eso significa que tenemos que usar granularidad de a 4KB de lo contrario no llegamos a los 500MB pedidos. El limite se calcula de hacer (500MB / 4KB) - 1. Esto es porque granularity como dijimos está seteado. El dpl es 3 si se trata de usuario y 0 si se trata de kernel. El tipo es 10 si se trata de  de código y 2 si se trata de datos. Hay otro descriptor al comienzo de nuestro sistema para el video. Aquí la base es 0xB8000 a diferencia del cero de las demás entradas. Ésto lo dice la página 2 del enunciado del TP. Todos los segmentos se ponen en presentes.
 \newline
 Nos encargamos de setear los offset de los descriptores de los selectores de segmentos. Luego seteamos la pila del kernel en la direcci\'on 0x27000 que indica el enunciado del TP. Al primer ax le cargamos el indice de la gdt de los datos de nivel 0 y al segundo el indice de la gdt del segmento de video, que son el 9 y el 12 respectivamente.
+Todos los índices de la GDT se encuentran en \textbf{defines.h}. GDT$\_$count es 31 ya que hay 31 descriptores en la GDT y los índices más grandes que el 0 (descriptor NULL) están a partir del 8 por restricción en el enunciado de TP.
 
 \begin{algorithmic}
 \State \tab BITS 32
@@ -69,7 +70,7 @@ Finalmente, mara desmapear una pagina, usamos mmu$\_$unmapear$\_$pagina que toma
 	\item Se shiftea 10 bits para la izquierda y 22 para la derecha para quedarse con el índice del page table de la dirección virtual pasada por parámetro.
 	\item Se va al page table de esa dirección virtual sacando lo que apunta la base$\_$address del page directory en el primer índice resuelto y se la pone como no presente.
 \end{itemize}
-Siempre que mapeamos o desmapeamos algo de la memoria llamamos a $tlbflush()$ para actualizar e	l caché de interrupciones llamado Translation Lookaside Buffer o TLB.
+Siempre que mapeamos o desmapeamos algo de la memoria llamamos a $tlbflush()$ para actualizar el caché de interrupciones llamado Translation Lookaside Buffer o TLB.
 
 Durante el juego, debemos poder paginar de manera din\'amica las direcciones de los piratas que se agregan, para poder realizarlo utilizamos el siguiente m\'etodo:
 \begin{algorithmic}
@@ -79,6 +80,17 @@ Durante el juego, debemos poder paginar de manera din\'amica las direcciones de 
   \State \tab \tab return $pagina\_libre$;
 \State \tab }
 \end{algorithmic}
+
+Los piratas (o tareas) en el juego van a tener que copiar su código a la página en donde están y luego, a medida que se vayan moviendo por el mapa, lo que se mueve es ese código por todo el mapa (que está representado desde la 0x800000 a 0x1520000 y 0x500000 a 0x121FFFF en la física).
+Para ésto, en \textbf{mmu.c} contamos con las funciones memcpy y memmov. La primera usando el cr3 que esta en ejecución, mapea la página destino con ella misma (sólo se va a usar para escribir en memoria). Se copia los datos que se querían copiar a esa página y a continuación se desmapea. 
+La función memmov es similar a la anterior, sólo que en vez de únicamente la página de destina se mapea la página de destina y la página de source, se traslada lo que esta source en destino y se desmapean ambas.
+
+Hay otra función en \textbf{mmu.c} que es memcpyPila que lo único que hace es pasarle a la pila de la tarea un valor. Ésta función sólo se usa cuando se quieren pasar los parámetros de x e y a la tarea minero.
+
+La última función importante de \textbf{mmu.c} es mmu$\_$inicializar$\_$dir$\_$pirata.
+\newline
+Ésta función primero mapea el kernel, ya que todas las tareas deben tener mapeados el kernel por si hay una interrupción de nivel 0 y se está ejecutando una tarea. Luego se mapean las posiciones donde empieza el pirata y sus 8 posiciones circundantes. Para esto tenemos la ayuda de dos funciones; pos2mapVir y pos2mapFis que dados un x y un y devuelve la dirección de memoria de la página de esas coordenadas. Ésto último, a diferencia del kernel, se mapea con nivel de usuario (es decir, 1).
+ 
 
 
 \subsection{Manejo de Interrupciones}
@@ -231,8 +243,11 @@ Cuando se completa una tss, esto es con el método completarTssPirata lo que se 
 \item Para todos estos segmentos hacemos un OR con 3 porque el DPL es 3 (user).
 \item El manual de Intel indica que el iomap hay que ponerlo todo en 1.
 \item El esp y ebp tendrán como valor el 401000, ya que según el enunciado del TP comparten el mismo espacio que la tarea y crecen desde la base. Se les resta 12 porque también en el enunciado se dice que las tareas esperan tener apilados sus 2 argumentos y una dirección de retorno y como estamos en 32 bits cada uno de esos 3 datos son 4 bytes.
+\item El cr3 se usa la función mmu$\_$inicializar$\_$dir$\_$pirata que toma como parámetros al jugador de esa tarea y a la referencia de la tarea.
  
 \end{itemize}
+
+En el código \textbf{defines.h} hay una constante que es EMPIEZAN$\_$TSS que sirve para saber a partir de qué índice en la GDT, las entradas pertenecen a las tareas. En nuestro caso es 15.
 
 \subsection{Scheduler}
 
@@ -254,21 +269,21 @@ Decidimos representar al \textit{Scheduler} de la siguiente manera:
 Para inicializar estos valores, definimos el siguiente m\'etodo:
 \begin{algorithmic}
     \State \tab void sched$\_$inicializar$() \{$
-    \State \tab turnoPirata = 0;
-    \State \tab proximaTareaA = 0;
-    \State \tab estaEnIdle = 1;
-    \State \tab proximaTareaB = 0;
-    \State \tab modoDebugActivado = 1;
-    \State \tab tareaActualA = 0;
-    \State \tab tareaActualB = 0;
-    \State \tab turnoPirataActual = 0;
-    \State \tab proxTareaAMuerta = 0;
-    \State \tab proxTareaBMuerta = 0;
-    \State \tab modoDebugPantalla = 0; 
+    \State \tab \tab turnoPirata = 0;
+    \State \tab \tab proximaTareaA = 0;
+    \State \tab \tab estaEnIdle = 1;
+    \State \tab \tab proximaTareaB = 0;
+    \State \tab \tab modoDebugActivado = 1;
+    \State \tab \tab tareaActualA = 0;
+    \State \tab \tab tareaActualB = 0;
+    \State \tab \tab turnoPirataActual = 0;
+    \State \tab \tab proxTareaAMuerta = 0;
+    \State \tab \tab proxTareaBMuerta = 0;
+    \State \tab \tab modoDebugPantalla = 0; 
     \State \tab $\}$
 \end{algorithmic}
 
-El sistema de context-switch para las tareas es un round-robin, es decir, le toca un ciclo de reloj a cada jugador.
+El sistema de context-switch para las tareas es el denominado round-robin, es decir, le toca un ciclo de reloj a cada jugador.
 El jugador que empieza el es A, la primera tarea que empieza a correr es la idle por eso está seteado. Ambos jugadores tienen como primer tarea a correr la 0 o sea la primera. El modoDebugActivado está seteado porque el enunciado dice que la primer excepción del procesador ya tiene que lanzar la pantalla y hay dos flags porque uno indica si está la pantalla debug y otra si está el debug activado.
 proximaTareaA y proximaTareaB indican las proximas tarea a correr de cada jugador. Por último, la proxTareaAMuerta y proxTareaBMuerta indican cuales son los indices de los piratas de cada jugador que van a ser usados en caso de que se lance un pirata verde o azul, respectivamente.
 
@@ -363,4 +378,16 @@ Cuando se produce una excepción del procesador se va a la rutina de excepción 
 
 Las funciones game$\_$modoDebug$\_$open y su contraparte game$\_$modoDebug$\_$close están ambas definidas en el archivo \textbf{game.c}. La primera toma el puntero pasado por parámetro para ir para atras en la pila y guardar todos los registros y valores necesarios para la pantalla debug. También guarda el estado de la pantalla del juego en el buffer que denominamos como mapa$\_$backup  con un puntero al egmento de video antes de popear la pantalla debug y pone el flag modoPantallaDebug en 1.
 La segunda sólo reestablece la pantalla del juego utilizando el puntero al segmento de video y el buffer mapa$\_$backup.
+\newline
+En el archivo \textbf{defines.h} hay una serie de constantes que nos sirven a la hora de implementar el modoDebug. Éstas son:
+\begin{itemize}
+\item DEBUG$\_$REGISTROS$\_$X: La coordenada X del borde superior izquierdo del rectángulo imaginario donde se empiezan a listar los datos.
+\item DEBUG$\_$REGISTROS$\_$Y: La coordenada Y del borde superior izquierdo del rectángulo imaginario donde se empiezan a listar los datos.
+\item DEBUG$\_$CORNER$\_$X: La coordenada X del borde superior izquierdo de la pantalla debug.
+\item DEBUG$\_$CORNER$\_$Y: La coordenada Y del borde superior izquierdo de la pantalla debug. 
+\item DEBUG$\_$WIDTH: El ancho de la pantalla debug.
+\item DEBUG$\_$HEIGHT: El alto de la pantalla debug.
+\end{itemize}
+
+Por último, por afuera del modoDebug, se implementó un nuevo syscall, con un tipo 4 para que sea diferente a los tipos de los syscalls provistos por la cátedra, que imprime en pantalla el valor que se le pasa. Éste syscall resultó muy útil cuando se quería inspeccionar algún dato o valor desde los códigos de las tareas. Es el último método definido en el archivo \textbf{syscall.h} 
 

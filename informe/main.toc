@@ -4,7 +4,8 @@
 \contentsline {section}{\numberline {3}Modo Protegido}{5}
 \contentsline {subsection}{\numberline {3.1}Segmentacion}{5}
 \contentsline {subsection}{\numberline {3.2}Paginado}{5}
-\contentsline {subsection}{\numberline {3.3}Manejo de Interrupciones}{6}
-\contentsline {subsection}{\numberline {3.4}Tareas}{8}
-\contentsline {subsection}{\numberline {3.5}Scheduler}{9}
+\contentsline {subsection}{\numberline {3.3}Manejo de Interrupciones}{7}
+\contentsline {subsection}{\numberline {3.4}Tareas}{9}
+\contentsline {subsection}{\numberline {3.5}Scheduler}{10}
 \contentsline {subsection}{\numberline {3.6}modoDebug}{11}
+\contentsline {section}{\numberline {4}Juego}{13}

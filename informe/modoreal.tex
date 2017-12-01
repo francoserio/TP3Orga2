@@ -36,11 +36,7 @@ Para nuestro sistema, definimos el c\'odigo de \textit{Modo Real} en el archivo 
 Mediante este set de instrucciones estamos preparando nuestro sistema para poder pasar a \textit{Modo Protegido}.
 Dentro del codigo, estamos habilitando A20 que nos da accesos a direcciones superiores a los 2$^{20}$ bits.\newline
 Cargamos la \textit{GDT} (Global Descriptor Table).
-La \textit{GDT} es una tabla ubicada en memoria que define los siguientes descriptores:
-\begin{itemize}
-    \item Descriptores de segmento de memoria
-    \item Descriptor de Task State Segment (TSS)
-\end{itemize}
+La \textit{GDT} es una tabla ubicada en memoria que define los descriptores de segmentos de memoria en principio.
 Luego seteamos el bit \textit{PE} del registro \textit{CR0}.
 \newline
 Una vez activado, vamos a saltar a \textit{Modo Protegido}. Este salto lo realizamos utilizando un far jump al descriptor de segmento de c\'odigo con nivel de privilegio de sistema. Es el jmp que realizamos en la \'ultima linea.
