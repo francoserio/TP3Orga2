@@ -1,4 +1,4 @@
-El \textit{Modo Protegido}, es un poco mas completo que el \textit{Modo Real}, tenemos 4GB de memoria disponible, 4 niveles de protecci\'on de memoria y rutinas de atencii\'on con privilegios.
+El \textit{Modo Protegido}, es un poco mas completo que el \textit{Modo Real}, tenemos 4GB de memoria disponible, 4 niveles de protecci\'on de memoria y rutinas de atenci\'on con privilegios.
 
 \subsection{Segmentacion}
 Para el mecanismo de segmentación necesitamos inicializar la GDT.
@@ -69,6 +69,7 @@ Finalmente, mara desmapear una pagina, usamos mmu$\_$unmapear$\_$pagina que toma
 	\item Se shiftea 10 bits para la izquierda y 22 para la derecha para quedarse con el índice del page table de la dirección virtual pasada por parámetro.
 	\item Se va al page table de esa dirección virtual sacando lo que apunta la base$\_$address del page directory en el primer índice resuelto y se la pone como no presente.
 \end{itemize}
+Siempre que mapeamos o desmapeamos algo de la memoria llamamos a $tlbflush()$ para actualizar e	l caché de interrupciones llamado Translation Lookaside Buffer o TLB.
 
 Durante el juego, debemos poder paginar de manera din\'amica las direcciones de los piratas que se agregan, para poder realizarlo utilizamos el siguiente m\'etodo:
 \begin{algorithmic}
@@ -214,6 +215,25 @@ cambia a la tarea idle.
 \newline
 Cada pirata es una tarea distinta y tienen cada uno un cr3 distinto.
 Cuando se lanza una tarea lo primero que se hace es agregar el descriptor de tss de ese pirata a la GDT y despues se completa la tss. Ésto se hace con los métodos tss$\_$agregar$\_$pirata$\_$a$\_$gdt y completarTssPirata, respectivamente. Ambos estan en el archivo \textbf{tss.c}
+Las entradas de los descriptores de TSS en la GDT tienen como límite 0x0067 porque es el tamaño de la TSS. Se corren en nivel usuario, por eso su dpl es 3, el tipo según el manual de Intel tiene que ser 9 y la base apunta a la dirección de memoria de su correspondiente TSS. Para esto tenemos dos arreglos de TSS, uno para el jugador A y otro para el jugador B de size 8 (porque cada uno puede tener como máximo 8 piratas en ejecución). Por supuesto, todas estas entradas en la GDT se marcan como presente.
+Cuando se completa una tss, esto es con el método completarTssPirata lo que se hace es lo siguiente:
+
+\begin{itemize}
+
+\item Pido una pagina de memoria libre que voy a utilizar para la pila de nivel cero de la tarea en cuestión. Le sumo 4KB (el tamaño de una página) para que el stack pointer apunte al tope de la pila.
+\item Tomo el puntero a la tss a llenar.
+\item Pongo como stack pointer de la pila de nivel 0 a la pagina descripta en el punto uno de ésta enumeración.
+\item El stack segment de nivel kernel es el índice del segmento de datos de nivel kernel en la GDT shifteado 3 para sacar el table indicator y el RPL.
+\item El eip va a ser el 0x400000 (requerimiento del TP, es la virtual a donde despues se va a copiar el código de la tarea).
+\item Los eflags siempre que están activadas las interrupciones Intel dice que hay que ponerlos en 0x202.
+\item El es, ss, ds, fs y gs todos van a tener el índice en la GDT del segmento de datos de usuario (shifteados también 3 para sacar el TI y el RPL).
+\item El cs va a tener el índice de la gdt correspondiente a el segmento de código nivel user (shifteado 3 para sacar el TI y RPL).
+\item Para todos estos segmentos hacemos un OR con 3 porque el DPL es 3 (user).
+\item El manual de Intel indica que el iomap hay que ponerlo todo en 1.
+\item El esp y ebp tendrán como valor el 401000, ya que según el enunciado del TP comparten el mismo espacio que la tarea y crecen desde la base. Se les resta 12 porque también en el enunciado se dice que las tareas esperan tener apilados sus 2 argumentos y una dirección de retorno y como estamos en 32 bits cada uno de esos 3 datos son 4 bytes.
+ 
+\end{itemize}
+
 \subsection{Scheduler}
 
 Decidimos representar al \textit{Scheduler} de la siguiente manera:
@@ -248,6 +268,7 @@ Para inicializar estos valores, definimos el siguiente m\'etodo:
     \State \tab $\}$
 \end{algorithmic}
 
+El sistema de context-switch para las tareas es un round-robin, es decir, le toca un ciclo de reloj a cada jugador.
 El jugador que empieza el es A, la primera tarea que empieza a correr es la idle por eso está seteado. Ambos jugadores tienen como primer tarea a correr la 0 o sea la primera. El modoDebugActivado está seteado porque el enunciado dice que la primer excepción del procesador ya tiene que lanzar la pantalla y hay dos flags porque uno indica si está la pantalla debug y otra si está el debug activado.
 proximaTareaA y proximaTareaB indican las proximas tarea a correr de cada jugador. Por último, la proxTareaAMuerta y proxTareaBMuerta indican cuales son los indices de los piratas de cada jugador que van a ser usados en caso de que se lance un pirata verde o azul, respectivamente.
 
@@ -301,6 +322,7 @@ El scheduler si inicialize en el kernel.asm cuando se hace
 
 \subsection{modoDebug}
 Para el modo debug usamos 2 flags que están en la estructura del scheduler, modoDebugActivado y modoDebugPantalla.
+
 \begin{algorithmic}
 	\State \tab pushad
     \State \tab call game$\_$pirata$\_$explotoisr
@@ -327,4 +349,18 @@ Para el modo debug usamos 2 flags que están en la estructura del scheduler, mod
     \State \tab call game$\_$modoDebug$\_$open
   	\State .fin:
     \State \tab jmp 0x68:0 ;jumpeo a la idle\end{algorithmic}
+    
+Cuando se produce una excepción del procesador se va a la rutina de excepción de interrupciones de arriba.
+Ésta rutina lo que hace es:
+\begin{itemize}
+\item Pushea los registros de proposito general.
+\item Llama a game$\_$pirata$\_$explotoisr que mata a la tarea en cuestión, es decir la saca del scheduler, la borra de la pantalla, reestablece el clock del pirata en cero, etc.
+\item Pushea los registros de control a la pila.
+\item Pushea los segmentos a la pila.
+\item Pushea el esp, que es lo que se le pasa como parámetro a la función game$\_$modoDebug$\_$open.
+\item Si el flag modoDebugActivado está apagado no se hace nada de ésto y simplemente se va a la tarea Idle, haciendo un jmp far a su selector de segmento en la GDT. 
+\end{itemize}
+
+Las funciones game$\_$modoDebug$\_$open y su contraparte game$\_$modoDebug$\_$close están ambas definidas en el archivo \textbf{game.c}. La primera toma el puntero pasado por parámetro para ir para atras en la pila y guardar todos los registros y valores necesarios para la pantalla debug. También guarda el estado de la pantalla del juego en el buffer que denominamos como mapa$\_$backup  con un puntero al egmento de video antes de popear la pantalla debug y pone el flag modoPantallaDebug en 1.
+La segunda sólo reestablece la pantalla del juego utilizando el puntero al segmento de video y el buffer mapa$\_$backup.
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.10.8)  1 DEC 2017 14:57
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.10.8)  1 DEC 2017 16:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -741,12 +741,12 @@ ni-das en \T1/cmr/bx/n/10 screen.h \T1/cmr/m/n/10 y desa-rro-lla-das en \T1/cmr
 
 [5
 
-] [6] [7]
-Underfull \hbox (badness 10000) in paragraph at lines 211--217
+] [6] [7] [8]
+Underfull \hbox (badness 10000) in paragraph at lines 212--220
 
  []
 
-[8] [9]) [10] (./main.aux
+[9] [10]) [11] (./main.aux
 LaTeX Info: Redefining \. on input line 6.
 LaTeX Info: Redefining \% on input line 6.
 ) ) 
@@ -770,10 +770,10 @@ blic/cm-super/sfbx1728.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm10
 00.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/t
 exmf/fonts/type1/public/cm-super/sfti1000.pfb></usr/share/texmf/fonts/type1/pub
 lic/cm-super/sftt1000.pfb>
-Output written on main.pdf (10 pages, 210986 bytes).
+Output written on main.pdf (11 pages, 214792 bytes).
 PDF statistics:
- 90 PDF objects out of 1000 (max. 8388607)
- 64 compressed objects within 1 object stream
+ 93 PDF objects out of 1000 (max. 8388607)
+ 66 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
