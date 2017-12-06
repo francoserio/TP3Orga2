@@ -38,7 +38,7 @@ void screen_actualizar_reloj_global()
     screen_pintar_reloj_piratas(&jugadorB);
 
     contador_de_tiempo++;
-    
+
     if (contador_de_tiempo == MAX_SIN_CAMBIOS) {
       game_terminar_si_es_hora();
     }
@@ -246,7 +246,7 @@ void screen_stop_game_show_winner(jugador_t *j) {
   if (j->index == 0) {
     print("GANADOR: JUGADOR A FELICITACIONES CAMPEON", 20, 22, 0xF);
   } else {
-    print("GANADOR: JUGADOR B FELICITACIONES CAMPEON", 39, 22, 0xF);
+    print("GANADOR: JUGADOR B FELICITACIONES CAMPEON", 20, 22, 0xF);
   }
 
 }

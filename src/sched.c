@@ -37,7 +37,13 @@ unsigned int sched_tick() {
       uchar todosMuertos = 0;
       int i = proximaTareaA + 1;
       // breakpoint();
+      if (jugadorA.piratasRestantes == 0) {
+        breakpoint();
+      }
       while (noEncontreNinguna == 1 && todosMuertos == 0) {
+        if (i == 8) {
+          i = 0;
+        }
         if (jugadorA.piratas[i].vivoMuerto == 1) {
           //si esta vivo la pongo como la proxima tarea de A
           tareaActualA = proximaTareaA;
@@ -50,10 +56,6 @@ unsigned int sched_tick() {
         }
 
         i++;
-
-        if (i == 8) {
-          i = 0;
-        }
       }
       if (todosMuertos) {
         //salto a la idle
@@ -73,6 +75,9 @@ unsigned int sched_tick() {
       uchar todosMuertos = 0;
       int i = proximaTareaB + 1;
       while (noEncontreNinguna == 1 && todosMuertos == 0) {
+        if (i == 8) {
+          i = 0;
+        }
         if (jugadorB.piratas[i].vivoMuerto == 1) {
           //si esta vivo la pongo como la proxima tarea de B
           tareaActualB = proximaTareaB;
@@ -86,9 +91,6 @@ unsigned int sched_tick() {
 
         i++;
 
-        if (i == 8) {
-          i = 0;
-        }
       }
 
       if (todosMuertos) {
@@ -108,6 +110,9 @@ unsigned int sched_tick() {
       uchar todosMuertos = 0;
       int i = proximaTareaA + 1;
       while (noEncontreNinguna == 1 && todosMuertos == 0) {
+        if (i == 8) {
+          i = 0;
+        }
         if (jugadorA.piratas[i].vivoMuerto == 1) {
           //si esta vivo la pongo como la proxima tarea de A
           tareaActualA = proximaTareaA;
@@ -121,9 +126,6 @@ unsigned int sched_tick() {
 
         i++;
 
-        if (i == 8) {
-          i = 0;
-        }
       }
 
       if (todosMuertos) {
@@ -144,6 +146,9 @@ unsigned int sched_tick() {
       uchar todosMuertos = 0;
       int i = proximaTareaB + 1;
       while (noEncontreNinguna == 1 && todosMuertos == 0) {
+        if (i == 8) {
+          i = 0;
+        }
         if (jugadorB.piratas[i].vivoMuerto == 1) {
           //si esta vivo la pongo como la proxima tarea de B
           tareaActualB = proximaTareaB;
@@ -157,9 +162,6 @@ unsigned int sched_tick() {
 
         i++;
 
-        if (i == 8) {
-          i = 0;
-        }
       }
       if (todosMuertos) {
         //salto a la idle
@@ -200,12 +202,16 @@ void sched_agregar(jugador_t* jugador) {
   if (jugador->index == 0) {
     //es un pirata de A
     int i = tareaActualA;
-    while (i < 8 && jugador->piratas[i].vivoMuerto == 1) {
+    uchar estanTodosVivos = 0;
+    while (i < 8 && jugador->piratas[i].vivoMuerto == 1 && estanTodosVivos == 0) {
+      if (i == 8) {
+        i = 0;
+      }
 
       i++;
 
-      if (i == 8) {
-        i = 0;
+      if (i == tareaActualA) {
+        estanTodosVivos = 1;
       }
     }
 
@@ -213,12 +219,16 @@ void sched_agregar(jugador_t* jugador) {
   } else {
     //es un pirata de B
     int i = tareaActualB;
-    while (i < 8 && jugador->piratas[i].vivoMuerto == 1) {
+    uchar estanTodosVivos = 0;
+    while (i < 8 && jugador->piratas[i].vivoMuerto == 1 && estanTodosVivos == 0) {
+      if (i == 8) {
+        i = 0;
+      }
 
       i++;
 
-      if (i == 8) {
-        i = 0;
+      if (i == tareaActualB) {
+        estanTodosVivos = 1;
       }
     }
 

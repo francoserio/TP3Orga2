@@ -49,7 +49,7 @@ typedef struct jugador_t
     uchar index;
     pirata_t piratas[MAX_CANT_PIRATAS_VIVOS];
     uint puntaje;
-    uint piratasRestantes;
+    int piratasRestantes;
     uint minerosPendientes;
     uchar posicionesXYVistas[80][45];
     uint puertoX;
