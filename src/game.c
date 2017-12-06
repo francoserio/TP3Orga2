@@ -17,14 +17,13 @@ TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 #define POS_INIT_B_Y          (MAPA_ALTO - 2)
 
 #define CANT_POSICIONES_VISTAS            9
-#define MAX_SIN_CAMBIOS                 999
 
 
 #define BOTINES_CANTIDAD 8
 
 uint botines[BOTINES_CANTIDAD][3] = { // TRIPLAS DE LA FORMA (X, Y, MONEDAS)
-                                      {30,  3, 50},
-                                      {49,  3, 50}
+                                      {30,  3, 50}, {31, 38, 50}, {15, 21, 100}, {45, 21, 100} ,
+                                      {49,  3, 50}, {48, 38, 50}, {64, 21, 100}, {34, 21, 100}
                                     };
 
 jugador_t jugadorA;
@@ -543,7 +542,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
     int y = 0;
     game_dir2xy(dir, &x, &y);
     if (game_posicion_valida(tareaPirata->posicionX + x, tareaPirata->posicionY + y)) {
-      if (game_pirata_en_posicion(tareaPirata->posicionX + x, tareaPirata->posicionY + y) == 0) {
+      // if (game_pirata_en_posicion(tareaPirata->posicionX + x, tareaPirata->posicionY + y) == 0) {
         //va a pasar a una posicion valida en el juego
         tareaPirata->posicionX = tareaPirata->posicionX + x;
         tareaPirata->posicionY = tareaPirata->posicionY + y;
@@ -566,7 +565,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
         // breakpoint();
         screen_pintar_piratas();
         // breakpoint();
-      }
+      // }
     } else {
       //si no va a ir a una posicion valida lo mato
       game_pirata_exploto(id);
@@ -708,8 +707,6 @@ void game_jugador_anotar_punto(jugador_t *j)
 {
   j->puntaje = j->puntaje + 1;
   if (game_valores_tesoros() == 0) {
-    game_terminar_si_es_hora();
-  } else if (contador_de_tiempo == MAX_SIN_CAMBIOS && siempreIgual == 1) {
     game_terminar_si_es_hora();
   }
   screen_actualizar_puntajes();

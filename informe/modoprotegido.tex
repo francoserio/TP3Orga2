@@ -2,10 +2,11 @@ El \textit{Modo Protegido}, es un poco mas completo que el \textit{Modo Real}, t
 
 \subsection{Segmentacion}
 Para el mecanismo de segmentación necesitamos inicializar la GDT.
-El primer descriptor de la tabla siempre es \textit{nulo}. También al principio tenemos otros 4 segmentos. 1 de código nivel kernel, 1 de código nivel usuario, 1 de datos nivel usuario y 1 de datos nivel kernel. Los segmentos de user tienen dpl 3 y los de sistema 0. A su vez, el límite de los segmentos de la gdt se saca porque en el TP dice que se direccionan los primeros 500MB de memoria. Eso significa que tenemos que usar granularidad de a 4KB de lo contrario no llegamos a los 500MB pedidos. El limite se calcula de hacer (500MB / 4KB) - 1. Esto es porque granularity como dijimos está seteado. El dpl es 3 si se trata de usuario y 0 si se trata de kernel. El tipo es 10 si se trata de  de código y 2 si se trata de datos. Hay otro descriptor al comienzo de nuestro sistema para el video. Aquí la base es 0xB8000 a diferencia del cero de las demás entradas. Ésto lo dice la página 2 del enunciado del TP. Todos los segmentos se ponen en presentes.
+El primer descriptor de la tabla siempre es \textit{nulo}. También al principio tenemos otros 4 segmentos. 1 de código nivel kernel, 1 de código nivel usuario, 1 de datos nivel usuario y 1 de datos nivel kernel. Los segmentos de user tienen dpl 3 y los de kernel 0. Todos los segmentos tienen el bit D/B en 1 por tratarse de segmentos de 32 bits, y el bit S en 1 por ser de datos/código. A su vez, el límite de los segmentos de la gdt se saca porque en el TP dice que se direccionan los primeros 500MB de memoria. Eso significa que tenemos que usar granularidad de a 4KB de lo contrario no llegamos a los 500MB pedidos. El limite se calcula de hacer (500MB / 4KB) - 1. Esto es porque granularity como dijimos está seteado. El dpl es 3 si se trata de usuario y 0 si se trata de kernel. El tipo es 10 si se trata de  de código y 2 si se trata de datos. Hay otro descriptor al comienzo de nuestro sistema para el video. Aquí la base es 0xB8000 a diferencia del cero de las demás entradas. Ésto lo dice la página 2 del enunciado del TP. Todos los segmentos se ponen en presentes.
 \newline
-Nos encargamos de setear los offset de los descriptores de los selectores de segmentos. Luego seteamos la pila del kernel en la direcci\'on 0x27000 que indica el enunciado del TP. Al primer ax le cargamos el indice de la gdt de los datos de nivel 0 y al segundo el indice de la gdt del segmento de video, que son el 9 y el 12 respectivamente.
-Todos los índices de la GDT se encuentran en \textbf{defines.h}. GDT$\_$count es 31 ya que hay 31 descriptores en la GDT y los índices más grandes que el 0 (descriptor NULL) están a partir del 8 por restricción en el enunciado de TP.
+Nos encargamos de setear los offset de los descriptores de los selectores de segmentos. Luego seteamos la pila del kernel en la direcci\'on 0x27000 que indica el enunciado del TP. Al primer ax le cargamos el índice de la gdt de los datos de nivel 0 y al segundo el indice de la gdt del segmento de video, que son el 9 y el 12 respectivamente.
+\newline
+Todos los índices de la GDT se encuentran en \textbf{defines.h}. GDT$\_$count es 31 ya que hay 31 descriptores en la GDT (de los $2^{13}$ posibles) y los índices más grandes que el 0 (descriptor NULL) están a partir del 8 por restricción en el enunciado de TP.
 
 \begin{algorithmic}
 \State \tab BITS 32
@@ -36,6 +37,8 @@ Luego de esto imprimimos en pantalla un mensaje de bienvenida a nuestro sistema 
 \end{algorithmic}
 
 Las funciones \textit{$screen\_inicializar$}, \textit{$screen\_pintar\_nombre$} estan definidas en \textbf{screen.h} y desarrolladas en \textbf{screen.c}. Estos m\'etodos se encargan de pintar la pantalla, seg\'un lo pedido en el enunciado. La función \textit{$game\_inicializar$} esta definida en \textbf{game.c} que inicializa los 2 jugadores y el reloj de cada pirata.
+Si bien se va a explicar con profundidad más tarde, nuestra GDT tendrá en total, aparte de los 5 segmentos descriptos al comienzo de ésta sección, 1 segmento de video, 1 segmento para la tarea Idle, otro para la tarea Inicial y 1 por cada tarea de cada jugador.
+La GDT$\_$DESC que cargamos en la sección \textbf{Modo Real}es una estructura formada por su longitud y su dirección de memoria. Despues de llenar la GDT, pedimos el sizeof(gdt) - 1 y la referencia de gdt (con $\&gdt$) para llenar éstos campos.
 
 \subsection{Paginado}
 Habilitamos la paginaci\'on en nuestro sistema de la siguiente manera:

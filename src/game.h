@@ -21,6 +21,8 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD } direccio
 #define MAPA_MEM_ANCHO                   (MAPA_ANCHO * PAGE_SIZE)
 #define MAPA_START                       0x500000
 
+#define MAX_SIN_CAMBIOS                 999
+
 typedef enum tipoPirata_e { minero = 1, explorador = 0 } tipoPirata;
 uint reloj_pirata[16];
 uint contador_de_tiempo;

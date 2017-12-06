@@ -15,7 +15,7 @@ La estructura pirata, que consta de:
 \item reloj: Estado del reloj del pirata. Tiene un rango de 0-3.
 \item vivoMuerto: Flag para saber si el pirata esta vivo (1) o muerto (0).
 \item posicionXObjetivo: Coordenada X del objetivo del pirata. Sólo usado para los mineros. De lo contrario vale -1.
-\item posicionYObjetivo: Coordenada X del objetivo del pirata. Sólo usado para los mineros. De lo contrario vale -1.
+\item posicionYObjetivo: Coordenada Y del objetivo del pirata. Sólo usado para los mineros. De lo contrario vale -1.
 \end{itemize}
 y la estructura jugador que tiene las siguientes propiedades:
 \begin{itemize}
@@ -29,3 +29,14 @@ y la estructura jugador que tiene las siguientes propiedades:
 \item puertoY: Coordenada Y de donde salen los piratas del jugador. 
 \item colorJug: Color del jugador. Verde si es el jugador A y azul si es el jugador B. Utiliza los valores C$\_$BG$\_$GREEN y C$\_$BG$\_$BLUE, respectivamente, que se proveen en el archivo \textbf{colors.h}
 \end{itemize}
+En \textbf{screen.c} tenemos varias funciones que complementan el juego. Las principales son:
+\begin{itemize}
+\item screen$\_$pintar$\_$nombre: Pinta el nombre del grupo en el márgen superior derecho de la pantalla.
+\item screen$\_$pintar$\_$puntajes: Pinta por primera vez los puntajes de los jugadores.
+\item screen$\_$stop$\_$game$\_$show$\_$winner: Muestra el jugador que ganó el juego.
+\item screen$\_$actualizar$\_$puntajes: Actualiza los puntajes de los jugadores en la pantalla cada vez que algún jugador hace un punto.
+\item screen$\_$pintar$\_$reloj$\_$piratas: Pinta los relojes de todos los piratas del juego. 
+\item screen$\_$actualizar$\_$reloj$\_$global: Pinta el reloj de la tarea Idle y el reloj global, así como llamar a la anterior.
+\item screen$\_$actualizar$\_$posicion$\_$mapa: Actualiza la posición de los piratas en la pantalla.
+\end{itemize}
+Por último, para hacer que se corte el juego cuando se llega a un cierto tiempo sin ningún cambio en ninguno de los dos jugadores, se estableció un variable global en \textbf{game.h} MAX$\_$SIN$\_$CAMBIOS. En cada ciclo de clock se incrementa otra variable, definida como contador$\_$de$\_$tiempo, que, en caso de ser igual a la primera, se termina el juego.

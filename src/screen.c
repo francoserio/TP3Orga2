@@ -38,6 +38,10 @@ void screen_actualizar_reloj_global()
     screen_pintar_reloj_piratas(&jugadorB);
 
     contador_de_tiempo++;
+    
+    if (contador_de_tiempo == MAX_SIN_CAMBIOS) {
+      game_terminar_si_es_hora();
+    }
 }
 
 void screen_actualizar_reloj_pirata(jugador_t *j, pirata_t *pirata) {

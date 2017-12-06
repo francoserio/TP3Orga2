@@ -3,7 +3,7 @@
 \contentsline {section}{\numberline {2}Modo Real}{4}
 \contentsline {section}{\numberline {3}Modo Protegido}{5}
 \contentsline {subsection}{\numberline {3.1}Segmentacion}{5}
-\contentsline {subsection}{\numberline {3.2}Paginado}{5}
+\contentsline {subsection}{\numberline {3.2}Paginado}{6}
 \contentsline {subsection}{\numberline {3.3}Manejo de Interrupciones}{7}
 \contentsline {subsection}{\numberline {3.4}Tareas}{9}
 \contentsline {subsection}{\numberline {3.5}Scheduler}{10}
