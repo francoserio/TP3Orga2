@@ -78,6 +78,8 @@ void game_jugador_anotar_punto(jugador_t *j);
 void game_explorar_posicion(jugador_t *jugador, int x, int y);
 
 uchar existeMineroParaEse(unsigned int x, unsigned int y);
+uint xMinaSinMinero(jugador_t* jugador);
+uint yMinaSinMinero(jugador_t* jugador);
 
 uint game_valor_tesoro(uint x, uint y);
 uint game_valores_tesoros();
