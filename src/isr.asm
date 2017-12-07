@@ -96,34 +96,34 @@ extern modoDebugActivado
 global _isr%1
 
 _isr%1:
-    ; pushad
-    mov eax, 1
-    imprimir_texto_mp desc_%1, desc_len_%1, 0x07, 3, 0 ;ESTE ES EL EJERCICIO 2
-    jmp $
-  ;   call game_pirata_explotoisr
-  ;   cmp byte [modoDebugActivado], 1
-  ;   jne .fin
-  ;
-  ;   mov eax, cr0
-  ;   push eax
-  ;   mov eax, cr2
-  ;   push eax
-  ;   mov eax, cr3
-  ;   push eax
-  ;   mov eax, cr4
-  ;   push eax
-  ;
-  ;   push cs ; push segmentos
-  ;   push ds
-  ;   push es
-  ;   push fs
-  ;   push gs
-  ;   push ss
-  ;
-  ;   push esp ; push array con toda la info de los registros
-  ;   call game_modoDebug_open
-  ; .fin:
-  ;   jmp 0x68:0 ;jumpeo a la idle
+    pushad
+    ; mov eax, 1
+    ; imprimir_texto_mp desc_%1, desc_len_%1, 0x07, 3, 0 ;ESTE ES EL EJERCICIO 2
+    ; jmp $
+    call game_pirata_explotoisr
+    cmp byte [modoDebugActivado], 1
+    jne .fin
+
+    mov eax, cr0
+    push eax
+    mov eax, cr2
+    push eax
+    mov eax, cr3
+    push eax
+    mov eax, cr4
+    push eax
+
+    push cs ; push segmentos
+    push ds
+    push es
+    push fs
+    push gs
+    push ss
+
+    push esp ; push array con toda la info de los registros
+    call game_modoDebug_open
+  .fin:
+    jmp 0x68:0 ;jumpeo a la idle
 
 %endmacro
 

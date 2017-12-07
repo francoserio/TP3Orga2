@@ -13,19 +13,26 @@
 
 void task(int x_target, int y_target) {
     /* Tarea */
-
+    // breakpoint();
     uint pos = syscall_posicion(-1);
     int x = pos & 0xFF;
     int y = pos >> 8;
     // syscall_debug(pos);
     // syscall_debug(x);
+    // breakpoint();
+    // syscall_debug(y);
+    // breakpoint();
+    // syscall_debug(x_target);
+    // breakpoint();
+    // syscall_debug(y_target);
+    // breakpoint();
     int i;
     for(i=x; i < x_target; i++)
         syscall_mover(DER);
-
+    // breakpoint();
     for(i=y; i < y_target; i++)
         syscall_mover(ABA);
-
+    // breakpoint();
     while(1) {syscall_cavar();}
 
   while(1) { __asm __volatile("mov $2, %%eax":::"eax"); }

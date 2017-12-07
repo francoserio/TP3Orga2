@@ -125,10 +125,10 @@ void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y)
       for (int j = 0; j <= 1; j++) {
         (jugador->posicionesXYVistas)[x + i][y + j] = 1;
         if (game_valor_tesoro(x + i, y + j) > 0) {
-          if (jugador->piratasRestantes == 0) {
+          if (jugador->piratasRestantes > 0) {
             //no puede mandar mas piratas
-            (jugador->minerosPendientes)++;
-          } else {
+          //   (jugador->minerosPendientes)++;
+          // } else {
             if (existeMineroParaEse(x + i, y + j) == 0) {
               //si puede, lanzar pirata minero
               game_jugador_lanzar_pirata(jugador, minero, x + i, y + j);
@@ -144,10 +144,10 @@ void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y)
       for (int j = -1; j <= 0; j++) {
         (jugador->posicionesXYVistas)[x + i][y + j] = 1;
         if (game_valor_tesoro(x + i, y + j) > 0) {
-          if (jugador->piratasRestantes == 0) {
+          if (jugador->piratasRestantes > 0) {
             //no puede mandar mas piratas
-            (jugador->minerosPendientes)++;
-          } else {
+          //   (jugador->minerosPendientes)++;
+          // } else {
             if (existeMineroParaEse(x + i, y + j) == 0) {
               //si puede, lanzar pirata minero
               game_jugador_lanzar_pirata(jugador, minero, x + i, y + j);
@@ -162,10 +162,10 @@ void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y)
       for (int j = 0; j <= 1; j++) {
         (jugador->posicionesXYVistas)[x + j][y + i] = 1;
         if (game_valor_tesoro(x + i, y + j) > 0) {
-          if (jugador->piratasRestantes == 0) {
-            //no puede mandar mas piratas
-            (jugador->minerosPendientes)++;
-          } else {
+          if (jugador->piratasRestantes > 0) {
+          //   //no puede mandar mas piratas
+          //   (jugador->minerosPendientes)++;
+          // } else {
             if (existeMineroParaEse(x + i, y + j) == 0) {
               //si puede, lanzar pirata minero
               game_jugador_lanzar_pirata(jugador, minero, x + i, y + j);
@@ -180,10 +180,10 @@ void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y)
       for (int j = -1; j <= 0; j++) {
         (jugador->posicionesXYVistas)[x + j][y + i] = 1;
         if (game_valor_tesoro(x + i, y + j) > 0) {
-          if (jugador->piratasRestantes == 0) {
+          if (jugador->piratasRestantes > 0) {
             //no puede mandar mas piratas
-            (jugador->minerosPendientes)++;
-          } else {
+          //   (jugador->minerosPendientes)++;
+          // } else {
             if (existeMineroParaEse(x + i, y + j) == 0) {
               //si puede, lanzar pirata minero
               game_jugador_lanzar_pirata(jugador, minero, x + i, y + j);
@@ -201,10 +201,10 @@ void game_calcular_posiciones_vistas(jugador_t* jugador, int x, int y)
       {
         (jugador->posicionesXYVistas)[x + j][y + i] = 1;
         if (game_valor_tesoro(x + i, y + j) > 0) {
-          if (jugador->piratasRestantes == 0) {
+          if (jugador->piratasRestantes > 0) {
             //no puede mandar mas piratas
-            (jugador->minerosPendientes)++;
-          } else {
+          //   (jugador->minerosPendientes)++;
+          // } else {
             if (existeMineroParaEse(x + i, y + j) == 0) {
               //si puede, lanzar pirata minero
               // breakpoint();
@@ -441,6 +441,11 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
           game_explorar_posicion(j, 1, 2);
       }
 
+      // if (tipo == minero) {
+      //   print_dec(proxTareaAMuerta, 3, 19, 19, 0x0F);
+      //   // breakpoint();
+      // }
+
       pirata_t* tareaPirata = &(jugadorA.piratas[proxTareaAMuerta]);
       tareaPirata->tipo = tipo;
       tareaPirata->vivoMuerto = 1;
@@ -451,17 +456,24 @@ void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y)
         tareaPirata->posicionYObjetivo = y;
       }
       tss_agregar_piratas_a_gdt(j, proxTareaAMuerta);
-      mmu_mapear_pagina(0x00400000, tss_jugadorA[proxTareaAMuerta].cr3, pos2mapFis(1, 2), 1, 1);
       if (tareaPirata->tipo == explorador) {
         //explorador
         memcpy((unsigned int)0x10000, pos2mapFis(1, 2), PAGE_SIZE, 1, 1);
+        mmu_mapear_pagina(0x00400000, tss_jugadorA[proxTareaAMuerta].cr3, pos2mapFis(1, 2), 1, 1);
       } else {
         //minero
         memcpy((unsigned int)0x11000, pos2mapFis(1, 2), PAGE_SIZE, 1, 1);
+        mmu_mapear_pagina(0x00400000, tss_jugadorA[proxTareaAMuerta].cr3, pos2mapFis(1, 2), 1, 1);
         memcpyPila(8, tss_jugadorA[proxTareaAMuerta].cr3, 1, 1, tareaPirata->posicionYObjetivo, j);
         memcpyPila(4, tss_jugadorA[proxTareaAMuerta].cr3, 1, 1, tareaPirata->posicionXObjetivo, j);
       }
+
       sched_agregar(&jugadorA);
+      // if (tipo == minero) {
+      //   print_dec(tareaPirata->posicionXObjetivo, 5, 28, 28, 0x0F);
+      //   print_dec(tareaPirata->posicionYObjetivo, 5, 29, 29, 0x0F);
+      //   // breakpoint();
+      // }
     } else {
       //turno de jugador B. Tengo que explorar las paginas de alrededor
       if (tipo != minero) {
@@ -529,6 +541,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
       // print_dec(tareaPirata->posicionY, 3, 19, 19, 0x0F);
       if (game_posicion_ya_vista(tareaPirata, dir) == 0) {
         //si no está mapeada, lo mato
+        // breakpoint();
         game_pirata_exploto(id);
         // screen_borrar_pirata(tareaPirata->jugador, tareaPirata);
       } else {
@@ -536,7 +549,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
         tareaPirata->posicionX = tareaPirata->posicionX + x;
         tareaPirata->posicionY = tareaPirata->posicionY + y;
         if ((tareaPirata->jugador)->index == 0) {
-          mmu_unmapear_pagina(0x00400000, tss_jugadorA[tareaActualA].cr3);
+          // mmu_unmapear_pagina(0x00400000, tss_jugadorA[tareaActualA].cr3);
           memmov(pos2mapFis(tareaPirata->posicionX - x, tareaPirata->posicionY - y), tss_jugadorA[tareaActualA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), PAGE_SIZE, 1, 1);
           mmu_mapear_pagina(0x00400000, tss_jugadorA[tareaActualA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
           mmu_mapear_pagina(pos2mapVir(tareaPirata->posicionX, tareaPirata->posicionY), tss_jugadorA[tareaActualA].cr3, pos2mapFis(tareaPirata->posicionX, tareaPirata->posicionY), 1, 1);
@@ -581,6 +594,7 @@ uint game_syscall_pirata_mover(uint id, direccion dir)
       // }
     } else {
       //si no va a ir a una posicion valida lo mato
+      // breakpoint();
       game_pirata_exploto(id);
       // screen_borrar_pirata(tareaPirata->jugador, tareaPirata);
     }
@@ -593,8 +607,13 @@ uint game_syscall_cavar(uint id)
   pirata_t* tareaPirata = id_pirata2pirata(id);
   if (game_valor_tesoro(tareaPirata->posicionX, tareaPirata->posicionY) == 0) {
     //lo mato
+
+    // print_dec(tareaPirata->index, 5, 25, 25, 0x0F);
+    // print_dec(tareaPirata->posicionX, 5, 26, 26, 0x0F);
+    // print_dec(tareaPirata->posicionY, 5, 27, 27, 0x0F);
+    // breakpoint();
     game_pirata_exploto(id);
-    screen_borrar_pirata(tareaPirata->jugador, tareaPirata);
+
   } else {
     for (int i = 0; i < BOTINES_CANTIDAD; i++) {
       if (botines[i][0] == tareaPirata->posicionX && botines[i][1] == tareaPirata->posicionY) {
@@ -684,7 +703,7 @@ uint yMinaSinMinero(jugador_t* jugador) {
 
 void game_pirata_exploto(uint id)
 {
-  sched_intercambiar_por_idle();
+  // sched_intercambiar_por_idle();
   pirata_t* tareaPirata = id_pirata2pirata(id);
   ((tareaPirata->jugador)->piratasRestantes)++;
   tareaPirata->vivoMuerto = 0;
@@ -693,7 +712,11 @@ void game_pirata_exploto(uint id)
   sched_sacar(tareaPirata->jugador, tareaPirata->index);
   if ((tareaPirata->jugador)->minerosPendientes > 0) {
     (tareaPirata->jugador)->minerosPendientes--;
+    // print_dec(xMinaSinMinero(tareaPirata->jugador), 5, 20, 20, 0x0F);
+    // print_dec(yMinaSinMinero(tareaPirata->jugador), 5, 22, 22, 0x0F);
+    // breakpoint();
     game_jugador_lanzar_pirata(tareaPirata->jugador, minero, xMinaSinMinero(tareaPirata->jugador), yMinaSinMinero(tareaPirata->jugador));
+    // breakpoint();
   }
 }
 
@@ -708,6 +731,10 @@ void game_pirata_explotoisr()
     tareaPirata->reloj = 0;
     screen_pintar(' ', (tareaPirata->jugador)->colorJug, tareaPirata->posicionY, tareaPirata->posicionX);
     sched_sacar(tareaPirata->jugador, tareaPirata->index);
+    if ((tareaPirata->jugador)->minerosPendientes > 0) {
+      (tareaPirata->jugador)->minerosPendientes--;
+      game_jugador_lanzar_pirata(tareaPirata->jugador, minero, xMinaSinMinero(tareaPirata->jugador), yMinaSinMinero(tareaPirata->jugador));
+    }
   } else {
     //jugador B
     // breakpoint();
@@ -717,6 +744,10 @@ void game_pirata_explotoisr()
     tareaPirata->reloj = 0;
     screen_pintar(' ', (tareaPirata->jugador)->colorJug, tareaPirata->posicionY, tareaPirata->posicionX);
     sched_sacar(tareaPirata->jugador, tareaPirata->index);
+    if ((tareaPirata->jugador)->minerosPendientes > 0) {
+      (tareaPirata->jugador)->minerosPendientes--;
+      game_jugador_lanzar_pirata(tareaPirata->jugador, minero, xMinaSinMinero(tareaPirata->jugador), yMinaSinMinero(tareaPirata->jugador));
+    }
     // breakpoint();
   }
 }

@@ -237,10 +237,10 @@ void memcpy(unsigned int src, unsigned int dest, unsigned int len, unsigned char
 }
 
 void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us) {
-	lcr3(cr3);
+	// lcr3(cr3);
   // breakpoint();
-	mmu_mapear_pagina(src, cr3, src, rd, us);
-	mmu_mapear_pagina(dest, cr3, dest, rd, us);
+	mmu_mapear_pagina(src, rcr3(), src, rd, us);
+	mmu_mapear_pagina(dest, rcr3(), dest, rd, us);
 	char* srcp = (char*)src;
 	char* destp = (char*)dest;
 	unsigned int i;
@@ -248,8 +248,8 @@ void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int 
 		destp[i] = srcp[i];
 	}
   // breakpoint();
-	mmu_unmapear_pagina(src, cr3);
-	mmu_unmapear_pagina(dest, cr3);
+	mmu_unmapear_pagina(src, rcr3());
+	mmu_unmapear_pagina(dest, rcr3());
 }
 
 void memcpyPila(unsigned int destVir, unsigned int cr3, unsigned char rd, unsigned char us, int value, jugador_t* jug) {

@@ -37,9 +37,6 @@ unsigned int sched_tick() {
       uchar todosMuertos = 0;
       int i = proximaTareaA + 1;
       // breakpoint();
-      if (jugadorA.piratasRestantes == 0) {
-        breakpoint();
-      }
       while (noEncontreNinguna == 1 && todosMuertos == 0) {
         if (i == 8) {
           i = 0;
@@ -204,48 +201,68 @@ void sched_agregar(jugador_t* jugador) {
     int i = tareaActualA;
     uchar estanTodosVivos = 0;
     while (i < 8 && jugador->piratas[i].vivoMuerto == 1 && estanTodosVivos == 0) {
-      if (i == 8) {
-        i = 0;
-      }
 
       i++;
 
       if (i == tareaActualA) {
         estanTodosVivos = 1;
       }
+
+      if (i == 8) {
+        i = 0;
+      }
     }
 
-    proxTareaAMuerta = i;
+    if (estanTodosVivos) {
+      breakpoint();
+      proxTareaAMuerta = -1;
+    } else {
+      proxTareaAMuerta = i;
+    }
   } else {
     //es un pirata de B
     int i = tareaActualB;
     uchar estanTodosVivos = 0;
     while (i < 8 && jugador->piratas[i].vivoMuerto == 1 && estanTodosVivos == 0) {
-      if (i == 8) {
-        i = 0;
-      }
+
 
       i++;
 
       if (i == tareaActualB) {
         estanTodosVivos = 1;
       }
-    }
 
-    proxTareaBMuerta = i;
+      if (i == 8) {
+        i = 0;
+      }
+    }
+    if (estanTodosVivos) {
+      proxTareaBMuerta = -1;
+    } else {
+      proxTareaBMuerta = i;
+    }
   }
 }
 
 void sched_sacar(jugador_t* jug, uint idx) {
   if (jug->index == 0) {
     //es jugadorA
-    if (proxTareaAMuerta > idx) {
+    if (proxTareaAMuerta == -1) {
+      breakpoint();
       proxTareaAMuerta = idx;
+    } else {
+      if (proxTareaAMuerta > idx) {
+        proxTareaAMuerta = idx;
+      }
     }
   } else {
     //es jugadorB
-    if (proxTareaBMuerta > idx) {
+    if (proxTareaBMuerta == -1) {
       proxTareaBMuerta = idx;
+    } else {
+      if (proxTareaBMuerta > idx) {
+        proxTareaBMuerta = idx;
+      }
     }
   }
 }
