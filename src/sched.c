@@ -8,6 +8,7 @@ definicion de funciones del scheduler
 #include "sched.h"
 #include "i386.h"
 #include "screen.h"
+#include "game.h"
 
 void sched_inicializar() {
     turnoPirata = 0;
@@ -17,26 +18,22 @@ void sched_inicializar() {
     modoDebugActivado = 1;
     tareaActualA = 0;
     tareaActualB = 0;
-    turnoPirataActual = 0;
     proxTareaAMuerta = 0;
     proxTareaBMuerta = 0;
     modoDebugPantalla = 0;
 }
 
 unsigned int sched_tick() {
-  turnoPirataActual = turnoPirata;
   if (estaEnIdle == 1) {
     estaEnIdle = 0;
     if (turnoPirata == 0) {
       //turno jug A
-      // breakpoint();
       uint proxTarea = EMPIEZAN_TSS + proximaTareaA;
       game_tick(proxTarea);
       turnoPirata = 1;
       uchar noEncontreNinguna = 1;
       uchar todosMuertos = 0;
       int i = proximaTareaA + 1;
-      // breakpoint();
       while (noEncontreNinguna == 1 && todosMuertos == 0) {
         if (i == 8) {
           i = 0;
@@ -46,6 +43,11 @@ unsigned int sched_tick() {
           tareaActualA = proximaTareaA;
           proximaTareaA = i;
           noEncontreNinguna = 0;
+        } else {
+          if (jugadorA.minerosPendientes->primero != jugadorA.minerosPendientes->ultimo) {
+            tTuple elem = pop(jugadorA.minerosPendientes);
+            game_jugador_relanzar_pirata(&jugadorA, minero, elem.posicionX, elem.posicionY);
+          }
         }
 
         if (i == proximaTareaA && jugadorA.piratas[i].vivoMuerto == 0) {
@@ -58,9 +60,6 @@ unsigned int sched_tick() {
         //salto a la idle
         return (13) << 3;
       }
-
-      // print_dec(proxTarea, 10, 35, 20, C_FG_WHITE);
-      // breakpoint();
 
       return (proxTarea << 3);
     } else {
@@ -80,6 +79,11 @@ unsigned int sched_tick() {
           tareaActualB = proximaTareaB;
           proximaTareaB = i;
           noEncontreNinguna = 0;
+        } else {
+          if (jugadorB.minerosPendientes->primero != jugadorB.minerosPendientes->ultimo) {
+            tTuple elem = pop(jugadorB.minerosPendientes);
+            game_jugador_relanzar_pirata(&jugadorB, minero, elem.posicionX, elem.posicionY);
+          }
         }
 
         if (i == proximaTareaB && jugadorB.piratas[i].vivoMuerto == 0) {
@@ -115,6 +119,12 @@ unsigned int sched_tick() {
           tareaActualA = proximaTareaA;
           proximaTareaA = i;
           noEncontreNinguna = 0;
+        } else {
+          // breakpoint();
+          if (jugadorA.minerosPendientes->primero != jugadorA.minerosPendientes->ultimo) {
+            tTuple elem = pop(jugadorA.minerosPendientes);
+            game_jugador_relanzar_pirata(&jugadorA, minero, elem.posicionX, elem.posicionY);
+          }
         }
 
         if (i == proximaTareaA && jugadorA.piratas[i].vivoMuerto == 0) {
@@ -129,9 +139,6 @@ unsigned int sched_tick() {
         //salto a la idle
         return (13) << 3;
       }
-
-      // print_dec(proxTarea, 10, 35, 20, C_FG_WHITE);
-      // breakpoint();
 
       return (proxTarea << 3);
     } else {
@@ -151,6 +158,11 @@ unsigned int sched_tick() {
           tareaActualB = proximaTareaB;
           proximaTareaB = i;
           noEncontreNinguna = 0;
+        } else {
+          if (jugadorB.minerosPendientes->primero != jugadorB.minerosPendientes->ultimo) {
+            tTuple elem = pop(jugadorB.minerosPendientes);
+            game_jugador_relanzar_pirata(&jugadorB, minero, elem.posicionX, elem.posicionY);
+          }
         }
 
         if (i == proximaTareaB && jugadorB.piratas[i].vivoMuerto == 0) {
@@ -198,43 +210,41 @@ void sched_toggle_debug() {
 void sched_agregar(jugador_t* jugador) {
   if (jugador->index == 0) {
     //es un pirata de A
-    int i = tareaActualA;
+    int i = tareaActualA + 1;
     uchar estanTodosVivos = 0;
     while (i < 8 && jugador->piratas[i].vivoMuerto == 1 && estanTodosVivos == 0) {
-
-      i++;
-
-      if (i == tareaActualA) {
-        estanTodosVivos = 1;
-      }
-
       if (i == 8) {
         i = 0;
       }
+
+      if (i == tareaActualA && jugador->piratas[i].vivoMuerto == 1) {
+        estanTodosVivos = 1;
+      }
+
+      i++;
+
     }
 
     if (estanTodosVivos) {
-      breakpoint();
       proxTareaAMuerta = -1;
     } else {
       proxTareaAMuerta = i;
     }
   } else {
     //es un pirata de B
-    int i = tareaActualB;
+    int i = tareaActualB + 1;
     uchar estanTodosVivos = 0;
     while (i < 8 && jugador->piratas[i].vivoMuerto == 1 && estanTodosVivos == 0) {
-
-
-      i++;
-
-      if (i == tareaActualB) {
-        estanTodosVivos = 1;
-      }
-
       if (i == 8) {
         i = 0;
       }
+
+      if (i == tareaActualB && jugador->piratas[i].vivoMuerto == 1) {
+        estanTodosVivos = 1;
+      }
+
+      i++;
+
     }
     if (estanTodosVivos) {
       proxTareaBMuerta = -1;
@@ -248,7 +258,7 @@ void sched_sacar(jugador_t* jug, uint idx) {
   if (jug->index == 0) {
     //es jugadorA
     if (proxTareaAMuerta == -1) {
-      breakpoint();
+      // breakpoint();
       proxTareaAMuerta = idx;
     } else {
       if (proxTareaAMuerta > idx) {

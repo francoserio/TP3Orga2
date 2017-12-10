@@ -21,12 +21,24 @@ typedef enum direccion_e { ARR = 0x4, ABA = 0x7, DER = 0xA, IZQ = 0xD } direccio
 #define MAPA_MEM_ANCHO                   (MAPA_ANCHO * PAGE_SIZE)
 #define MAPA_START                       0x500000
 
-#define MAX_SIN_CAMBIOS                 999
+#define MAX_SIN_CAMBIOS                 99999
 
 typedef enum tipoPirata_e { minero = 1, explorador = 0 } tipoPirata;
 uint reloj_pirata[16];
 uint contador_de_tiempo;
 uchar siempreIgual;
+
+typedef struct tTuple {
+    int posicionX; // or char strVal[20];
+    int posicionY;
+} tTuple;
+
+typedef struct colaCircular {
+  int primero;
+  int ultimo;
+  int largo;
+  tTuple cola[20];
+}  colaCircular;
 
 typedef struct pirata_t
 {
@@ -50,7 +62,7 @@ typedef struct jugador_t
     pirata_t piratas[MAX_CANT_PIRATAS_VIVOS];
     uint puntaje;
     int piratasRestantes;
-    uint minerosPendientes;
+    colaCircular* minerosPendientes;
     uchar posicionesXYVistas[80][45];
     uint puertoX;
     uint puertoY;
@@ -73,13 +85,15 @@ void game_pirata_exploto(uint id);
 
 void game_jugador_inicializar(jugador_t *j);
 void game_jugador_lanzar_pirata(jugador_t *j, uint tipo, uint x, uint y);
+void game_jugador_relanzar_pirata(jugador_t *j, uint tipo, uint x, uint y);
 pirata_t* game_jugador_erigir_pirata(jugador_t *j, uint tipo);
 void game_jugador_anotar_punto(jugador_t *j);
 void game_explorar_posicion(jugador_t *jugador, int x, int y);
 
 uchar existeMineroParaEse(unsigned int x, unsigned int y);
-uint xMinaSinMinero(jugador_t* jugador);
-uint yMinaSinMinero(jugador_t* jugador);
+void insertar(tTuple elem, colaCircular* puntero);
+tTuple pop(colaCircular* puntero);
+uchar estaEnCola(jugador_t* jug, int x, int y);
 
 uint game_valor_tesoro(uint x, uint y);
 uint game_valores_tesoros();

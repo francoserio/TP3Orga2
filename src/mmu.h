@@ -56,7 +56,6 @@ unsigned int mmu_proxima_pagina_fisica_libre();
 unsigned int pos2mapFis(unsigned int x, unsigned int y);
 unsigned int pos2mapVir(unsigned int x, unsigned int y);
 void mmu_inicializar_dir_pirataConocidas(jugador_t* jugador);
-void mmu_moverCodigo(pirata_t* tarea, uint x, uint y, uint indexJug);
 void memcpy(unsigned int src, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us);
 void memmov(unsigned int src, unsigned int cr3, unsigned int dest, unsigned int len, unsigned char rd, unsigned char us);
 void memcpyPila(unsigned int destVir, unsigned int cr3, unsigned char rd, unsigned char us, int value, jugador_t* jug);
